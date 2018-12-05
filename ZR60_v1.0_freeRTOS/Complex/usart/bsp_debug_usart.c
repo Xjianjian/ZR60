@@ -1,19 +1,10 @@
-/**
-  ******************************************************************************
+/********************************************************
   * @file    bsp_debug_usart.c
-  * @author  fire
+  * @author  liujian
   * @version V1.0
-  * @date    2015-xx-xx
+  * @date    2018-xx-xx
   * @brief   重定向c库printf函数到usart端口，中断接收模式
-  ******************************************************************************
-  * @attention
-  *
-  * 实验平台:秉火  STM32 F407 开发板  
-  * 论坛    :http://www.firebbs.cn
-  * 淘宝    :https://fire-stm32.taobao.com
-  *
-  ******************************************************************************
-  */ 
+*********************************************************/ 
   
 #include "./usart/bsp_debug_usart.h"
 
@@ -25,21 +16,21 @@
   */
 static void NVIC_Configuration(void)
 {
-  NVIC_InitTypeDef NVIC_InitStructure;
-  
-  /* 嵌套向量中断控制器组选择 */
-  //NVIC_PriorityGroupConfig(NVIC_PriorityGroup_2);
-  
-  /* 配置USART为中断源 */
-  NVIC_InitStructure.NVIC_IRQChannel = DEBUG_USART_IRQ;
-  /* 抢断优先级为1 */
-  NVIC_InitStructure.NVIC_IRQChannelPreemptionPriority = 2;
-  /* 子优先级为1 */
-  NVIC_InitStructure.NVIC_IRQChannelSubPriority = 0;
-  /* 使能中断 */
-  NVIC_InitStructure.NVIC_IRQChannelCmd = ENABLE;
-  /* 初始化配置NVIC */
-  NVIC_Init(&NVIC_InitStructure);
+	NVIC_InitTypeDef NVIC_InitStructure;
+
+	/* 嵌套向量中断控制器组选择 */
+	//NVIC_PriorityGroupConfig(NVIC_PriorityGroup_2);
+
+	/* 配置USART为中断源 */
+	NVIC_InitStructure.NVIC_IRQChannel = DEBUG_USART_IRQ;
+	/* 抢断优先级为1 */
+	NVIC_InitStructure.NVIC_IRQChannelPreemptionPriority = 2;
+	/* 子优先级为1 */
+	NVIC_InitStructure.NVIC_IRQChannelSubPriority = 0;
+	/* 使能中断 */
+	NVIC_InitStructure.NVIC_IRQChannelCmd = ENABLE;
+	/* 初始化配置NVIC */
+	NVIC_Init(&NVIC_InitStructure);
 }
 
 
@@ -119,15 +110,15 @@ void Usart_SendByte( USART_TypeDef * pUSARTx, uint8_t ch)
 void Usart_SendString( USART_TypeDef * pUSARTx, char *str)
 {
 	unsigned int k=0;
-  do 
-  {
-      Usart_SendByte( pUSARTx, *(str + k) );
-      k++;
-  } while(*(str + k)!='\0');
-  
-  /* 等待发送完成 */
-  while(USART_GetFlagStatus(pUSARTx,USART_FLAG_TC)==RESET)
-  {}
+	do 
+	{
+		Usart_SendByte( pUSARTx, *(str + k) );
+		k++;
+	}while(*(str + k)!='\0');
+
+	/* 等待发送完成 */
+	while(USART_GetFlagStatus(pUSARTx,USART_FLAG_TC)==RESET)
+	{}
 }
 
 /*****************  发送一个16位数 **********************/
@@ -155,7 +146,6 @@ int fputc(int ch, FILE *f)
 	uint32_t timeout = 0xffffff;
 	/* 发送一个字节数据到串口 */
 	USART_SendData(DEBUG_USART, (uint8_t) ch);
-	
 	/* 等待发送完毕 */
 	while ((USART_GetFlagStatus(DEBUG_USART, USART_FLAG_TXE) == RESET) && (--timeout));		
 
@@ -165,9 +155,9 @@ int fputc(int ch, FILE *f)
 ///重定向c库函数scanf到串口，重写向后可使用scanf、getchar等函数
 int fgetc(FILE *f)
 {
-		/* 等待串口输入数据 */
-		while (USART_GetFlagStatus(DEBUG_USART, USART_FLAG_RXNE) == RESET);
+	/* 等待串口输入数据 */
+	while (USART_GetFlagStatus(DEBUG_USART, USART_FLAG_RXNE) == RESET);
 
-		return (int)USART_ReceiveData(DEBUG_USART);
+	return (int)USART_ReceiveData(DEBUG_USART);
 }
 /*********************************************END OF FILE**********************/

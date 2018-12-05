@@ -1,22 +1,24 @@
-/**
-  ******************************************************************************
+/**************************************************************
   * @file    bsp_bsp_adc.c
-  * @author  fire
+  * @author  liujian
   * @version V1.0
-  * @date    2015-xx-xx
+  * @date    2018-xx-xx
   * @brief   adc驱动
-  ******************************************************************************
-  * @attention
-  *
-  * 实验平台:秉火  STM32 F407 开发板  
-  * 论坛    :http://www.firebbs.cn
-  * 淘宝    :https://fire-stm32.taobao.com
-  *
-  ******************************************************************************
-  */ 
+***************************************************************/ 
 #include "./adc/bsp_adc.h"
 
 __IO uint16_t ADC_ConvertedValue;
+
+
+static void Rheostat_ADC_GPIO_Config(void);
+static void Rheostat_ADC_Mode_Config(void);
+
+void bsp_adc_Init(void)
+{
+	Rheostat_ADC_GPIO_Config();
+	Rheostat_ADC_Mode_Config();
+}
+
 
 static void Rheostat_ADC_GPIO_Config(void)
 {
@@ -119,14 +121,6 @@ static void Rheostat_ADC_Mode_Config(void)
 	ADC_Cmd(RHEOSTAT_ADC, ENABLE);  
 	//开始adc转换，软件触发
 	ADC_SoftwareStartConv(RHEOSTAT_ADC);
-}
-
-
-
-void Rheostat_Init(void)
-{
-	Rheostat_ADC_GPIO_Config();
-	Rheostat_ADC_Mode_Config();
 }
 
 

@@ -82,16 +82,15 @@ static void AppTaskCreate(void)
 	vTaskStartScheduler();//启动调动器
 }
 
+/* lwip 5ms 周期性任务 */
 static void Lwip_app_5msTask(void * pvParameters)
 {
 	static uint64_t Se_dw_LocalTime = 0U;
 	while(1)
-	{	
+	{
 		TskdhcpClient_MainFunction();
 	
-		/*********************************
-		以下接口需要周期调用
-		*********************************/
+		/****** 以下接口需要周期调用 **********/
 		/* handle periodic timers for LwIP */
 		Se_dw_LocalTime = Se_dw_LocalTime + 5U;
 		LwIP_Periodic_Handle(Se_dw_LocalTime);
@@ -101,7 +100,7 @@ static void Lwip_app_5msTask(void * pvParameters)
 	}
 }
 
-
+/* 低功耗任务 */
 static void LowPower_Task(void * pvParameters)
 {
 	while(1)

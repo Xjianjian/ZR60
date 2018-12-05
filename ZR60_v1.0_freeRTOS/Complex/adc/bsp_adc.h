@@ -25,7 +25,7 @@
 
 extern __IO uint16_t ADC_ConvertedValue;//ADC1
 
-void Rheostat_Init(void);
+void bsp_adc_Init(void);
 
 #endif /* __BSP_ADC_H */
 

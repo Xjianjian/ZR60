@@ -1,26 +1,17 @@
-/*
-******************************************************************************
+/*********************************************************
 * @file    bsp_led.c
-* @author  fire
+* @author  liujian
 * @version V1.0
-* @date    2015-xx-xx
+* @date    2018-xx-xx
 * @brief   led应用函数接口
-******************************************************************************
-* @attention
-*
-* 实验平台:秉火  STM32 F429 开发板  
-* 论坛    :http://www.chuxue123.com
-* 淘宝    :http://firestm32.taobao.com
-*
-******************************************************************************
-*/
+*********************************************************/
 #include "./wm8978/bsp_wm8978.h" 
-#include "./usart/bsp_debug_usart.h"
-/**
-	*******************************************************************************************************
+//#include "./usart/bsp_debug_usart.h"
+
+
+/************************************************************************
 	*	                     I2C控制WM8978配置部分 
-	*******************************************************************************************************
-	*/
+*************************************************************************/
 
 //static  uint8_t WM8978_I2C_TIMEOUT_UserCallback(void);
 static uint8_t WM8978_I2C_WriteRegister(uint8_t RegisterAddr, uint16_t RegisterValue);
@@ -49,9 +40,6 @@ static uint16_t wm8978_RegCash[] = {
 
 static uint8_t WM8978_I2C_WriteRegister(uint8_t RegisterAddr, uint16_t RegisterValue)
 {
-	//uint16_t i,m;
-	//uint16_t usAddr;
-	
 	/* 
 		写串行EEPROM不像读操作可以连续读取很多字节，每次写操作只能在同一个page。
 		对于24xx02，page size = 8
@@ -59,21 +47,25 @@ static uint8_t WM8978_I2C_WriteRegister(uint8_t RegisterAddr, uint16_t RegisterV
 		为了提高连续写的效率: 本函数采用page wirte操作。
 	*/
 	i2c_Start();
-	
 	i2c_SendByte(WM8978_SLAVE_ADDRESS);
+	
 	if (i2c_WaitAck() != 0)
 	{
-			goto cmd_fail;	/* EEPROM器件无应答 */
+		goto cmd_fail;	/* EEPROM器件无应答 */
 	}
+	
 	i2c_SendByte(((RegisterAddr << 1) & 0xFE) | ((RegisterValue >> 8) & 0x1));
+	
 	if (i2c_WaitAck() != 0)
 	{
-			goto cmd_fail;	/* EEPROM器件无应答 */
+		goto cmd_fail;	/* EEPROM器件无应答 */
 	}
-	 i2c_SendByte( RegisterValue&0xff);
-		if (i2c_WaitAck() != 0)
+	
+	i2c_SendByte( RegisterValue&0xff);
+	
+	if (i2c_WaitAck() != 0)
 	{
-			goto cmd_fail;	/* EEPROM器件无应答 */
+		goto cmd_fail;	/* EEPROM器件无应答 */
 	}
 
 	i2c_Stop();
@@ -83,7 +75,6 @@ cmd_fail: /* 命令执行失败后，切记发送停止信号，避免影响I2C总线上其他设备 */
 	/* 发送I2C总线停止信号 */
 	i2c_Stop();
 	return 0;
-	
 }
 
 /**
@@ -341,7 +332,6 @@ void wm8978_CfgAudioIF(uint16_t _usStandard, uint8_t _ucWordLen)
 	uint16_t usReg;
 
 	/* WM8978(V4.5_2011).pdf 73页，寄存器列表 */
-
 	/*	REG R4, 音频接口控制寄存器
 		B8		BCP	 = X, BCLK极性，0表示正常，1表示反相
 		B7		LRCP = x, LRC时钟极性，0表示正常，1表示反相
@@ -382,7 +372,6 @@ void wm8978_CfgAudioIF(uint16_t _usStandard, uint8_t _ucWordLen)
 		usReg |= (0 << 5);		/* 16bit */
 	}
 	wm8978_WriteReg(4, usReg);
-
 
 	/*
 		R6，时钟产生控制寄存器
@@ -980,32 +969,32 @@ void I2Sx_TX_DMA_Init(const uint16_t *buffer0,const uint16_t *buffer1,const uint
 {  
 	NVIC_InitTypeDef   NVIC_InitStructure;
 	DMA_InitTypeDef  DMA_InitStructure;
-	
- 
-  RCC_AHB1PeriphClockCmd(I2Sx_DMA_CLK,ENABLE);//DMA1时钟使能 
-	
+
+
+	RCC_AHB1PeriphClockCmd(I2Sx_DMA_CLK,ENABLE);//DMA1时钟使能 
+
 	DMA_DeInit(I2Sx_TX_DMA_STREAM);
 	while (DMA_GetCmdStatus(I2Sx_TX_DMA_STREAM) != DISABLE){}//等待DMA1_Stream4可配置 
 		
 	DMA_ClearITPendingBit(I2Sx_TX_DMA_STREAM,DMA_IT_FEIF4|DMA_IT_DMEIF4|DMA_IT_TEIF4|DMA_IT_HTIF4|DMA_IT_TCIF4);//清空DMA1_Stream4上所有中断标志
 
-  /* 配置 DMA Stream */
-  DMA_InitStructure.DMA_Channel = I2Sx_TX_DMA_CHANNEL;  //通道0 SPIx_TX通道 
-  DMA_InitStructure.DMA_PeripheralBaseAddr = (uint32_t)&WM8978_I2Sx_SPI->DR;//外设地址为:(u32)&SPI2->DR
-  DMA_InitStructure.DMA_Memory0BaseAddr = (uint32_t)buffer0;//DMA 存储器0地址
-  DMA_InitStructure.DMA_DIR = DMA_DIR_MemoryToPeripheral;//存储器到外设模式
-  DMA_InitStructure.DMA_BufferSize = num;//数据传输量 
-  DMA_InitStructure.DMA_PeripheralInc = DMA_PeripheralInc_Disable;//外设非增量模式
-  DMA_InitStructure.DMA_MemoryInc = DMA_MemoryInc_Enable;//存储器增量模式
-  DMA_InitStructure.DMA_PeripheralDataSize = DMA_PeripheralDataSize_HalfWord;//外设数据长度:16位
-  DMA_InitStructure.DMA_MemoryDataSize = DMA_MemoryDataSize_HalfWord;//存储器数据长度：16位 
-  DMA_InitStructure.DMA_Mode = DMA_Mode_Circular;// 使用循环模式 
-  DMA_InitStructure.DMA_Priority = DMA_Priority_High;//高优先级
-  DMA_InitStructure.DMA_FIFOMode = DMA_FIFOMode_Disable; //不使用FIFO模式        
-  DMA_InitStructure.DMA_FIFOThreshold = DMA_FIFOThreshold_1QuarterFull;
-  DMA_InitStructure.DMA_MemoryBurst = DMA_MemoryBurst_Single;//外设突发单次传输
-  DMA_InitStructure.DMA_PeripheralBurst = DMA_PeripheralBurst_Single;//存储器突发单次传输
-  DMA_Init(I2Sx_TX_DMA_STREAM, &DMA_InitStructure);//初始化DMA Stream
+	/* 配置 DMA Stream */
+	DMA_InitStructure.DMA_Channel = I2Sx_TX_DMA_CHANNEL;  //通道0 SPIx_TX通道 
+	DMA_InitStructure.DMA_PeripheralBaseAddr = (uint32_t)&WM8978_I2Sx_SPI->DR;//外设地址为:(u32)&SPI2->DR
+	DMA_InitStructure.DMA_Memory0BaseAddr = (uint32_t)buffer0;//DMA 存储器0地址
+	DMA_InitStructure.DMA_DIR = DMA_DIR_MemoryToPeripheral;//存储器到外设模式
+	DMA_InitStructure.DMA_BufferSize = num;//数据传输量 
+	DMA_InitStructure.DMA_PeripheralInc = DMA_PeripheralInc_Disable;//外设非增量模式
+	DMA_InitStructure.DMA_MemoryInc = DMA_MemoryInc_Enable;//存储器增量模式
+	DMA_InitStructure.DMA_PeripheralDataSize = DMA_PeripheralDataSize_HalfWord;//外设数据长度:16位
+	DMA_InitStructure.DMA_MemoryDataSize = DMA_MemoryDataSize_HalfWord;//存储器数据长度：16位 
+	DMA_InitStructure.DMA_Mode = DMA_Mode_Circular;// 使用循环模式 
+	DMA_InitStructure.DMA_Priority = DMA_Priority_High;//高优先级
+	DMA_InitStructure.DMA_FIFOMode = DMA_FIFOMode_Disable; //不使用FIFO模式        
+	DMA_InitStructure.DMA_FIFOThreshold = DMA_FIFOThreshold_1QuarterFull;
+	DMA_InitStructure.DMA_MemoryBurst = DMA_MemoryBurst_Single;//外设突发单次传输
+	DMA_InitStructure.DMA_PeripheralBurst = DMA_PeripheralBurst_Single;//存储器突发单次传输
+	DMA_Init(I2Sx_TX_DMA_STREAM, &DMA_InitStructure);//初始化DMA Stream
 		
 	if(n == 1)
 	{
@@ -1026,19 +1015,19 @@ void I2Sx_TX_DMA_Init(const uint16_t *buffer0,const uint16_t *buffer1,const uint
 	}
 	else
 	{
-			DMA_DoubleBufferModeConfig(I2Sx_TX_DMA_STREAM,(uint32_t)buffer1,DMA_Memory_1);//双缓冲模式配置
-		 
-			DMA_DoubleBufferModeCmd(I2Sx_TX_DMA_STREAM,DISABLE);//双缓冲模式开启
-		 
-			DMA_ITConfig(I2Sx_TX_DMA_STREAM,DMA_IT_TC,ENABLE);//开启传输完成中断
-			
-			SPI_I2S_DMACmd(WM8978_I2Sx_SPI,SPI_I2S_DMAReq_Tx,ENABLE);//SPI2 TX DMA请求使能.
-			
-			NVIC_InitStructure.NVIC_IRQChannel = I2Sx_TX_DMA_STREAM_IRQn; 
-			NVIC_InitStructure.NVIC_IRQChannelPreemptionPriority = 0;//抢占优先级1
-			NVIC_InitStructure.NVIC_IRQChannelSubPriority = 1;//子优先级2
-			NVIC_InitStructure.NVIC_IRQChannelCmd = ENABLE;//使能外部中断通道
-			NVIC_Init(&NVIC_InitStructure);//配置		
+		DMA_DoubleBufferModeConfig(I2Sx_TX_DMA_STREAM,(uint32_t)buffer1,DMA_Memory_1);//双缓冲模式配置
+	 
+		DMA_DoubleBufferModeCmd(I2Sx_TX_DMA_STREAM,DISABLE);//双缓冲模式开启
+	 
+		DMA_ITConfig(I2Sx_TX_DMA_STREAM,DMA_IT_TC,ENABLE);//开启传输完成中断
+		
+		SPI_I2S_DMACmd(WM8978_I2Sx_SPI,SPI_I2S_DMAReq_Tx,ENABLE);//SPI2 TX DMA请求使能.
+		
+		NVIC_InitStructure.NVIC_IRQChannel = I2Sx_TX_DMA_STREAM_IRQn; 
+		NVIC_InitStructure.NVIC_IRQChannelPreemptionPriority = 0;//抢占优先级1
+		NVIC_InitStructure.NVIC_IRQChannelSubPriority = 1;//子优先级2
+		NVIC_InitStructure.NVIC_IRQChannelCmd = ENABLE;//使能外部中断通道
+		NVIC_Init(&NVIC_InitStructure);//配置		
 	}
 
 }
@@ -1053,7 +1042,7 @@ void I2Sx_TX_DMA_STREAM_IRQFUN(void)
 	if(DMA_GetITStatus(I2Sx_TX_DMA_STREAM,I2Sx_TX_DMA_IT_TCIF)==SET)//DMA传输完成标志
 	{ 
 		DMA_ClearITPendingBit(I2Sx_TX_DMA_STREAM,I2Sx_TX_DMA_IT_TCIF);//清DMA传输完成标准
-    I2S_DMA_TX_Callback();	//执行回调函数,读取数据等操作在这里面处理  
+		I2S_DMA_TX_Callback();	//执行回调函数,读取数据等操作在这里面处理  
 	}   											 
 } 
 /**
@@ -1115,46 +1104,46 @@ void I2Sxext_RX_DMA_Init(const uint16_t *buffer0,const uint16_t *buffer1,const u
 {  
 	NVIC_InitTypeDef   NVIC_InitStructure;
 	DMA_InitTypeDef  DMA_InitStructure;	
- 
-  RCC_AHB1PeriphClockCmd(I2Sx_DMA_CLK,ENABLE);//DMA1时钟使能 
-	
+
+	RCC_AHB1PeriphClockCmd(I2Sx_DMA_CLK,ENABLE);//DMA1时钟使能 
+
 	DMA_DeInit(I2Sxext_RX_DMA_STREAM);
 	while (DMA_GetCmdStatus(I2Sxext_RX_DMA_STREAM) != DISABLE){}//等待DMA1_Stream3可配置 
 		
 	DMA_ClearITPendingBit(I2Sxext_RX_DMA_STREAM,DMA_IT_FEIF3|DMA_IT_DMEIF3|DMA_IT_TEIF3|DMA_IT_HTIF3|DMA_IT_TCIF3);//清空DMA1_Stream3上所有中断标志
 
-  /* 配置 DMA Stream */
-  DMA_InitStructure.DMA_Channel = I2Sxext_RX_DMA_CHANNEL;  //通道0 SPIx_TX通道 
-  DMA_InitStructure.DMA_PeripheralBaseAddr = (uint32_t)&WM8978_I2Sx_ext->DR;//外设地址为:(u32)&SPI2->DR
-  DMA_InitStructure.DMA_Memory0BaseAddr = (uint32_t)buffer0;//DMA 存储器0地址
-  DMA_InitStructure.DMA_DIR = DMA_DIR_PeripheralToMemory;//外设到存储器模式
-  DMA_InitStructure.DMA_BufferSize = num;//数据传输量 
-  DMA_InitStructure.DMA_PeripheralInc = DMA_PeripheralInc_Disable;//外设非增量模式
-  DMA_InitStructure.DMA_MemoryInc = DMA_MemoryInc_Enable;//存储器增量模式
-  DMA_InitStructure.DMA_PeripheralDataSize = DMA_PeripheralDataSize_HalfWord;//外设数据长度:16位
-  DMA_InitStructure.DMA_MemoryDataSize = DMA_MemoryDataSize_HalfWord;//存储器数据长度：16位 
-  DMA_InitStructure.DMA_Mode = DMA_Mode_Circular;// 使用循环模式 
-  DMA_InitStructure.DMA_Priority = DMA_Priority_Medium;//中等优先级
-  DMA_InitStructure.DMA_FIFOMode = DMA_FIFOMode_Disable; //不使用FIFO模式        
-  DMA_InitStructure.DMA_FIFOThreshold = DMA_FIFOThreshold_1QuarterFull;
-  DMA_InitStructure.DMA_MemoryBurst = DMA_MemoryBurst_Single;//外设突发单次传输
-  DMA_InitStructure.DMA_PeripheralBurst = DMA_PeripheralBurst_Single;//存储器突发单次传输
-  DMA_Init(I2Sxext_RX_DMA_STREAM, &DMA_InitStructure);//初始化DMA Stream
+	/* 配置 DMA Stream */
+	DMA_InitStructure.DMA_Channel = I2Sxext_RX_DMA_CHANNEL;  //通道0 SPIx_TX通道 
+	DMA_InitStructure.DMA_PeripheralBaseAddr = (uint32_t)&WM8978_I2Sx_ext->DR;//外设地址为:(u32)&SPI2->DR
+	DMA_InitStructure.DMA_Memory0BaseAddr = (uint32_t)buffer0;//DMA 存储器0地址
+	DMA_InitStructure.DMA_DIR = DMA_DIR_PeripheralToMemory;//外设到存储器模式
+	DMA_InitStructure.DMA_BufferSize = num;//数据传输量 
+	DMA_InitStructure.DMA_PeripheralInc = DMA_PeripheralInc_Disable;//外设非增量模式
+	DMA_InitStructure.DMA_MemoryInc = DMA_MemoryInc_Enable;//存储器增量模式
+	DMA_InitStructure.DMA_PeripheralDataSize = DMA_PeripheralDataSize_HalfWord;//外设数据长度:16位
+	DMA_InitStructure.DMA_MemoryDataSize = DMA_MemoryDataSize_HalfWord;//存储器数据长度：16位 
+	DMA_InitStructure.DMA_Mode = DMA_Mode_Circular;// 使用循环模式 
+	DMA_InitStructure.DMA_Priority = DMA_Priority_Medium;//中等优先级
+	DMA_InitStructure.DMA_FIFOMode = DMA_FIFOMode_Disable; //不使用FIFO模式        
+	DMA_InitStructure.DMA_FIFOThreshold = DMA_FIFOThreshold_1QuarterFull;
+	DMA_InitStructure.DMA_MemoryBurst = DMA_MemoryBurst_Single;//外设突发单次传输
+	DMA_InitStructure.DMA_PeripheralBurst = DMA_PeripheralBurst_Single;//存储器突发单次传输
+	DMA_Init(I2Sxext_RX_DMA_STREAM, &DMA_InitStructure);//初始化DMA Stream
 		
 	DMA_DoubleBufferModeConfig(I2Sxext_RX_DMA_STREAM,(uint32_t)buffer0,DMA_Memory_0);//双缓冲模式配置
 	DMA_DoubleBufferModeConfig(I2Sxext_RX_DMA_STREAM,(uint32_t)buffer1,DMA_Memory_1);//双缓冲模式配置
- 
-  DMA_DoubleBufferModeCmd(I2Sxext_RX_DMA_STREAM,ENABLE);//双缓冲模式开启
- 
-  DMA_ITConfig(I2Sxext_RX_DMA_STREAM,DMA_IT_TC,ENABLE);//开启传输完成中断
-	
- 	SPI_I2S_DMACmd(WM8978_I2Sx_ext,SPI_I2S_DMAReq_Rx,ENABLE);//SPI2 RX DMA请求使能.
-	
+
+	DMA_DoubleBufferModeCmd(I2Sxext_RX_DMA_STREAM,ENABLE);//双缓冲模式开启
+
+	DMA_ITConfig(I2Sxext_RX_DMA_STREAM,DMA_IT_TC,ENABLE);//开启传输完成中断
+
+	SPI_I2S_DMACmd(WM8978_I2Sx_ext,SPI_I2S_DMAReq_Rx,ENABLE);//SPI2 RX DMA请求使能.
+
 	NVIC_InitStructure.NVIC_IRQChannel = I2Sxext_RX_DMA_STREAM_IRQn; 
-  NVIC_InitStructure.NVIC_IRQChannelPreemptionPriority = 0;//抢占优先级0
-  NVIC_InitStructure.NVIC_IRQChannelSubPriority = 2;//子优先级2
-  NVIC_InitStructure.NVIC_IRQChannelCmd = ENABLE;//使能外部中断通道
-  NVIC_Init(&NVIC_InitStructure);//配置
+	NVIC_InitStructure.NVIC_IRQChannelPreemptionPriority = 0;//抢占优先级0
+	NVIC_InitStructure.NVIC_IRQChannelSubPriority = 2;//子优先级2
+	NVIC_InitStructure.NVIC_IRQChannelCmd = ENABLE;//使能外部中断通道
+	NVIC_Init(&NVIC_InitStructure);//配置
 }
 
 
@@ -1168,7 +1157,7 @@ void I2Sxext_RX_DMA_STREAM_IRQFUN(void)
 	if(DMA_GetITStatus(I2Sxext_RX_DMA_STREAM,I2Sxext_RX_DMA_IT_TCIF)==SET)////DMA1_Stream3,传输完成标志
 	{ 
 		DMA_ClearITPendingBit(I2Sxext_RX_DMA_STREAM,I2Sxext_RX_DMA_IT_TCIF);
-    I2S_DMA_RX_Callback();	//执行回调函数,读取数据等操作在这里面处理  		
+		I2S_DMA_RX_Callback();	//执行回调函数,读取数据等操作在这里面处理  		
 	}   											 
 }
 
