@@ -25,15 +25,8 @@
 **************************************************/
 //#define RunSt_bits_Task  		(1 << 0)
 #define LwipApp5ms_bits_Task  	(1 << 1)
-#define LwipApp100ms_bits_Task  (1 << 2)
-#define iap_bits_Task  			(1 << 3)
-#define Fliter_bits_Task  		(1 << 4)
-#define ZR60Ctrl5ms_bits_Task  	(1 << 5)
-#define ZR60Ctrl100ms_bits_Task (1 << 6)
 #define SleepMng_bits_Task 		(1 << 7)
-#define https_bits_Task 		(1 << 8)
-#define All_bits_Task  			(LwipApp5ms_bits_Task | LwipApp100ms_bits_Task | iap_bits_Task | SleepMng_bits_Task\
-								 | Fliter_bits_Task | ZR60Ctrl5ms_bits_Task | ZR60Ctrl100ms_bits_Task)
+#define All_bits_Task  			(LwipApp5ms_bits_Task | SleepMng_bits_Task)
 static EventGroupHandle_t  		xCreatedEventGroup;
 
 /*************************************************
@@ -45,34 +38,24 @@ static EventGroupHandle_t  		xCreatedEventGroup;
 **************************************************/
 static void AppTaskCreate(void);
 static void Lwip_app_5msTask(void * pvParameters);
-static void Lwip_app_100msTask(void * pvParameters);
-static void iap_Task(void * pvParameters);
-static void Fliter_Task(void * pvParameters);
-static void ZR60Ctrl_5msTask(void * pvParameters);
-static void ZR60Ctrl_10msTask(void * pvParameters);
 #ifdef freeRTOS_RUN_STATUS_DEBUG
 static void vTaskRunningStatus(void *pvParameters);
 #endif
 static void AppObjCreate (void);
 static void vTaskFeedDog(void *pvParameters);
 static void LowPower_Task(void * pvParameters);
-static void https_Task(void * pvParameters);
 /*************************************************
   *        				main函数
 **************************************************/
 int main(void)
 {
-	SCB->VTOR = FLASH_BASE | 0x40000;//中断向量表偏移
+	//SCB->VTOR = FLASH_BASE | 0x40000;//中断向量表偏移
 	Mcu_Init();/* 初始化 */
 	
-	/* Enable RNG clock source *///polarSSL库要使用到
+	/* Enable RNG clock source *///polarSSL库要使用到，未使用可注释掉
 	RCC_AHB2PeriphClockCmd(RCC_AHB2Periph_RNG, ENABLE);
 	/* Enable RNG IP  */
 	RNG_Cmd(ENABLE);
-	/* Enable CRYP clock */
-	//RCC_AHB2PeriphClockCmd(RCC_AHB2Periph_CRYP, ENABLE);
-	/* Enable HASH clock */
-	//RCC_AHB2PeriphClockCmd(RCC_AHB2Periph_HASH, ENABLE);
 	
 	AppObjCreate(); /* 创建事件标志组 */
 	AppTaskCreate();/* 创建任务 */
@@ -91,20 +74,8 @@ static void AppTaskCreate(void)
 #endif
 	xTaskCreate(LowPower_Task, (const char *)"LowPower", 	256 , \
 				STD_NULL_PTR, tskIDLE_PRIORITY + 2, STD_NULL_PTR);
-	xTaskCreate(iap_Task, 			(const char *)"iap", 			512 , \
-				STD_NULL_PTR, tskIDLE_PRIORITY + 3, STD_NULL_PTR);
-	xTaskCreate(Lwip_app_100msTask, (const char *)"Lwip_app_100ms", 1024 , \
-				STD_NULL_PTR, tskIDLE_PRIORITY + 3, STD_NULL_PTR);
-	xTaskCreate(https_Task, (const char *)"https", 1024 , \
-				STD_NULL_PTR, tskIDLE_PRIORITY + 1, STD_NULL_PTR);
-	xTaskCreate(ZR60Ctrl_5msTask, 	(const char *)"ZR60Ctrl_5ms", 	512 , \
-				STD_NULL_PTR, tskIDLE_PRIORITY + 5,STD_NULL_PTR);
-	xTaskCreate(ZR60Ctrl_10msTask, 	(const char *)"ZR60Ctrl_10ms", 	512 , \
-				STD_NULL_PTR, tskIDLE_PRIORITY + 3,STD_NULL_PTR);
 	xTaskCreate(Lwip_app_5msTask, 	(const char *)"Lwip_app_5ms", 	512 , \
 				STD_NULL_PTR, tskIDLE_PRIORITY + 4, STD_NULL_PTR);
-	xTaskCreate(Fliter_Task,		(const char *)"Fliter", 		128 , \
-				STD_NULL_PTR, tskIDLE_PRIORITY + 5,STD_NULL_PTR);
 	xTaskCreate(vTaskFeedDog,		(const char *)"FeedDog", 		128 , \
 				STD_NULL_PTR, tskIDLE_PRIORITY + 5,STD_NULL_PTR);
 	
@@ -117,7 +88,6 @@ static void Lwip_app_5msTask(void * pvParameters)
 	while(1)
 	{	
 		TskdhcpClient_MainFunction();
-		TskdnsAnalysis_MainFunction();
 	
 		/*********************************
 		以下接口需要周期调用
@@ -127,94 +97,10 @@ static void Lwip_app_5msTask(void * pvParameters)
 		LwIP_Periodic_Handle(Se_dw_LocalTime);
 		
 		xEventGroupSetBits(xCreatedEventGroup,LwipApp5ms_bits_Task);
-		//IWDG_Feed();//喂狗
 		vTaskDelay(5 / portTICK_RATE_MS);
 	}
 }
 
-
-static void https_Task(void * pvParameters)
-{
-	while(1)
-	{
-		tcp_ShortConnect_MainFunction();
-		
-		//xEventGroupSetBits(xCreatedEventGroup, https_bits_Task);
-		vTaskDelay(5000 / portTICK_RATE_MS);
-	}
-}
-
-
-static void Lwip_app_100msTask(void * pvParameters)
-{
-	while(1)
-	{
-		tcp_LngConnect_MainFunction();
-		Tskntpclient_MainFunction();
-		
-		xEventGroupSetBits(xCreatedEventGroup, LwipApp100ms_bits_Task);
-		//IWDG_Feed();//喂狗
-		vTaskDelay(35 / portTICK_RATE_MS);
-	}
-}
-
-static void iap_Task(void * pvParameters)
-{
-	while(1)
-	{
-		//stm8_fm17550_iap_MainFunction();
-		http_client_iap_MainFunction();
-		
-		xEventGroupSetBits(xCreatedEventGroup, iap_bits_Task);
-		//IWDG_Feed();//喂狗
-		vTaskDelay(50 / portTICK_RATE_MS);
-	}
-}
-
-
-/* 滤波任务 */
-static void Fliter_Task(void * pvParameters)
-{
-	while(1)
-	{
-		MngADFliter_mainFunction();
-		TskBtnFltr_MainFunction();//按键扫描
-		TskPSFltr_MainFunction();//外设输入硬线信号扫描
-		
-		xEventGroupSetBits(xCreatedEventGroup, Fliter_bits_Task);
-		//IWDG_Feed();//喂狗
-		vTaskDelay(5 / portTICK_RATE_MS);
-	}
-}
-
-static void ZR60Ctrl_5msTask(void * pvParameters)
-{
-	while(1)
-	{
-		/*******************
-		*	ZR60控制逻辑
-		********************/	
-		TskZR60Ctrl_MainFunction();
-		TskAudioIO_MainFunction();//语音播放
-		
-		xEventGroupSetBits(xCreatedEventGroup, ZR60Ctrl5ms_bits_Task);
-		//IWDG_Feed();//喂狗
-		vTaskDelay(20 / portTICK_RATE_MS);
-	}
-}
-
-static void ZR60Ctrl_10msTask(void * pvParameters)
-{
-	while(1)
-	{
-		TskBListMng_MainFunction();
-		TskMemIf_MainFunction();//写flash或eeprom
-		
-		xEventGroupSetBits(xCreatedEventGroup, ZR60Ctrl100ms_bits_Task);
-		//IWDG_Feed();//喂狗
-		vTaskDelay(10 / portTICK_RATE_MS);
-	}
-}
 
 static void LowPower_Task(void * pvParameters)
 {
@@ -223,7 +109,6 @@ static void LowPower_Task(void * pvParameters)
 		TskSleepMng_MainFunction();	
 		
 		xEventGroupSetBits(xCreatedEventGroup, SleepMng_bits_Task);
-		//IWDG_Feed();//喂狗
 		vTaskDelay(20 / portTICK_RATE_MS);
 	}
 }
@@ -298,31 +183,6 @@ static void vTaskFeedDog(void *pvParameters)
 			if((uxBits & LwipApp5ms_bits_Task) != LwipApp5ms_bits_Task)
 			{
 				USART_PRINTF_S("\r\nErrorLogging：Lwip app 5ms任务未正常运行\r\n");
-			}
-			
-			if((uxBits & LwipApp100ms_bits_Task) != LwipApp100ms_bits_Task)
-			{
-				USART_PRINTF_S("\r\nErrorLogging：Lwip app 100ms任务未正常运行\r\n");
-			}
-			
-			if((uxBits & iap_bits_Task) != iap_bits_Task)
-			{
-				USART_PRINTF_S("\r\nErrorLogging：在线更新任务未正常运行\r\n");
-			}	
-			
-			if((uxBits & Fliter_bits_Task) != Fliter_bits_Task)
-			{
-				USART_PRINTF_S("\r\nErrorLogging：滤波任务未正常运行\r\n");
-			}
-			
-			if((uxBits & ZR60Ctrl5ms_bits_Task) != ZR60Ctrl5ms_bits_Task)
-			{
-				USART_PRINTF_S("\r\nErrorLogging：ZR60 5ms任务未正常运行\r\n");
-			}
-			
-			if((uxBits & ZR60Ctrl100ms_bits_Task) != ZR60Ctrl100ms_bits_Task)
-			{
-				USART_PRINTF_S("\r\nErrorLogging：ZR60 100ms任务未正常运行\r\n");
 			}
 			
 			if((uxBits & SleepMng_bits_Task) != SleepMng_bits_Task)

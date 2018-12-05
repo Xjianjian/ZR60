@@ -11,13 +11,9 @@ Data			  Vasion			author
 /*******************************************************
 description锛歩nclude the header file
 *******************************************************/
-//#define ZR50			//定义时，为zr50设备；未定义时，为zr60设备
-//#define HYM8563		//定义时，使用外部hym8563时钟芯片
 #define NETWORK_ON     	//定义时，开启网络功能
 //#define UART_DEBUG		//定义时，开启串口打印
-//#define WM8978_DEBUG
 //#define NET_DEBUG
-//#define TIME_DEBUG
 //#define freeRTOS_RUN_STATUS_DEBUG
 
 
@@ -26,35 +22,20 @@ description锛歩nclude the header file
 #include <stdlib.h>
 #include <stdio.h>
 /*bsp文件*/
-#include "rtc.h"
 #include "./usart/bsp_debug_usart.h"
-#include "./usart3/usart3.h"
-#include "./usart4/usart4.h"
-#include "./usart5/usart5.h"
-#include "./led/bsp_led.h"
 #include "./i2c/bsp_i2c_gpio.h"
 #include "time.h"
 #include "./systick/bsp_SysTick.h"
-#include "./key/bsp_exti.h"
-#include "./hym8563/hym8563.h"
-#include "./rtc/bsp_rtc.h"
-#include "./display/display.h"
-#include "./sm3/SM3.h"
-#include "./beep/bsp_beep.h" 
 #include "./wm8978/bsp_wm8978.h"
 #include "./FATFS/ff.h" 
-#include "./AudioIO/AudioIO.h"
-#include "./timeStamp/time_stamp.h"
 #include "./FATFS/tm_stm32f4_fatfs.h"
 #include "./FATFS/diskio.h"	
 #include "./flash/fatfs_flash_spi.h"
 #include "./adc/bsp_adc.h"
-#include "./wdata/wdata.h" 
 #include "./iwdg/bsp_iwdg.h"   
 #include "./rcc/bsp_clkconfig.h"
 #include "stm32f4xx_iwdg.h"
-#include "./tim/bsp_basic_tim.h"
-//#include "polarssl/ssl.h"
+#include "./timer/bsp_basic_tim.h"
 
 /*STM32库文件*/
 #include "stm32f4xx.h"
@@ -70,32 +51,16 @@ description锛歩nclude the header file
 //Ecal
 #include "MyType.h"
 #include "Mcu_Init.h"
-#include "BtnFltr.h"
-#include "UartCmn.h"
-#include "MemIf.h"
-#include "./BListCache/BListCache.h"
-#include "./UnlockLogCache/UnlockLogCache.h"
 #include "./NetConnIf/NetConnIf.h"
-#include "tcp_client_ShortConnect.h"
-#include "tcp_client_LngConnect.h"
-#include "dnsAnalysis.h"
-#include "ntpclient.h"
 #include "dhcpClient.h"
-#include "JsonIf.h"
 #include "cJSON.h"
-#include "./STD_ADFliter/STD_ADFliter.h"
-#include "./PeriStFliter/PSFltr.h"
 #include "./crc32/crc32.h"
-#include "http_client_iap.h"
-#include "STM8_FM17550_iap.h"
 
 //service
 #include "./SleepMng/SleepMng.h"
 
 //App
-#include "./ZR60_Ctrl/ZR60_Ctrl.h"
-#include "BListMng.h"
-#include "./readcard/readcard.h"
+
 
 /*Lwip库文件*/
 #include "memp.h"

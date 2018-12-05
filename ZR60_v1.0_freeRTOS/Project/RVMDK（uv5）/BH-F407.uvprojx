@@ -272,7 +272,7 @@
               </OCR_RVCT3>
               <OCR_RVCT4>
                 <Type>1</Type>
-                <StartAddress>0x8040000</StartAddress>
+                <StartAddress>0x8000000</StartAddress>
                 <Size>0x5ffff</Size>
               </OCR_RVCT4>
               <OCR_RVCT5>
@@ -335,7 +335,7 @@
               <MiscControls></MiscControls>
               <Define>USE_STDPERIPH_DRIVER,STM32F40_41xxx,</Define>
               <Undefine></Undefine>
-              <IncludePath>..\..\Libraries\CMSIS\Device\ST\STM32F4xx\Include;..\..\Libraries\CMSIS\Include;..\..\Libraries\STM32F4xx_StdPeriph_Driver\inc;..\..\..\ZR60_v1.0_freeRTOS;..\..\Lwip\App;..\..\Lwip\Bsp;..\..\Lwip\Bsp\LAN8742A;..\..\Lwip\lwip-1.4.1;..\..\Lwip\lwip-1.4.1\port;..\..\Lwip\lwip-1.4.1\port\arch;..\..\Lwip\lwip-1.4.1\port\Standalone;..\..\Lwip\lwip-1.4.1\src\include;..\..\Lwip\lwip-1.4.1\src\include\ipv4;..\..\Lwip\lwip-1.4.1\src\include\lwip;..\..\Lwip\lwip-1.4.1\src\include\netif;..\..\Ecal\BtnFltr;..\..\Ecal\UartComn;..\..\Ecal\MemIf;..\..\APP;..\..\APP\BlackListMng;..\..\APP\SeverNewsPush;..\..\APP\NewsPull;..\..\Ecal;..\..\Ecal\JsonIf;..\..\Ecal\Mcu_Init;..\..\Service;..\..\Complex;..\..\Complex\FATFS;..\..\FreeRTOS\Source\include;..\..\FreeRTOS\Source\portable\RVDS\ARM_CM4F;..\..\FreeRTOS;..\..\polarssl-1.0.0\include;..\..\polarssl-1.0.0</IncludePath>
+              <IncludePath>..\..\Libraries\CMSIS\Device\ST\STM32F4xx\Include;..\..\Libraries\CMSIS\Include;..\..\Libraries\STM32F4xx_StdPeriph_Driver\inc;..\..\..\ZR60_v1.0_freeRTOS;..\..\Lwip\App;..\..\Lwip\Bsp;..\..\Lwip\Bsp\LAN8742A;..\..\Lwip\lwip-1.4.1;..\..\Lwip\lwip-1.4.1\port;..\..\Lwip\lwip-1.4.1\port\arch;..\..\Lwip\lwip-1.4.1\port\Standalone;..\..\Lwip\lwip-1.4.1\src\include;..\..\Lwip\lwip-1.4.1\src\include\ipv4;..\..\Lwip\lwip-1.4.1\src\include\lwip;..\..\Lwip\lwip-1.4.1\src\include\netif;..\..\APP;..\..\Ecal;..\..\Ecal\JsonIf;..\..\Ecal\Mcu_Init;..\..\Service;..\..\Complex;..\..\Complex\FATFS;..\..\FreeRTOS\Source\include;..\..\FreeRTOS\Source\portable\RVDS\ARM_CM4F;..\..\FreeRTOS;..\..\polarssl-1.0.0\include;..\..\polarssl-1.0.0</IncludePath>
             </VariousControls>
           </Cads>
           <Aads>
@@ -957,13 +957,6 @@
         </Group>
         <Group>
           <GroupName>DOC</GroupName>
-          <Files>
-            <File>
-              <FileName>必读说明.txt</FileName>
-              <FileType>5</FileType>
-              <FilePath>..\..\必读说明.txt</FilePath>
-            </File>
-          </Files>
         </Group>
         <Group>
           <GroupName>FatFs</GroupName>
@@ -1130,44 +1123,9 @@
           </GroupOption>
           <Files>
             <File>
-              <FileName>SM3.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\..\Complex\sm3\SM3.c</FilePath>
-            </File>
-            <File>
-              <FileName>display.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\..\Complex\display\display.c</FilePath>
-            </File>
-            <File>
-              <FileName>time_stamp.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\..\Complex\timeStamp\time_stamp.c</FilePath>
-            </File>
-            <File>
-              <FileName>wdata.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\..\Complex\wdata\wdata.c</FilePath>
-            </File>
-            <File>
               <FileName>fatfs_flash_spi.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\..\Complex\flash\fatfs_flash_spi.c</FilePath>
-            </File>
-            <File>
-              <FileName>usart3.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\..\Complex\usart3\usart3.c</FilePath>
-            </File>
-            <File>
-              <FileName>usart4.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\..\Complex\usart4\usart4.c</FilePath>
-            </File>
-            <File>
-              <FileName>usart5.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\..\Complex\usart5\usart5.c</FilePath>
             </File>
             <File>
               <FileName>bsp_debug_usart.c</FileName>
@@ -1190,11 +1148,6 @@
               <FilePath>..\..\Complex\systick\bsp_SysTick.c</FilePath>
             </File>
             <File>
-              <FileName>bsp_exti.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\..\Complex\key\bsp_exti.c</FilePath>
-            </File>
-            <File>
               <FileName>bsp_wm8978.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\..\Complex\wm8978\bsp_wm8978.c</FilePath>
@@ -1213,26 +1166,6 @@
               <FileName>bsp_adc.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\..\Complex\adc\bsp_adc.c</FilePath>
-            </File>
-            <File>
-              <FileName>AudioIO.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\..\Complex\AudioIO\AudioIO.c</FilePath>
-            </File>
-            <File>
-              <FileName>hym8563.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\..\Complex\hym8563\hym8563.c</FilePath>
-            </File>
-            <File>
-              <FileName>bsp_basic_tim.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\..\Complex\tim\bsp_basic_tim.c</FilePath>
-            </File>
-            <File>
-              <FileName>bsp_rtc.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\..\Complex\rtc\bsp_rtc.c</FilePath>
             </File>
           </Files>
         </Group>
@@ -1307,21 +1240,6 @@
             </GroupArmAds>
           </GroupOption>
           <Files>
-            <File>
-              <FileName>tcp_client_LngConnect.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\..\Lwip\App\tcp_client_LngConnect.c</FilePath>
-            </File>
-            <File>
-              <FileName>tcp_client_ShortConnect.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\..\Lwip\App\tcp_client_ShortConnect.c</FilePath>
-            </File>
-            <File>
-              <FileName>dnsAnalysis.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\..\Lwip\App\dnsAnalysis.c</FilePath>
-            </File>
             <File>
               <FileName>netconf.c</FileName>
               <FileType>1</FileType>
@@ -1508,24 +1426,9 @@
               <FilePath>..\..\Lwip\Bsp\LAN8742A\stm32f429_eth.c</FilePath>
             </File>
             <File>
-              <FileName>ntpclient.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\..\Lwip\App\ntpclient.c</FilePath>
-            </File>
-            <File>
               <FileName>dhcpClient.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\..\Lwip\App\dhcpClient.c</FilePath>
-            </File>
-            <File>
-              <FileName>http_client_iap.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\..\Lwip\App\http_client_iap.c</FilePath>
-            </File>
-            <File>
-              <FileName>STM8_FM17550_iap.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\..\Lwip\App\STM8_FM17550_iap.c</FilePath>
             </File>
             <File>
               <FileName>sys_arch.c</FileName>
@@ -1616,174 +1519,14 @@
           </GroupOption>
           <Files>
             <File>
-              <FileName>BtnFltr.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\..\Ecal\BtnFltr\BtnFltr.c</FilePath>
-            </File>
-            <File>
-              <FileName>BtnFltr_Cfg.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\..\Ecal\BtnFltr\BtnFltr_Cfg.c</FilePath>
-            </File>
-            <File>
-              <FileName>UartCmn.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\..\Ecal\UartComn\UartCmn.c</FilePath>
-            </File>
-            <File>
-              <FileName>MemIf.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\..\Ecal\MemIf\MemIf.c</FilePath>
-            </File>
-            <File>
-              <FileName>MemIf_cfg.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\..\Ecal\MemIf\MemIf_cfg.c</FilePath>
-            </File>
-            <File>
               <FileName>cJSON.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\..\Ecal\JsonIf\cJSON.c</FilePath>
             </File>
             <File>
-              <FileName>JsonIf.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\..\Ecal\JsonIf\JsonIf.c</FilePath>
-            </File>
-            <File>
               <FileName>Mcu_Init.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\..\Ecal\Mcu_Init\Mcu_Init.c</FilePath>
-            </File>
-            <File>
-              <FileName>BListCache.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\..\Ecal\BListCache\BListCache.c</FilePath>
-              <FileOption>
-                <CommonProperty>
-                  <UseCPPCompiler>2</UseCPPCompiler>
-                  <RVCTCodeConst>0</RVCTCodeConst>
-                  <RVCTZI>5</RVCTZI>
-                  <RVCTOtherData>5</RVCTOtherData>
-                  <ModuleSelection>0</ModuleSelection>
-                  <IncludeInBuild>2</IncludeInBuild>
-                  <AlwaysBuild>2</AlwaysBuild>
-                  <GenerateAssemblyFile>2</GenerateAssemblyFile>
-                  <AssembleAssemblyFile>2</AssembleAssemblyFile>
-                  <PublicsOnly>2</PublicsOnly>
-                  <StopOnExitCode>11</StopOnExitCode>
-                  <CustomArgument></CustomArgument>
-                  <IncludeLibraryModules></IncludeLibraryModules>
-                  <ComprImg>1</ComprImg>
-                </CommonProperty>
-                <FileArmAds>
-                  <Cads>
-                    <interw>2</interw>
-                    <Optim>0</Optim>
-                    <oTime>2</oTime>
-                    <SplitLS>2</SplitLS>
-                    <OneElfS>2</OneElfS>
-                    <Strict>2</Strict>
-                    <EnumInt>2</EnumInt>
-                    <PlainCh>2</PlainCh>
-                    <Ropi>2</Ropi>
-                    <Rwpi>2</Rwpi>
-                    <wLevel>0</wLevel>
-                    <uThumb>2</uThumb>
-                    <uSurpInc>2</uSurpInc>
-                    <uC99>2</uC99>
-                    <useXO>2</useXO>
-                    <v6Lang>0</v6Lang>
-                    <v6LangP>0</v6LangP>
-                    <vShortEn>2</vShortEn>
-                    <vShortWch>2</vShortWch>
-                    <v6Lto>2</v6Lto>
-                    <v6WtE>2</v6WtE>
-                    <v6Rtti>2</v6Rtti>
-                    <VariousControls>
-                      <MiscControls></MiscControls>
-                      <Define></Define>
-                      <Undefine></Undefine>
-                      <IncludePath></IncludePath>
-                    </VariousControls>
-                  </Cads>
-                </FileArmAds>
-              </FileOption>
-            </File>
-            <File>
-              <FileName>UnlockLogCache.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\..\Ecal\UnlockLogCache\UnlockLogCache.c</FilePath>
-              <FileOption>
-                <CommonProperty>
-                  <UseCPPCompiler>2</UseCPPCompiler>
-                  <RVCTCodeConst>0</RVCTCodeConst>
-                  <RVCTZI>5</RVCTZI>
-                  <RVCTOtherData>5</RVCTOtherData>
-                  <ModuleSelection>0</ModuleSelection>
-                  <IncludeInBuild>2</IncludeInBuild>
-                  <AlwaysBuild>2</AlwaysBuild>
-                  <GenerateAssemblyFile>2</GenerateAssemblyFile>
-                  <AssembleAssemblyFile>2</AssembleAssemblyFile>
-                  <PublicsOnly>2</PublicsOnly>
-                  <StopOnExitCode>11</StopOnExitCode>
-                  <CustomArgument></CustomArgument>
-                  <IncludeLibraryModules></IncludeLibraryModules>
-                  <ComprImg>1</ComprImg>
-                </CommonProperty>
-                <FileArmAds>
-                  <Cads>
-                    <interw>2</interw>
-                    <Optim>0</Optim>
-                    <oTime>2</oTime>
-                    <SplitLS>2</SplitLS>
-                    <OneElfS>2</OneElfS>
-                    <Strict>2</Strict>
-                    <EnumInt>2</EnumInt>
-                    <PlainCh>2</PlainCh>
-                    <Ropi>2</Ropi>
-                    <Rwpi>2</Rwpi>
-                    <wLevel>0</wLevel>
-                    <uThumb>2</uThumb>
-                    <uSurpInc>2</uSurpInc>
-                    <uC99>2</uC99>
-                    <useXO>2</useXO>
-                    <v6Lang>0</v6Lang>
-                    <v6LangP>0</v6LangP>
-                    <vShortEn>2</vShortEn>
-                    <vShortWch>2</vShortWch>
-                    <v6Lto>2</v6Lto>
-                    <v6WtE>2</v6WtE>
-                    <v6Rtti>2</v6Rtti>
-                    <VariousControls>
-                      <MiscControls></MiscControls>
-                      <Define></Define>
-                      <Undefine></Undefine>
-                      <IncludePath></IncludePath>
-                    </VariousControls>
-                  </Cads>
-                </FileArmAds>
-              </FileOption>
-            </File>
-            <File>
-              <FileName>STD_ADFliter.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\..\Ecal\STD_ADFliter\STD_ADFliter.c</FilePath>
-            </File>
-            <File>
-              <FileName>STD_ADFliterCfg.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\..\Ecal\STD_ADFliter\STD_ADFliterCfg.c</FilePath>
-            </File>
-            <File>
-              <FileName>PSFltr.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\..\Ecal\PeriStFliter\PSFltr.c</FilePath>
-            </File>
-            <File>
-              <FileName>PSFltr_Cfg.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\..\Ecal\PeriStFliter\PSFltr_Cfg.c</FilePath>
             </File>
             <File>
               <FileName>crc32.c</FileName>
@@ -1862,28 +1605,6 @@
               </Aads>
             </GroupArmAds>
           </GroupOption>
-          <Files>
-            <File>
-              <FileName>BListMng.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\..\APP\BlackListMng\BListMng.c</FilePath>
-            </File>
-            <File>
-              <FileName>BListMng_Cfg.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\..\APP\BlackListMng\BListMng_Cfg.c</FilePath>
-            </File>
-            <File>
-              <FileName>readcard.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\..\APP\readcard\readcard.c</FilePath>
-            </File>
-            <File>
-              <FileName>ZR60_Ctrl.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\..\APP\ZR60_Ctrl\ZR60_Ctrl.c</FilePath>
-            </File>
-          </Files>
         </Group>
         <Group>
           <GroupName>Service</GroupName>

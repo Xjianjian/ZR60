@@ -86,24 +86,15 @@ static void low_level_init(struct netif *netif)
   
   
   /* set MAC hardware address */
-  if(Se_u_BleMacFlg == 1)
-  {
-	  netif->hwaddr[0] =  (((Se_u_MacAddr[0] << 4U)&0xF0)|(Se_u_MacAddr[1] & 0x0F));
-	  netif->hwaddr[1] =  (((Se_u_MacAddr[2] << 4U)&0xF0)|(Se_u_MacAddr[3] & 0x0F));
-	  netif->hwaddr[2] =  (((Se_u_MacAddr[4] << 4U)&0xF0)|(Se_u_MacAddr[5] & 0x0F));
-	  netif->hwaddr[3] =  (((Se_u_MacAddr[6] << 4U)&0xF0)|(Se_u_MacAddr[7] & 0x0F));
-	  netif->hwaddr[4] =  (((Se_u_MacAddr[8] << 4U)&0xF0)|(Se_u_MacAddr[9] & 0x0F));
-	  netif->hwaddr[5] =  (((Se_u_MacAddr[10] << 4U)&0xF0)|(Se_u_MacAddr[11] & 0x0F));
-  }
-  else
-  {
+#if 0
 	  netif->hwaddr[0] =  (Ve_h_tm.tm_year%1000);
 	  netif->hwaddr[1] =  Ve_h_tm.tm_mon;
 	  netif->hwaddr[2] =  Ve_h_tm.tm_mday;
 	  netif->hwaddr[3] =  Ve_h_tm.tm_hour;
 	  netif->hwaddr[4] =  Ve_h_tm.tm_min;
 	  netif->hwaddr[5] =  Ve_h_tm.tm_sec;
-  }
+#endif
+	
 #ifdef SERIAL_DEBUG
   printf("MACµØÖ·: %x£º%x£º%x£º%x£º%x£º%x\n",netif->hwaddr[0],netif->hwaddr[1],netif->hwaddr[2],\
 		 netif->hwaddr[3],netif->hwaddr[4],netif->hwaddr[5]);

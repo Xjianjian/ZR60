@@ -39,6 +39,7 @@
 #include <stdio.h>
 #include "LAN8742A.h"
 #include "Include.h"
+#include "lwip/tcpip.h"
 /* Private typedef -----------------------------------------------------------*/
 #define MAX_DHCP_TRIES        4
 

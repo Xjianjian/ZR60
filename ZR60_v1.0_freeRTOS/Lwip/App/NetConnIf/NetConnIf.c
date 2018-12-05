@@ -87,7 +87,7 @@ char NetConnIf_Connect(char Le_u_obj,ip_addr_t *Le_u_DestIPaddr, u16_t Le_w_port
 	}
 	else
 	{
-		ret = ERR_MEM;
+		ret = (char)ERR_MEM;
 		/* deallocate the pcb */
 		NETCONNIF_PRINTF_D("\r\nErrorLogging：连接对象 %d tcp控制块分配失败\r\n",Le_u_obj);
 	}

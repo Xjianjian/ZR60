@@ -51,8 +51,6 @@ description： function code
 ******************************************************/
 void Mcu_Init(void)
 {
-	u8 ret;
-	FRESULT res = FR_OK;
 	uint32 Le_dw_InitDlyTime = 0xffffff;//延时时间
 	/*******************
 	 *	初始化...	
@@ -63,59 +61,23 @@ void Mcu_Init(void)
 	/* 配置NVIC为优先级组4 *//*一旦初始化好 NVIC 的优先级分组后，切不可以在应用中再次更改*/
 	/*优先级分组为 4 表示支持 0-15 级抢占优先级（注意，0-15 级是 16 个级别，包含 0 级），每个抢占（优先）级下只有1个副优先级：0。数值越小，抢占优先级的级别越高*/
 	NVIC_PriorityGroupConfig(NVIC_PriorityGroup_4);
-#ifdef freeRTOS_RUN_STATUS_DEBUG
-	TIMx_Configuration();
-#endif
-	LED_GPIO_Config();//led引脚配置
-	Debug_USART_Config();//debug 串口配置
-	USART3_Config();//FM17550使用
-	USART4_Config();//声波使用
-	USART5_Config();//蓝牙使用
-	Rheostat_Init();/*初始化ADC*/
-	Key_Config();//按键口配置
-	printf("\n软件版本：%s\n",CeZR60Ctrl_u_SoftVersion);
-#ifndef HYM8563
-	/* RTC配置：选择时钟源，设置RTC_CLK的分频系数 */
-	RTC_CLK_Config_Backup();
-#endif
-	//LCD_Init();//lcd1062初始化,目前未使用
-	TM_FATFS_FLASH_SPI_disk_initialize();//外部flash初始化
 
-	ret = wm8978_Init();//wm8978复位
-	if(ret == 1)
-	{
-		printf("\n【2】wm8978初始化完成 √\n");
-	}
-	InitAudioIO_playconfig();//音频播放初始化配置（DMA的双缓冲，wm8978工作方式）
-	MemIf_Init();
-	InitZR60Ctrl_parameter();
-	InitBtnFltr_Parameter();//按键滤波初始化	
-	InitPSFltr_Parameter();
-	BListMng_Init();
-	InitBListCache_Parameter();//黑名单缓存队列初始化
-	InitUnlockLogCache_Parameter();//开门日志缓存队列初始化
-	InitADFliter_parameter();
-	InitSleepMng_parameter();
+	/*  user init code begin */
 
-#ifdef NETWORK_ON
-	NetConnIf_Parameter();
-	ETH_BSP_Config();/* Configure ethernet (GPIOs, clocks, MAC, DMA) */	
-	LwIP_Init();/* Initilaize the LwIP stack */
-	stm8_fm17550_iap_parameter();
-	http_client_iap_parameter();	
-	InitdhcpClient_parameter();
-	InitdnsAnalysis_parameter();//dns
-	tcp_ShortConnect_parameter();//短连接
-	tcp_LngConnect_Parameter();//长连接
-	Initntpclient_Pramater();
-#endif	
-	LED_RGBOFF;
-	printf("\nall初始化完成！\n");
+	/*  user init code end */
 }
 
-/*
-	查看复位类型
-*/
+/******************************************************
+*函数名：McuInit_RSTtype
+
+*形  参：void
+
+*返回值：void
+
+*描  述：查看复位类型
+
+*备  注：
+******************************************************/
 static void McuInit_RSTtype(void)
 {
 	if(RCC_GetFlagStatus(RCC_FLAG_PORRST) == SET)

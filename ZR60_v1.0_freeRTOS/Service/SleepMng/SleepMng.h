@@ -16,7 +16,7 @@ description锛歩nclude the header file
 /*******************************************************
 description锛歮acro definitions
 *******************************************************/
-#define  SLEEPMNG_SCHEDULING_CYCLE     20U//调度周期  单位ms
+#define  SLEEPMNG_SCHEDULING_CYCLE     (uint16)20U//调度周期  单位ms
 
 
 

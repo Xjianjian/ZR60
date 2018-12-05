@@ -20,7 +20,7 @@ description£º global variable definitions
 /*******************************************************
 description£º static variable definitions
 *******************************************************/
-static uint8 SeSleepMng_w_CntdownTimer;
+static uint16 SeSleepMng_w_CntdownTimer;
 
 /*******************************************************
 description£º function declaration
