@@ -1,0 +1,12 @@
+.\frame.o: ..\AUDIOCODEC\MP3\libmad-0.15.1b\libmad-0.15.1b\frame.c
+.\frame.o: ..\AUDIOCODEC\MP3\libmad-0.15.1b\libmad-0.15.1b\msvc++\libmad_config.h
+.\frame.o: ..\AUDIOCODEC\MP3\libmad-0.15.1b\libmad-0.15.1b\global.h
+.\frame.o: D:\Keil_v5\ARM\ARMCC\bin\..\include\stdlib.h
+.\frame.o: ..\AUDIOCODEC\MP3\libmad-0.15.1b\libmad-0.15.1b\bit.h
+.\frame.o: ..\AUDIOCODEC\MP3\libmad-0.15.1b\libmad-0.15.1b\stream.h
+.\frame.o: ..\AUDIOCODEC\MP3\libmad-0.15.1b\libmad-0.15.1b\frame.h
+.\frame.o: ..\AUDIOCODEC\MP3\libmad-0.15.1b\libmad-0.15.1b\fixed.h
+.\frame.o: ..\AUDIOCODEC\MP3\libmad-0.15.1b\libmad-0.15.1b\msvc++\libmad_config.h
+.\frame.o: ..\AUDIOCODEC\MP3\libmad-0.15.1b\libmad-0.15.1b\timer.h
+.\frame.o: ..\AUDIOCODEC\MP3\libmad-0.15.1b\libmad-0.15.1b\layer12.h
+.\frame.o: ..\AUDIOCODEC\MP3\libmad-0.15.1b\libmad-0.15.1b\layer3.h

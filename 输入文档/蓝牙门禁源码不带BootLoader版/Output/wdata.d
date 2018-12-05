@@ -1,0 +1,44 @@
+..\..\output\wdata.o: ..\..\User\wdata\wdata.c
+..\..\output\wdata.o: ..\..\User\./wdata/wdata.h
+..\..\output\wdata.o: ..\..\Libraries\CMSIS\Device\ST\STM32F4xx\Include\stm32f4xx.h
+..\..\output\wdata.o: ..\..\Libraries\CMSIS\Include\core_cm4.h
+..\..\output\wdata.o: D:\Program Files (x86)\keil5\ARM\ARMCC\Bin\..\include\stdint.h
+..\..\output\wdata.o: ..\..\Libraries\CMSIS\Include\core_cmInstr.h
+..\..\output\wdata.o: ..\..\Libraries\CMSIS\Include\core_cmFunc.h
+..\..\output\wdata.o: ..\..\Libraries\CMSIS\Include\core_cmSimd.h
+..\..\output\wdata.o: ..\..\Libraries\CMSIS\Device\ST\STM32F4xx\Include\system_stm32f4xx.h
+..\..\output\wdata.o: ..\..\User\stm32f4xx_conf.h
+..\..\output\wdata.o: ..\..\Libraries\STM32F4xx_StdPeriph_Driver\inc\stm32f4xx_adc.h
+..\..\output\wdata.o: ..\..\Libraries\CMSIS\Device\ST\STM32F4xx\Include\stm32f4xx.h
+..\..\output\wdata.o: ..\..\Libraries\STM32F4xx_StdPeriph_Driver\inc\stm32f4xx_crc.h
+..\..\output\wdata.o: ..\..\Libraries\STM32F4xx_StdPeriph_Driver\inc\stm32f4xx_dbgmcu.h
+..\..\output\wdata.o: ..\..\Libraries\STM32F4xx_StdPeriph_Driver\inc\stm32f4xx_dma.h
+..\..\output\wdata.o: ..\..\Libraries\STM32F4xx_StdPeriph_Driver\inc\stm32f4xx_exti.h
+..\..\output\wdata.o: ..\..\Libraries\STM32F4xx_StdPeriph_Driver\inc\stm32f4xx_flash.h
+..\..\output\wdata.o: ..\..\Libraries\STM32F4xx_StdPeriph_Driver\inc\stm32f4xx_gpio.h
+..\..\output\wdata.o: ..\..\Libraries\STM32F4xx_StdPeriph_Driver\inc\stm32f4xx_i2c.h
+..\..\output\wdata.o: ..\..\Libraries\STM32F4xx_StdPeriph_Driver\inc\stm32f4xx_iwdg.h
+..\..\output\wdata.o: ..\..\Libraries\STM32F4xx_StdPeriph_Driver\inc\stm32f4xx_pwr.h
+..\..\output\wdata.o: ..\..\Libraries\STM32F4xx_StdPeriph_Driver\inc\stm32f4xx_rcc.h
+..\..\output\wdata.o: ..\..\Libraries\STM32F4xx_StdPeriph_Driver\inc\stm32f4xx_rtc.h
+..\..\output\wdata.o: ..\..\Libraries\STM32F4xx_StdPeriph_Driver\inc\stm32f4xx_sdio.h
+..\..\output\wdata.o: ..\..\Libraries\STM32F4xx_StdPeriph_Driver\inc\stm32f4xx_spi.h
+..\..\output\wdata.o: ..\..\Libraries\STM32F4xx_StdPeriph_Driver\inc\stm32f4xx_syscfg.h
+..\..\output\wdata.o: ..\..\Libraries\STM32F4xx_StdPeriph_Driver\inc\stm32f4xx_tim.h
+..\..\output\wdata.o: ..\..\Libraries\STM32F4xx_StdPeriph_Driver\inc\stm32f4xx_usart.h
+..\..\output\wdata.o: ..\..\Libraries\STM32F4xx_StdPeriph_Driver\inc\stm32f4xx_wwdg.h
+..\..\output\wdata.o: ..\..\Libraries\STM32F4xx_StdPeriph_Driver\inc\misc.h
+..\..\output\wdata.o: ..\..\Libraries\STM32F4xx_StdPeriph_Driver\inc\stm32f4xx_cryp.h
+..\..\output\wdata.o: ..\..\Libraries\STM32F4xx_StdPeriph_Driver\inc\stm32f4xx_hash.h
+..\..\output\wdata.o: ..\..\Libraries\STM32F4xx_StdPeriph_Driver\inc\stm32f4xx_rng.h
+..\..\output\wdata.o: ..\..\Libraries\STM32F4xx_StdPeriph_Driver\inc\stm32f4xx_can.h
+..\..\output\wdata.o: ..\..\Libraries\STM32F4xx_StdPeriph_Driver\inc\stm32f4xx_dac.h
+..\..\output\wdata.o: ..\..\Libraries\STM32F4xx_StdPeriph_Driver\inc\stm32f4xx_dcmi.h
+..\..\output\wdata.o: ..\..\Libraries\STM32F4xx_StdPeriph_Driver\inc\stm32f4xx_fsmc.h
+..\..\output\wdata.o: ..\..\User\usart/bsp_debug_usart.h
+..\..\output\wdata.o: D:\Program Files (x86)\keil5\ARM\ARMCC\Bin\..\include\stdio.h
+..\..\output\wdata.o: ..\..\User\./FATFS/ff.h
+..\..\output\wdata.o: ..\..\User\./FATFS/integer.h
+..\..\output\wdata.o: ..\..\User\./FATFS/ffconf.h
+..\..\output\wdata.o: ..\..\User\./malloc/malloc.h
+..\..\output\wdata.o: D:\Program Files (x86)\keil5\ARM\ARMCC\Bin\..\include\string.h

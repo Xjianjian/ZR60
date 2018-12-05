@@ -1,0 +1,10 @@
+..\..\output\pem.o: ..\..\polarssl-1.0.0\library\pem.c
+..\..\output\pem.o: ..\..\polarssl-1.0.0\config.h
+..\..\output\pem.o: ..\..\polarssl-1.0.0\include\polarssl/pem.h
+..\..\output\pem.o: d:\Keil_v5\ARM\ARMCC\Bin\..\include\string.h
+..\..\output\pem.o: ..\..\polarssl-1.0.0\include\polarssl/base64.h
+..\..\output\pem.o: ..\..\polarssl-1.0.0\include\polarssl/des.h
+..\..\output\pem.o: ..\..\polarssl-1.0.0\include\polarssl/aes.h
+..\..\output\pem.o: ..\..\polarssl-1.0.0\include\polarssl/md5.h
+..\..\output\pem.o: ..\..\polarssl-1.0.0\include\polarssl/cipher.h
+..\..\output\pem.o: d:\Keil_v5\ARM\ARMCC\Bin\..\include\stdlib.h

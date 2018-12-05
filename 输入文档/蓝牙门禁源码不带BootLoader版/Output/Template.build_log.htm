@@ -1,0 +1,75 @@
+<html>
+<body>
+<pre>
+<h1>礦ision Build Log</h1>
+<h2>Tool Versions:</h2>
+IDE-Version: μVision V5.15
+Copyright (C) 2015 ARM Ltd and ARM Germany GmbH. All rights reserved.
+License Information: dd dd, dd, LIC=MPPAR-KMZ0T-5TB3W-Q0NH3-GV9YB-VW1E1
+ 
+Tool Versions:
+Toolchain:       MDK-ARM Standard  Version: 5.15.0
+Toolchain Path:  D:\Program Files (x86)\keil5\ARM\ARMCC\Bin
+C Compiler:      Armcc.exe V5.05 update 2 (build 169)
+Assembler:       Armasm.exe V5.05 update 2 (build 169)
+Linker/Locator:  ArmLink.exe V5.05 update 2 (build 169)
+Library Manager: ArmAr.exe V5.05 update 2 (build 169)
+Hex Converter:   FromElf.exe V5.05 update 2 (build 169)
+CPU DLL:         SARMCM3.DLL V5.15.0
+Dialog DLL:      DCM.DLL V1.13.2.0
+Target DLL:      STLink\ST-LINKIII-KEIL_SWO.dll V2.0.15.0_KEIL
+Dialog DLL:      TCM.DLL V1.14.5.0
+ 
+<h2>Project:</h2>
+E:\stm32\模拟i2c - 修改之前\Project\RVMDK（uv5）\BH-F407.uvprojx
+Project File Date:  12/20/2017
+
+<h2>Output:</h2>
+*** Using Compiler 'V5.05 update 2 (build 169)', folder: 'D:\Program Files (x86)\keil5\ARM\ARMCC\Bin'
+Build target 'EEPROM'
+compiling main.c...
+Warning: C3910W: Old syntax, please use '--c99'.
+..\..\User\./rtc/rtc.h(63): warning:  #1-D: last line of file ends without a newline
+  #endif
+..\..\User\./timeStamp/time_stamp.h(20): warning:  #1-D: last line of file ends without a newline
+  #endif
+..\..\User\./display/display.h(11): warning:  #1295-D: Deprecated declaration LCD_Init - give arg types
+  void LCD_Init();
+..\..\User\./display/display.h(15): warning:  #1-D: last line of file ends without a newline
+  #endif
+..\..\User\./readcard/readcard.h(104): warning:  #1-D: last line of file ends without a newline
+  #endif
+..\..\User\main.c(256): warning:  #223-D: function "USART4_Config" declared implicitly
+        USART4_Config();
+..\..\User\main.c(257): warning:  #223-D: function "USART5_Config" declared implicitly
+        USART5_Config();
+..\..\User\main.c(313): warning:  #167-D: argument of type "unsigned char *" is incompatible with parameter of type "const char *"
+                                                                                                                if(strncmp(sm.build_num,"FF",2) == 0)
+..\..\User\main.c(400): warning:  #167-D: argument of type "u8 *" is incompatible with parameter of type "char *restrict"
+                                                                                                                        strncpy(key_buf,test_buf,6);
+..\..\User\main.c(400): warning:  #167-D: argument of type "u8 *" is incompatible with parameter of type "const char *restrict"
+                                                                                                                        strncpy(key_buf,test_buf,6);
+..\..\User\main.c(587): warning:  #1035-D: single-precision operand implicitly converted to double-precision
+                                                                                        adc_value = ((float)ADC_ConvertedValue/4096)* 3.30;
+..\..\User\main.c(590): warning:  #1035-D: single-precision operand implicitly converted to double-precision
+                                                                                if(adc_value < 0.4)
+..\..\User\main.c(595): warning:  #1035-D: single-precision operand implicitly converted to double-precision
+                                                                                else if(adc_value < 2.9)
+..\..\User\main.c(597): warning:  #1035-D: single-precision operand implicitly converted to double-precision
+                                                                                        delay_num = (u8)( adc_value * 10.0 / 3.0);
+..\..\User\main.c(241): warning:  #177-D: variable "i" was declared but never referenced
+         int i,state;
+..\..\User\main.c: 15 warnings, 0 errors
+linking...
+Program Size: Code=33056 RO-data=176168 RW-data=548 ZI-data=1143484  
+FromELF: creating hex file...
+"..\..\Output\Template.axf" - 0 Error(s), 15 Warning(s).
+
+<h2>Collection of Component include folders:</h2>
+  E:\stm32\模拟i2c - 修改之前\Project\RVMDK（uv5）\RTE
+  D:\Program Files (x86)\keil5\ARM\PACK\Keil\STM32F4xx_DFP\2.5.0\Drivers\CMSIS\Device\ST\STM32F4xx\Include
+
+<h2>Collection of Component Files used:</h2>
+</pre>
+</body>
+</html>

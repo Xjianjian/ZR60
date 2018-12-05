@@ -1,0 +1,30 @@
+#Wed Mar 28 21:07:44 GMT+08:00 2018
+ZR60/ZR60//com.parasoft.xtest.checkers.api.cpp.options.cdt.configuration=CPPTEST_USE_ACTIVE_CONFIG
+ZR60/ZR60//com.parasoft.xtest.checkers.api.cpp.options.compiler.command.c.win32.x86=cl.exe
+ZR60/ZR60//com.parasoft.xtest.checkers.api.cpp.options.compiler.command.cpp.win32.x86=cl.exe
+ZR60/ZR60//com.parasoft.xtest.checkers.api.cpp.options.compiler.family.win32.x86=vc_10_0
+ZR60/ZR60//com.parasoft.xtest.checkers.api.cpp.options.compiler.options.win32.x86=${cpptest\:original_options} -DPARASOFT_CPPTEST -I.
+ZR60/ZR60//com.parasoft.xtest.checkers.api.cpp.options.connected.6x.projects=
+ZR60/ZR60//com.parasoft.xtest.checkers.api.cpp.options.dependency.files.paths=${project_loc}/Makefile
+ZR60/ZR60//com.parasoft.xtest.checkers.api.cpp.options.dsp.env.var.mode=ENV_PATCH_PREPEND_MODE
+ZR60/ZR60//com.parasoft.xtest.checkers.api.cpp.options.edg.multibyte.chars.is.source.handling=AUTO
+ZR60/ZR60//com.parasoft.xtest.checkers.api.cpp.options.evc.env.var.mode=ENV_PATCH_PREPEND_MODE
+ZR60/ZR60//com.parasoft.xtest.checkers.api.cpp.options.linker.command.win32.x86=link.exe
+ZR60/ZR60//com.parasoft.xtest.checkers.api.cpp.options.linker.options.win32.x86=${cpptest\:original_options} ${cpptest\:project_lib_files}
+ZR60/ZR60//com.parasoft.xtest.checkers.api.cpp.options.make.command.line=make -i -B CXX\=${CPPTEST_SCAN} CC\=${CPPTEST_SCAN} LD\=${CPPTEST_SCAN}
+ZR60/ZR60//com.parasoft.xtest.checkers.api.cpp.options.make.scan.hash.code.validation=true
+ZR60/ZR60//com.parasoft.xtest.checkers.api.cpp.options.make.working.dir=${project_loc}
+ZR60/ZR60//com.parasoft.xtest.checkers.api.cpp.options.make_always_build=false
+ZR60/ZR60//com.parasoft.xtest.checkers.api.cpp.options.ode_auto_scan_mode=on_changes
+ZR60/ZR60//com.parasoft.xtest.checkers.api.cpp.options.ode_delete_bdf_postaction=false
+ZR60/ZR60//com.parasoft.xtest.checkers.api.cpp.options.ode_incremental_build=false
+ZR60/ZR60//com.parasoft.xtest.checkers.api.cpp.options.ode_options_dir=${project_loc}/cpptestscan.bdf
+ZR60/ZR60//com.parasoft.xtest.checkers.api.cpp.options.preference.store.version=1.1
+ZR60/ZR60//com.parasoft.xtest.checkers.api.cpp.options.run_orig_cmd_for_parallel_proj_bdf=true
+ZR60/ZR60//com.parasoft.xtest.checkers.api.cpp.options.runtime.location=${cpptest\:engine_loc}/runtime
+ZR60/ZR60//com.parasoft.xtest.checkers.api.cpp.options.synchronize_with_project_settings=true
+ZR60/ZR60//com.parasoft.xtest.checkers.api.cpp.options.test.case.location.patterns=*
+ZR60/ZR60//com.parasoft.xtest.checkers.api.cpp.options.test.ware.location=${workspace_loc}/.cpptest/${project_name}
+ZR60/ZR60//com.parasoft.xtest.checkers.api.cpp.options.vc71.configuration=CPPTEST_USE_ACTIVE_CONFIG
+ZR60/ZR60//com.parasoft.xtest.checkers.api.cpp.options.working.dir=${project_loc}
+project.path.9eaaa3ab-373f-4f2f-8684-28b0920ed771=ZR60/ZR60

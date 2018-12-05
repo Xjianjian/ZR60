@@ -1,0 +1,11 @@
+.\synth.o: ..\AUDIOCODEC\MP3\libmad-0.15.1b\libmad-0.15.1b\synth.c
+.\synth.o: ..\AUDIOCODEC\MP3\libmad-0.15.1b\libmad-0.15.1b\msvc++\libmad_config.h
+.\synth.o: ..\AUDIOCODEC\MP3\libmad-0.15.1b\libmad-0.15.1b\global.h
+.\synth.o: ..\AUDIOCODEC\MP3\libmad-0.15.1b\libmad-0.15.1b\fixed.h
+.\synth.o: ..\AUDIOCODEC\MP3\libmad-0.15.1b\libmad-0.15.1b\msvc++\libmad_config.h
+.\synth.o: ..\AUDIOCODEC\MP3\libmad-0.15.1b\libmad-0.15.1b\frame.h
+.\synth.o: ..\AUDIOCODEC\MP3\libmad-0.15.1b\libmad-0.15.1b\timer.h
+.\synth.o: ..\AUDIOCODEC\MP3\libmad-0.15.1b\libmad-0.15.1b\stream.h
+.\synth.o: ..\AUDIOCODEC\MP3\libmad-0.15.1b\libmad-0.15.1b\bit.h
+.\synth.o: ..\AUDIOCODEC\MP3\libmad-0.15.1b\libmad-0.15.1b\synth.h
+.\synth.o: ..\AUDIOCODEC\MP3\libmad-0.15.1b\libmad-0.15.1b\D.dat
