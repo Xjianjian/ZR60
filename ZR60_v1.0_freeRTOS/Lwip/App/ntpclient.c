@@ -44,6 +44,8 @@ description： function declaration
 /*Global function declaration*/
 
 /*Static function declaration*/
+static void ntpclient_RenewRTC(void);
+
 static void ntpclient_Rcv_callback(void *arg, struct udp_pcb *upcb, struct pbuf *p, struct ip_addr *addr, u16_t port);
 static void ntpclient_Release(void);
 static void ntpclient_Send(char *data,uint16_t Lng);
@@ -51,6 +53,29 @@ static uint8 ntpclient_connect(struct ip_addr SrcIPaddr,struct ip_addr DestIPadd
 /******************************************************
 description： function code
 ******************************************************/
+
+/**********************配置接口 BEGIN******************/
+/******************************************************
+*函数名：ntpclient_RenewRTC
+
+*形  参：
+
+*返回值：
+
+*描  述：校准RTC时钟芯片时间
+
+*备  注：
+******************************************************/
+static void ntpclient_RenewRTC(void)
+{
+	char Le_u_timeString[15] = {0};
+	timestamp_strBJtime(SeTransmit_dw_Timestamp,Le_u_timeString);//时间戳转换为北京时间（字符串格式）
+	timestamp_timeCalibration(Le_u_timeString,TIME_STAMP_BJT);//校准时钟芯片时间
+	ntpclient.CalTimeFlag = 1U;
+}
+/**********************配置接口 END*********************/
+
+
 /******************************************************
 *函数名：Initntpclient_Pramater
 
@@ -89,7 +114,6 @@ void Initntpclient_Pramater(void)
 void Tskntpclient_MainFunction(void)
 {
 	char Le_u_i;
-	char Le_u_timeString[15] = {0};
 	if((0 == GET_PHY_LINK_STATUS()) || (DHCP_ADDRESS_ASSIGNED != NTP_DHCP_STATE))/* Get Ethernet link status*/
 	{
 		Sentpclient_dw_TskTimer = NTPCLIENT_TSK_PERIOD - (55000U/NTPCLIENT_SCHEDULING_CYCLE);
@@ -167,8 +191,7 @@ void Tskntpclient_MainFunction(void)
 	{
 		USART_PRINTF_S("\n\r网络同步更新时钟芯片时间");
 		Sentpclient_u_TSUpdateFlg = 0U;
-		timestamp_strBJtime(SeTransmit_dw_Timestamp,Le_u_timeString);//时间戳转换为北京时间（字符串格式）
-		timestamp_timeCalibration(Le_u_timeString,TIME_STAMP_BJT);//校准时钟芯片时间	
+		ntpclient_RenewRTC();
 	}
 }
 
@@ -251,10 +274,9 @@ static void ntpclient_Rcv_callback(void *arg, struct udp_pcb *upcb, struct pbuf 
 			//minus the difference value of 1900 epoch and 1970 epoch
 			SeTransmit_dw_Timestamp = SeTransmit_dw_Timestamp - DIFF_SEC_1900_1970;
 			Sentpclient_u_TSUpdateFlg = 1U;
-			ntpclient.CalTimeFlag = 1U;
+			//ntpclient.CalTimeFlag = 1U;
 			//consider the time zone
 			//Transmit_Timestamp += SEC_TIME_ZONE;
-			//USART_PRINTF_D("\n\r收到Receive_Timestamp == %lu\n",Receive_Timestamp);
 			USART_PRINTF_D("\n\r ntp服务器获取的时间戳为 %lu\n",SeTransmit_dw_Timestamp);
 		}
 		pbuf_free(p);
