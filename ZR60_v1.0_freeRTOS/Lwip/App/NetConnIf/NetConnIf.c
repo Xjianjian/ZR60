@@ -22,7 +22,7 @@ static err_t NetConnIf_poll(void *arg, struct tcp_pcb *tpcb);
 static err_t NetConnIf_connected(void *arg, struct tcp_pcb *tpcb, err_t err);
 //static uint8 tcp_LngConnect_parseJson(char * pMsg);
 static void NetConnIf_Err(void *arg,err_t err);
-
+static void NetConnIf_memset(char *Le_u_Dt, uint16_t Le_u_Lng);
 /* Private functions --------------------------------------------*/
 /******************************************************
 *函数名：NetConnIf_Parameter
@@ -201,7 +201,7 @@ static err_t NetConnIf_connected(void *arg, struct tcp_pcb *tpcb, err_t err)
   * @retval err_t: retuned error  
   */
 static err_t NetConnIf_recv(void *arg, struct tcp_pcb *tpcb, struct pbuf *p, err_t err)
-{ 	
+{
 	err_t ret_err;
 	/* if we receive an empty tcp frame from server => close connection */
 	if(p == NULL)
@@ -226,11 +226,20 @@ static err_t NetConnIf_recv(void *arg, struct tcp_pcb *tpcb, struct pbuf *p, err
 	else if(((NetConnIf_arg*)arg)->state == NETCONN_CONNECTED)
 	{
 		/* Acknowledge data reception */
-		tcp_recved(tpcb, p->tot_len);  
-		memset(NetConnIf[((NetConnIf_arg*)arg)->Object].p_rx,0,NetConnIf[((NetConnIf_arg*)arg)->Object].rxlng);//清0
-		memcpy(NetConnIf[((NetConnIf_arg*)arg)->Object].p_rx,p->payload,p->len);
-		NETCONNIF_PRINTF_S(NetConnIf[((NetConnIf_arg*)arg)->Object].p_rx);
-		NetConnIf[((NetConnIf_arg*)arg)->Object].rcvCallback();
+		tcp_recved(tpcb, p->tot_len); 
+		if(p->len < NetConnIf[((NetConnIf_arg*)arg)->Object].rxlng)
+		{
+			//memset(NetConnIf[((NetConnIf_arg*)arg)->Object].p_rx,0,NetConnIf[((NetConnIf_arg*)arg)->Object].rxlng);//清0
+			memcpy(NetConnIf[((NetConnIf_arg*)arg)->Object].p_rx,p->payload,p->len);
+			NetConnIf_memset(&(NetConnIf[((NetConnIf_arg*)arg)->Object].p_rx[p->len]), \
+							 (NetConnIf[((NetConnIf_arg*)arg)->Object].rxlng - p->len));
+			//NETCONNIF_PRINTF_S(NetConnIf[((NetConnIf_arg*)arg)->Object].p_rx);
+			NetConnIf[((NetConnIf_arg*)arg)->Object].rcvCallback();
+		}
+		else
+		{
+			NETCONNIF_PRINTF_D("\r\nErrorLogging：连接对象 %d 接收数据长度溢出\r\n",((NetConnIf_arg*)arg)->Object);
+		}
 		/* free received pbuf*/
 		pbuf_free(p);
 		ret_err = ERR_OK;
@@ -260,6 +269,18 @@ static err_t NetConnIf_poll(void *arg, struct tcp_pcb *tpcb)
 	err_t ret_err = ERR_OK;
 	//NETCONNIF_PRINTF_D("连接对象 %d 调用了NetConnIf_poll\r\n",((NetConnIf_arg*)arg)->Object);
 	return ret_err;
+}
+
+/*
+	数据清0
+*/
+static void NetConnIf_memset(char *Le_u_Dt, uint16_t Le_u_Lng)
+{
+	uint16_t Le_w_i;
+	for(Le_w_i = 0U;Le_w_i < Le_u_Lng;Le_w_i++)
+	{
+		Le_u_Dt[Le_w_i] = 0U;
+	}
 }
 
 

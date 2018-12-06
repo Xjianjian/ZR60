@@ -45,11 +45,11 @@
 /* Private macro -------------------------------------------------------------*/
 /* Private variables ---------------------------------------------------------*/
 
-static char  LngRecev_buf[800] = {0};
+static char  LngRecev_buf[200] = {0};
 struct ip_addr LngConnect_DestIPaddr;
 tcp_client_Struct Setcp_Alias;
-static char   Setcp_client_u_TxBuf[80] = {0};
-static uint16 se_w_lng;
+static char   Setcp_client_u_TxBuf[60] = {0};
+static uint16_t se_w_lng;
 
 u8_t  volatile Setcp_client_u_Open = 0U;//远程开锁标志
 
@@ -98,7 +98,9 @@ void tcp_LngConnect_Parameter(void)
 		}
 	}
 	Setcp_Alias.lng = sizeof(Setcp_Alias.Alias);
-	NetConnIf_rxConfig(TcpLngConnect,LngRecev_buf,800,tcp_client_LngConnect_callback);
+	memset(Setcp_client_u_TxBuf,0,sizeof(Setcp_client_u_TxBuf));//清0
+	Json_HexToJson(Setcp_Alias.Alias,&se_w_lng,JSON_HEART_BEAT,Setcp_client_u_TxBuf);//初始化心跳包
+	NetConnIf_rxConfig(TcpLngConnect,LngRecev_buf,200,tcp_client_LngConnect_callback);
 }
 
 /******************************************************
@@ -152,8 +154,8 @@ void tcp_LngConnect_MainFunction(void)
 					{
 						return;
 					}
-					//GetdnsAnalysis_ipAddr(LngConnect,&LngConnect_DestIPaddr);
-					IP4_ADDR(&LngConnect_DestIPaddr, 10, 0, 0, 215);
+					GetdnsAnalysis_ipAddr(LngConnect,&LngConnect_DestIPaddr);
+					//IP4_ADDR(&LngConnect_DestIPaddr, 10, 0, 0, 215);
 					//IP4_ADDR(&LngConnect_DestIPaddr, 10, 0, 0, 16);
 					if(ERR_OK == NetConnIf_Connect(TcpLngConnect,&LngConnect_DestIPaddr,9800))
 					{
@@ -189,11 +191,8 @@ void tcp_LngConnect_MainFunction(void)
 				if((1U == Setcp_client_u_HeartFlg) && (GetLngCnnt_PerformCondition))
 				{//发送心跳==注册别名
 					Setcp_client_u_HeartFlg = 0U;
-					//se_w_lng = sizeof(Setcp_Alias.Alias);
-					memset(Setcp_client_u_TxBuf,0,sizeof(Setcp_client_u_TxBuf));//清0
-					Json_HexToJson(Setcp_Alias.Alias,&se_w_lng,JSON_HEART_BEAT,Setcp_client_u_TxBuf);
 					NetConnIf_sendMsg(TcpLngConnect,Setcp_client_u_TxBuf,se_w_lng);					
-					USART_PRINTF_S("长连接发送心跳报文");
+					USART_PRINTF_S("心跳包");
 					USART_PRINTF_S(Setcp_client_u_TxBuf);
 				}
 			}
@@ -242,6 +241,8 @@ void tcp_LngConnect_MainFunction(void)
 */
 static uint8 tcp_LngConnect_parseJson(char * pMsg)
 {
+	char La_u_TxMsg[35U] = {0};
+	uint16_t Le_u_Lng = 0U;
 	cJSON * pJson = cJSON_Parse(pMsg);
 	if(NULL == pJson)                                                                                         
 	{
@@ -272,7 +273,7 @@ static uint8 tcp_LngConnect_parseJson(char * pMsg)
 		break;
 		case (-1):
 		{
-			USART_PRINTF_S("长连接心跳正常回应");
+			USART_PRINTF_S("心跳正常");
 		}
 		break;
 		case 5://远程开门
@@ -310,13 +311,15 @@ static uint8 tcp_LngConnect_parseJson(char * pMsg)
 			}	
 			
 			if(0 == strcmp("open", cJSON_GetObjectItem(pSub_ex,"m")->valuestring))
-			{
+			{//接收到远程开锁请求
 				Setcp_client_u_Open = 1U;//远程开锁标志
+				cJSON * pSubMid = cJSON_GetObjectItem(pJson, "mid");
+				Json_HexToJson(pSubMid,&Le_u_Lng,JSON_DEVICE_ECHO_REMOTEUNLOCK,La_u_TxMsg);
+				NetConnIf_sendMsg(TcpLngConnect,La_u_TxMsg,Le_u_Lng);
+				USART_PRINTF_S("远程开门应答：");
+				USART_PRINTF_S(La_u_TxMsg);
 			}
-			cJSON * pSubMid = cJSON_GetObjectItem(pJson, "mid");
-			memset(Setcp_client_u_TxBuf,0,sizeof(Setcp_client_u_TxBuf));//清0
-			Json_HexToJson(pSubMid,&se_w_lng,JSON_DEVICE_ECHO_REMOTEUNLOCK,Setcp_client_u_TxBuf);
-			NetConnIf_sendMsg(TcpLngConnect,Setcp_client_u_TxBuf,se_w_lng);
+			
 			cJSON_Delete(pJsonMsg);
 		}
 		break;

@@ -35,8 +35,8 @@
 #include "http_client_iap.h"
 
 //#define SHORTCNNT_HEART  //定义时，短连接需要发送心跳
-//#define  SHORTCNNT_EXT_NET	  //定义时使用外部服务器,未定义使用内网服务器
-//#define  SHORTCNNT_HTTPS		  //定义时使用https连接,未定义使用http连接
+#define  SHORTCNNT_EXT_NET	  //定义时使用外部服务器,未定义使用内网服务器
+#define  SHORTCNNT_HTTPS		  //定义时使用https连接,未定义使用http连接
 
 
 #define  SHORTCNNT_SCHEDULING_CYCLE		  5000U//调度周期
