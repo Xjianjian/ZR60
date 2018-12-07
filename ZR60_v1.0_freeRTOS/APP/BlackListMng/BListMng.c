@@ -50,37 +50,7 @@ description： function code
 ******************************************************/
 void BListMng_Init(void)
 {
-	uint8 Le_u_i;
-#ifdef BLISTMNG_SAVEPOWEROFF
-	uint16 	Le_w_Lng = 0U;
-	printf("\n【5】\n");
-#endif	
-	for(Le_u_i = 0U;Le_u_i < BLISTMNG_BLIST_NUM;Le_u_i++)
-	{
-#ifdef BLISTMNG_SAVEPOWEROFF
-		if(1U == GetBListMngCfg_u_DtVild(CeBListMng_u_BlockIndex[Le_u_i]))
-		{//非易失性存储区数据读入ram缓存
-			printf("\n非易失性存储器数据块区 %d 的数据有效\n",Le_u_i);
-			Le_w_Lng = GetBListMngCfg_w_DtLng(CeBListMng_u_BlockIndex[Le_u_i]);//当前数据块区数据有效数据长
-			//剩余存储空间可存储卡的数量
-			printf("\n剩余存储空间可存储卡的数量 %d\n",(((BLISTMNG_CARD_NO_LNG * BLISTMNG_CARD_NUM)-Le_w_Lng)/BLISTMNG_CARD_NO_LNG));
-			BListMngCfg_RdEE(CeBListMng_u_BlockIndex[Le_u_i],&CardNumCache[Le_u_i].CardNumArray[0U].CardNum[0U], Le_w_Lng);
-			CardNumCache[Le_u_i].lng = Le_w_Lng;
-			CardNumCache[Le_u_i].validity = 1U;
-			printf("\n非易失性存储器数据块区 %d 的数据读入ram缓存\n",Le_u_i);
-		}
-		else
-		{
-			printf("\n非易失性存储器数据块区 %d 的数据无效  √\n",Le_u_i);
-		}
-#else
-	CardNumCache[Le_u_i].lng = 0U;
-	CardNumCache[Le_u_i].validity = 0U;
-	CardNumCacheBkUp[Le_u_i].lng = 0U;
-	CardNumCacheBkUp[Le_u_i].validity = 0U;
-	Se_u_UpdataFlag[Le_u_i] = 0U;
-#endif
-	}
+	
 }
 
 /******************************************************
