@@ -119,6 +119,7 @@ static void my_debug(void *ctx, int level, char *str);
 static int RandVal(void* arg);
 static uint8 Gettcp_client_u_XOR(uint8* Le_u_Dt,uint16 Le_w_Lng);
 static uint8_t Settcp_shortConnect_UpdataBLTime(void);
+static void tcp_shortConnect_UpdataBList(void);
 /******************************************************
 *函数名：tcp_ShortConnect_parameter
 
@@ -204,7 +205,7 @@ void tcp_ShortConnect_MainFunction(void)
 #ifdef ZR50
 	return;
 #endif
-	struct rtc_time Le_h_tm;
+	//struct rtc_time Le_h_tm;
 	uint16 Le_w_i;
 	uint16 Le_w_lng;
 	//uint8  Le_u_ret;
@@ -231,47 +232,23 @@ void tcp_ShortConnect_MainFunction(void)
 		//Setcp_client_w_TxTimer = 0U;
 		Se_w_OpenDoorLogTimer = 0U;
 		//Setcp_client_w_ConntTimer = 0U;
-		//tcp_ShortConnect_disconnect();
 		Setcp_client_u_cnntSt = CLIENT_SHORTCNNT_IDLE;
 		return;
 	}
 	
-	/**********************全量更新黑名单**********************/
-	if(0U == Se_h_UpdateBList.UpdataTimeSetflag)
+/**********************全量更新黑名单**********************/
+	if(1U == Se_h_UpdateBList.UpdataTimeSetflag)
+	{
+		tcp_shortConnect_UpdataBList();/* 全量更新黑名单 */
+	}
+	else
 	{
 		if(1U == Settcp_shortConnect_UpdataBLTime())
 		{
-			Se_h_UpdateBList.UpdataTimeSetflag = 1U;
-		}
-	}	
-	
-	/* 到了更新黑名单的设置时间，全量更新黑名单 */
-	Se_h_UpdateBList.Timer++;
-	if(Se_h_UpdateBList.Timer >= (25000U/SHORTCNNT_SCHEDULING_CYCLE))
-	{
-		Se_h_UpdateBList.Timer = 0U;
-#ifdef  HYM8563
-		(void)hym8563_read_datetime(&Le_h_tm);/*读取当前时间*/
-#else
-		Read_RTC_TimeAndDate(&Le_h_tm);//读取日期时间
-#endif
-		if((Se_h_UpdateBList.hour == Le_h_tm.tm_hour) && (Le_h_tm.tm_min == Se_h_UpdateBList.min))
-		{//全量更新黑名单
-			if(0U == Se_h_UpdateBList.flag)
-			{
-				ClrBListMng_ListData();//清黑名单列表
-				Se_h_UpdateBList.flag = 1U;
-				BListPull.timestamp = 0;
-				BListPull.page = 1U;
-				Se_dw_BListPullTimer = SHORTCNNT_PULLBLIST_PERIOD;
-			}
-		}
-		else
-		{
-			Se_h_UpdateBList.flag = 0U;
+			Se_h_UpdateBList.UpdataTimeSetflag = 1U;/* 全量更新黑名单的时间点设置完成 */
 		}
 	}
-	/**********************************************************/
+/**********************************************************/
 	
 #ifdef SHORTCNNT_HEART	
 	Setcp_client_w_HeartTimer++;
@@ -1333,7 +1310,7 @@ static void tcp_shortConnect_StrToHex(char* Le_in, uint8_t* Le_out)
 
 
 /*
-//	设置更新黑名单的时间
+//	设置全量更新黑名单的时间
 */
 static uint8_t Settcp_shortConnect_UpdataBLTime(void)
 { 
@@ -1360,6 +1337,40 @@ static uint8_t Settcp_shortConnect_UpdataBLTime(void)
 #endif
 	}
 	return ret;
+}
+
+
+/*
+//	全量更新黑名单
+*/
+static void tcp_shortConnect_UpdataBList(void)
+{ 
+	struct rtc_time Le_h_tm;
+	Se_h_UpdateBList.Timer++;
+	if(Se_h_UpdateBList.Timer >= (25000U/SHORTCNNT_SCHEDULING_CYCLE))
+	{
+		Se_h_UpdateBList.Timer = 0U;
+#ifdef  HYM8563
+		(void)hym8563_read_datetime(&Le_h_tm);/*读取当前时间*/
+#else
+		Read_RTC_TimeAndDate(&Le_h_tm);//读取日期时间
+#endif
+		if((Se_h_UpdateBList.hour == Le_h_tm.tm_hour) && (Le_h_tm.tm_min == Se_h_UpdateBList.min))
+		{//全量更新黑名单。[注：时钟误差大，同时在网络校时情况下会出现跳过全量更新黑名单过程]
+			if(0U == Se_h_UpdateBList.flag)
+			{
+				ClrBListMng_ListData();//清黑名单列表
+				Se_h_UpdateBList.flag = 1U;
+				BListPull.timestamp = 0;
+				BListPull.page = 1U;
+				Se_dw_BListPullTimer = SHORTCNNT_PULLBLIST_PERIOD;
+			}
+		}
+		else
+		{
+			Se_h_UpdateBList.flag = 0U;
+		}
+	}
 }
 
 
