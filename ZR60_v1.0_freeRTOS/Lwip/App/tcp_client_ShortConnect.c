@@ -237,17 +237,15 @@ void tcp_ShortConnect_MainFunction(void)
 	}
 	
 /**********************全量更新黑名单**********************/
-	if(1U == Se_h_UpdateBList.UpdataTimeSetflag)
-	{
-		tcp_shortConnect_UpdataBList();/* 全量更新黑名单 */
-	}
-	else
+	if(0U == Se_h_UpdateBList.UpdataTimeSetflag)
 	{
 		if(1U == Settcp_shortConnect_UpdataBLTime())
 		{
 			Se_h_UpdateBList.UpdataTimeSetflag = 1U;/* 全量更新黑名单的时间点设置完成 */
 		}
 	}
+	
+	tcp_shortConnect_UpdataBList();/* 全量更新黑名单 */
 /**********************************************************/
 	
 #ifdef SHORTCNNT_HEART	
