@@ -142,6 +142,7 @@ void tcp_ShortConnect_parameter(void)
 	BListPull.pageSize = SHORTCNNT_BLIST_PULLNUM;//默认最多拉取卡号数量
 	Se_dw_BListPullTimer = SHORTCNNT_PULLBLIST_PERIOD - (90000U/SHORTCNNT_SCHEDULING_CYCLE);
 	//client_TxFlag.TskFlag = 0U;//任务标志
+	Se_h_doorSt.state = 0xff;
 	
 	client_TxFlag.InitFlag = 0U;//
 	Letcp_ShortConnect_u_Xor = GetMemIf_u_CheckSum(EepromCfg_tokenInfo);//读取mac地址数据校验和
