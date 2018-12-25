@@ -345,7 +345,7 @@ void tcp_ShortConnect_MainFunction(void)
 					USART_PRINTF_S("connection failed \r\n");
 					netconn_delete(tcp_clientconn); //返回值不等于ERR_OK,删除tcp_clientconn连接
 					/* Wait 1s until next retry */
-					vTaskDelay(1000);
+					vTaskDelay(5000);
 				}
 			}while(err != ERR_OK);
 			
@@ -479,11 +479,14 @@ void tcp_ShortConnect_MainFunction(void)
 			//USART_PRINTF_S("\n\r---------------------------------------------------------\n\r");
 			//从http报文中解析出数据体
 			position = strchr(ShortRecev_buf, '\{');//首次出现'\{'的地址
-			Le_w_temp = position - (char*)ShortRecev_buf;//'\{'位置的下标
-			USART_PRINTF_S("接收到的Json格式数据如下：");
-			USART_PRINTF_S(&ShortRecev_buf[Le_w_temp]);
-			
-			(void)tcp_ShortConnect_parseJson(&ShortRecev_buf[Le_w_temp]);
+			if(position != NULL)
+			{
+				Le_w_temp = position - (char*)ShortRecev_buf;//'\{'位置的下标
+				USART_PRINTF_S("接收到的Json格式数据如下：");
+				USART_PRINTF_S(&ShortRecev_buf[Le_w_temp]);
+				
+				(void)tcp_ShortConnect_parseJson(&ShortRecev_buf[Le_w_temp]);
+			}
 			Setcp_client_u_cnntSt = CLIENT_SHORTCNNT_DISCNNT;
 			goto shortCnnt_exit;
 		}
@@ -578,11 +581,14 @@ void tcp_ShortConnect_MainFunction(void)
 				//USART_PRINTF_S("\n\r---------------------------------------------------------\n\r");
 				//从http报文中解析出数据体
 				position = strchr(ShortRecev_buf, '\{');//首次出现'\{'的地址
-				Le_w_temp = position - (char*)ShortRecev_buf;//'\{'位置的下标
-				USART_PRINTF_S("接收到的Json格式数据如下：");
-				USART_PRINTF_S(&ShortRecev_buf[Le_w_temp]);
-				
-				(void)tcp_ShortConnect_parseJson(&ShortRecev_buf[Le_w_temp]);
+				if(position != NULL)
+				{
+					Le_w_temp = position - (char*)ShortRecev_buf;//'\{'位置的下标
+					USART_PRINTF_S("接收到的Json格式数据如下：");
+					USART_PRINTF_S(&ShortRecev_buf[Le_w_temp]);
+					
+					(void)tcp_ShortConnect_parseJson(&ShortRecev_buf[Le_w_temp]);
+				}
 				Setcp_client_u_cnntSt = CLIENT_SHORTCNNT_DISCNNT;
 				goto shortCnnt_exit;
 			}
@@ -658,13 +664,16 @@ void tcp_ShortConnect_MainFunction(void)
 				//USART_PRINTF_S("\n\r---------------------------------------------------------\n\r");
 				//从http报文中解析出数据体
 				position = strchr(ShortRecev_buf, '\{');//首次出现'\{'的地址
-				Le_w_temp = position - (char*)ShortRecev_buf;//'\{'位置的下标
-				USART_PRINTF_S("接收到的Json格式数据如下：");
-				USART_PRINTF_S(&ShortRecev_buf[Le_w_temp]);
-				
-				if(1U != tcp_ShortConnect_parseJson(&ShortRecev_buf[Le_w_temp]))
+				if(position != NULL)
 				{
-					TxTempBuf.dtAlidity = 1U;
+					Le_w_temp = position - (char*)ShortRecev_buf;//'\{'位置的下标
+					USART_PRINTF_S("接收到的Json格式数据如下：");
+					USART_PRINTF_S(&ShortRecev_buf[Le_w_temp]);
+					
+					if(1U != tcp_ShortConnect_parseJson(&ShortRecev_buf[Le_w_temp]))
+					{
+						TxTempBuf.dtAlidity = 1U;
+					}
 				}
 				Setcp_client_u_cnntSt = CLIENT_SHORTCNNT_DISCNNT;
 				goto shortCnnt_exit;
@@ -765,20 +774,24 @@ void tcp_ShortConnect_MainFunction(void)
 					//USART_PRINTF_S("\n\r---------------------------------------------------------\n\r");
 					//从http报文中解析出数据体
 					position = strchr(ShortRecev_buf, '\{');//首次出现'\{'的地址
-					Le_w_temp = position - (char*)ShortRecev_buf;//'\{'位置的下标
-					USART_PRINTF_S("接收到的Json格式数据如下：");
-					USART_PRINTF_S(&ShortRecev_buf[Le_w_temp]);
-					
-					if(1U == tcp_ShortConnect_parseJson(&ShortRecev_buf[Le_w_temp]))
+					if(position != NULL)
 					{
-						TxTempBuf.dtAlidity = 0U;
+						Le_w_temp = position - (char*)ShortRecev_buf;//'\{'位置的下标
+						USART_PRINTF_S("接收到的Json格式数据如下：");
+						USART_PRINTF_S(&ShortRecev_buf[Le_w_temp]);
+						
+						if(1U == tcp_ShortConnect_parseJson(&ShortRecev_buf[Le_w_temp]))
+						{
+							TxTempBuf.dtAlidity = 0U;
+						}
 					}
 					Setcp_client_u_cnntSt = CLIENT_SHORTCNNT_DISCNNT;
 					goto shortCnnt_exit;
 				}
 				else
 				{//无开门锁记录
-					
+					Setcp_client_u_cnntSt = CLIENT_SHORTCNNT_DISCNNT;
+					goto shortCnnt_exit;
 				}	
 			}
 			
@@ -863,13 +876,16 @@ void tcp_ShortConnect_MainFunction(void)
 				//USART_PRINTF_S("\n\r---------------------------------------------------------\n\r");
 				//从http报文中解析出数据体
 				position = strchr(ShortRecev_buf, '\{');//首次出现'\{'的地址
-				Le_w_temp = position - (char*)ShortRecev_buf;//'\{'位置的下标
-				USART_PRINTF_S("接收到的Json格式数据如下：");
-				USART_PRINTF_S(&ShortRecev_buf[Le_w_temp]);
-				
-				if(1U == tcp_ShortConnect_parseJson(&ShortRecev_buf[Le_w_temp]))
+				if(position != NULL)
 				{
-					TxTempBuf.dtAlidity = 0U;
+					Le_w_temp = position - (char*)ShortRecev_buf;//'\{'位置的下标
+					USART_PRINTF_S("接收到的Json格式数据如下：");
+					USART_PRINTF_S(&ShortRecev_buf[Le_w_temp]);
+					
+					if(1U == tcp_ShortConnect_parseJson(&ShortRecev_buf[Le_w_temp]))
+					{
+						TxTempBuf.dtAlidity = 0U;
+					}
 				}
 				Setcp_client_u_cnntSt = CLIENT_SHORTCNNT_DISCNNT;
 				goto shortCnnt_exit;
