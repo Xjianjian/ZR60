@@ -169,7 +169,11 @@ void RTC_CLK_Config(void)
 	{
 		printf("\n\r RTC 时钟初始化失败 \r\n");
 	}
-	printf("\n\r RTC 时钟初始化完成 \r\n");
+	else
+	{
+		printf("\n\r RTC 时钟初始化成功 \r\n");
+	}
+	
 }
 
 /**
