@@ -53,18 +53,18 @@ static char    Setcp_u_shortCnntTxbuf[CLIENT_SHORTCNNT_LNG] = {0};
 
 //struct tcp_pcb *echoclient_pcb = NULL;
 
-static u8_t   Setcp_client_u_cnntSt = CLIENT_SHORTCNNT_IDLE;//tcpÁ¬½Ó×´Ì¬:0--¿ÕÏĞ
-static u8_t   Setcp_client_u_TxBusyFlg = 0U;//·¢ËÍÃ¦±êÖ¾£º0--¿ÕÏĞ£¬1--Ã¦
+static u8_t   Setcp_client_u_cnntSt = CLIENT_SHORTCNNT_IDLE;//tcpè¿æ¥çŠ¶æ€:0--ç©ºé—²
+static u8_t   Setcp_client_u_TxBusyFlg = 0U;//å‘é€å¿™æ ‡å¿—ï¼š0--ç©ºé—²ï¼Œ1--å¿™
 //static u16_t  Setcp_client_w_TxTimer = 0U;//
-//static u16_t  Setcp_client_w_ConntTimer = 0U;//½¨Á¢Á¬½Ó¼ÆÊ±Æ÷
+//static u16_t  Setcp_client_w_ConntTimer = 0U;//å»ºç«‹è¿æ¥è®¡æ—¶å™¨
 #ifdef SHORTCNNT_HEART
-static u16_t  Setcp_client_w_HeartTimer = 0U;//·¢ËÍĞÄÌø¼ÆÊ±Æ÷
+static u16_t  Setcp_client_w_HeartTimer = 0U;//å‘é€å¿ƒè·³è®¡æ—¶å™¨
 #endif
-static u16_t  Setcp_client_w_DoorStTimer = 0U;//ÉÏ±¨ÃÅËø×´Ì¬¼ÆÊ±Æ÷
-static u16_t  Se_w_OpenDoorLogTimer = 0U;//ÉÏ±¨¿ªËøÈÕÖ¾¼ÆÊ±Æ÷
-static u8_t  Setcp_client_u_TimeoutCnt = 0U;//¶ÌÁ¬½Ó³¬Ê±¼ÆÊı
+static u16_t  Setcp_client_w_DoorStTimer = 0U;//ä¸ŠæŠ¥é—¨é”çŠ¶æ€è®¡æ—¶å™¨
+static u16_t  Se_w_OpenDoorLogTimer = 0U;//ä¸ŠæŠ¥å¼€é”æ—¥å¿—è®¡æ—¶å™¨
+static u8_t  Setcp_client_u_TimeoutCnt = 0U;//çŸ­è¿æ¥è¶…æ—¶è®¡æ•°
 
-static u32_t  Se_dw_BListPullTimer;//À­È¡ºÚÃûµ¥¼ÆÊ±Æ÷
+static u32_t  Se_dw_BListPullTimer;//æ‹‰å–é»‘åå•è®¡æ—¶å™¨
 static tcp_client_OpenLogStruct Setcp_h_OpenLog;
 
 char Vetcp_client_u_token[40];
@@ -94,7 +94,7 @@ static tcp_client_UpdateBListStruct  Se_h_UpdateBList;
 
 /* Exported types ------------------------------------------------------------*/
 /* polarSSL */
-struct netconn *tcp_clientconn;					//TCP CLIENTÍøÂçÁ¬½Ó½á¹¹Ìå
+struct netconn *tcp_clientconn;					//TCP CLIENTç½‘ç»œè¿æ¥ç»“æ„ä½“
 #define SSL_SERVER_PORT 443 /* Server port number */
 #define SSL_SERVER_NAME "118.190.125.215" /* Server address */
 typedef struct
@@ -121,40 +121,40 @@ static uint8 Gettcp_client_u_XOR(uint8* Le_u_Dt,uint16 Le_w_Lng);
 static uint8_t Settcp_shortConnect_UpdataBLTime(void);
 static void tcp_shortConnect_UpdataBList(void);
 /******************************************************
-*º¯ÊıÃû£ºtcp_ShortConnect_parameter
+*å‡½æ•°åï¼štcp_ShortConnect_parameter
 
-*ĞÎ  ²Î£º
+*å½¢  å‚ï¼š
 
-*·µ»ØÖµ£º
+*è¿”å›å€¼ï¼š
 
-*Ãè  Êö£º³õÊ¼»¯
+*æ  è¿°ï¼šåˆå§‹åŒ–
 
-*±¸  ×¢£º
+*å¤‡  æ³¨ï¼š
 ******************************************************/
 void tcp_ShortConnect_parameter(void)
 {
 	//struct rtc_time Le_h_tm;
 	uint8_t Letcp_ShortConnect_u_Xor = 0;
-	//MemIf_ReadEE(EepromCfg_timestamp_page,BListPull.token,sizeof(BListPull));//¶ÁÈ¡ºÚÃûµ¥Ê±¼ä´Á¡¢Ò³ÂëµÈĞÅÏ¢
+	//MemIf_ReadEE(EepromCfg_timestamp_page,BListPull.token,sizeof(BListPull));//è¯»å–é»‘åå•æ—¶é—´æˆ³ã€é¡µç ç­‰ä¿¡æ¯
 	BListPull.timestamp = 0;
 	BListPull.page = 1U;
 	BListPull.Listtype = 0;
-	BListPull.pageSize = SHORTCNNT_BLIST_PULLNUM;//Ä¬ÈÏ×î¶àÀ­È¡¿¨ºÅÊıÁ¿
+	BListPull.pageSize = SHORTCNNT_BLIST_PULLNUM;//é»˜è®¤æœ€å¤šæ‹‰å–å¡å·æ•°é‡
 	Se_dw_BListPullTimer = SHORTCNNT_PULLBLIST_PERIOD - (90000U/SHORTCNNT_SCHEDULING_CYCLE);
-	//client_TxFlag.TskFlag = 0U;//ÈÎÎñ±êÖ¾
+	//client_TxFlag.TskFlag = 0U;//ä»»åŠ¡æ ‡å¿—
 	Se_h_doorSt.state = 0xff;
 	
 	client_TxFlag.InitFlag = 0U;//
-	Letcp_ShortConnect_u_Xor = GetMemIf_u_CheckSum(EepromCfg_tokenInfo);//¶ÁÈ¡macµØÖ·Êı¾İĞ£ÑéºÍ
+	Letcp_ShortConnect_u_Xor = GetMemIf_u_CheckSum(EepromCfg_tokenInfo);//è¯»å–macåœ°å€æ•°æ®æ ¡éªŒå’Œ
 	if((Letcp_ShortConnect_u_Xor == MemIf_ReadEE(EepromCfg_tokenInfo,Vetcp_client_u_token,sizeof(Vetcp_client_u_token))) && \
 			(STD_ACTIVE == GetMemIf_u_DtVild(EepromCfg_tokenInfo)))
-	{//tokenÓĞĞ§
-		SetMemIf_EEVild(EepromCfg_tokenInfo);//Êı¾İÓĞĞ§
+	{//tokenæœ‰æ•ˆ
+		SetMemIf_EEVild(EepromCfg_tokenInfo);//æ•°æ®æœ‰æ•ˆ
 		memcpy(BListPull.token,Vetcp_client_u_token,39U);
 		memcpy(Setcp_h_OpenLog.token,Vetcp_client_u_token,39U);
 		memcpy(Se_h_doorSt.token,Vetcp_client_u_token,39U);
-		client_TxFlag.InitFlag = 1U;//²»ĞèÒªÔÙ³õÊ¼»¯
-		printf("\r\n tokenĞÅÏ¢ÓĞĞ§,Éè±¸²»ĞèÖØĞÂ³õÊ¼»¯\r\n");
+		client_TxFlag.InitFlag = 1U;//ä¸éœ€è¦å†åˆå§‹åŒ–
+		printf("\r\n tokenä¿¡æ¯æœ‰æ•ˆ,è®¾å¤‡ä¸éœ€é‡æ–°åˆå§‹åŒ–\r\n");
 	}
 #ifdef SHORTCNNT_HEART
 	client_TxFlag.HeartFlag = 0U;//
@@ -166,7 +166,7 @@ void tcp_ShortConnect_parameter(void)
 	//client_TxFlag.PcktType = Pckt_Unknow;
 	DeviceInit.addrtype = 0;//
 #if 0	
-	DeviceInit.mac[0] = 'e';//²âÊÔÊ¹ÓÃ
+	DeviceInit.mac[0] = 'e';//æµ‹è¯•ä½¿ç”¨
 	DeviceInit.mac[1] = '0';
 	DeviceInit.mac[2] = '7';
 	DeviceInit.mac[3] = '6';
@@ -179,7 +179,7 @@ void tcp_ShortConnect_parameter(void)
 	DeviceInit.mac[10] = 'a';
 	DeviceInit.mac[11] = '8';
 #endif
-	/*¶ÁÈ¡µ±Ç°Ê±¼ä£¬¼ÆËãÈ«Á¿¸üĞÂºÚÃûµ¥µÄÊ±¼äµã*/
+	/*è¯»å–å½“å‰æ—¶é—´ï¼Œè®¡ç®—å…¨é‡æ›´æ–°é»‘åå•çš„æ—¶é—´ç‚¹*/
 	Se_h_UpdateBList.Timer = 0U;
 	Se_h_UpdateBList.flag = 0U;	
 	
@@ -191,15 +191,15 @@ void tcp_ShortConnect_parameter(void)
 }
 
 /******************************************************
-*º¯ÊıÃû£ºtcp_ShortConnect_MainFunction
+*å‡½æ•°åï¼štcp_ShortConnect_MainFunction
 
-*ĞÎ  ²Î£º
+*å½¢  å‚ï¼š
 
-*·µ»ØÖµ£º
+*è¿”å›å€¼ï¼š
 
-*Ãè  Êö£ºÏûÏ¢¼ÇÂ¼Ö÷ÈÎÎñ,5msÖÜÆÚµ÷ÓÃ
+*æ  è¿°ï¼šæ¶ˆæ¯è®°å½•ä¸»ä»»åŠ¡,5mså‘¨æœŸè°ƒç”¨
 
-*±¸  ×¢£º
+*å¤‡  æ³¨ï¼š
 ******************************************************/
 void tcp_ShortConnect_MainFunction(void)
 {
@@ -216,7 +216,7 @@ void tcp_ShortConnect_MainFunction(void)
 	if(0 == GET_PHY_LINK_STATUS())/* Get Ethernet link status*/
 	{
 		Setcp_client_w_DoorStTimer = 0U;
-		//client_TxFlag.TskFlag = 0U;//ÈÎÎñ±êÖ¾
+		//client_TxFlag.TskFlag = 0U;//ä»»åŠ¡æ ‡å¿—
 		//client_TxFlag.InitFlag = 0U;//
 		client_TxFlag.tokenOverdueFlag = 0U;
 #ifdef SHORTCNNT_HEART
@@ -237,16 +237,16 @@ void tcp_ShortConnect_MainFunction(void)
 		return;
 	}
 	
-/**********************È«Á¿¸üĞÂºÚÃûµ¥**********************/
+/**********************å…¨é‡æ›´æ–°é»‘åå•**********************/
 	if(0U == Se_h_UpdateBList.UpdataTimeSetflag)
 	{
 		if(1U == Settcp_shortConnect_UpdataBLTime())
 		{
-			Se_h_UpdateBList.UpdataTimeSetflag = 1U;/* È«Á¿¸üĞÂºÚÃûµ¥µÄÊ±¼äµãÉèÖÃÍê³É */
+			Se_h_UpdateBList.UpdataTimeSetflag = 1U;/* å…¨é‡æ›´æ–°é»‘åå•çš„æ—¶é—´ç‚¹è®¾ç½®å®Œæˆ */
 		}
 	}
 	
-	tcp_shortConnect_UpdataBList();/* È«Á¿¸üĞÂºÚÃûµ¥ */
+	tcp_shortConnect_UpdataBList();/* å…¨é‡æ›´æ–°é»‘åå• */
 /**********************************************************/
 	
 #ifdef SHORTCNNT_HEART	
@@ -263,7 +263,7 @@ void tcp_ShortConnect_MainFunction(void)
 	{
 		Setcp_client_w_DoorStTimer = 0U;
 		if(Se_h_doorSt.state != Gettcp_client_u_DoorSt)
-		{//ÃÅËø×´Ì¬¸Ä±äÊ±£¬ÉÏ±¨ÃÅËø×´Ì¬
+		{//é—¨é”çŠ¶æ€æ”¹å˜æ—¶ï¼Œä¸ŠæŠ¥é—¨é”çŠ¶æ€
 			Se_h_doorSt.state = Gettcp_client_u_DoorSt;
 			client_TxFlag.DoorStFlag = 1U;//
 		}	
@@ -297,7 +297,7 @@ void tcp_ShortConnect_MainFunction(void)
 	struct pbuf *q;
 	uint32_t data_len = 0;
 #endif
-	/**********½¨Á¢Á¬½Ó**********/
+	/**********å»ºç«‹è¿æ¥**********/
 	if((DHCP_ADDRESS_ASSIGNED == CLIENT_SHORTCNNT_DHCP_STATE) && (GetShortCnnt_PerformCondition) \
 		&& (CLIENT_SHORTCNNT_IDLE == Setcp_client_u_cnntSt))
 	{	
@@ -327,7 +327,7 @@ void tcp_ShortConnect_MainFunction(void)
 				if(ret != 0)
 				{
 					/* Connection to SSL server failed */
-					USART_PRINTF_D("\r\nErrorLogging£ºfailed \n\r ! net_connect returned %d\n\r", -ret);
+					USART_PRINTF_D("\r\nErrorLoggingï¼šfailed \n\r ! net_connect returned %d\n\r", -ret);
 					
 					/* Wait 1s until next retry */
 					vTaskDelay(5000);
@@ -338,12 +338,12 @@ void tcp_ShortConnect_MainFunction(void)
 			{
 				USART_PRINTF_S(( "\n\rStart the connection \n\r"));
 				
-				tcp_clientconn = netconn_new(NETCONN_TCP);  //´´½¨Ò»¸öNETCONN_TCPÁ´½Ó
-				err = netconn_connect(tcp_clientconn,&ShortConnect_DestIPaddr,8090);//Á¬½Ó·şÎñÆ÷
+				tcp_clientconn = netconn_new(NETCONN_TCP);  //åˆ›å»ºä¸€ä¸ªNETCONN_TCPé“¾æ¥
+				err = netconn_connect(tcp_clientconn,&ShortConnect_DestIPaddr,8090);//è¿æ¥æœåŠ¡å™¨
 				if(err != ERR_OK)  
 				{
 					USART_PRINTF_S("connection failed \r\n");
-					netconn_delete(tcp_clientconn); //·µ»ØÖµ²»µÈÓÚERR_OK,É¾³ıtcp_clientconnÁ¬½Ó
+					netconn_delete(tcp_clientconn); //è¿”å›å€¼ä¸ç­‰äºERR_OK,åˆ é™¤tcp_clientconnè¿æ¥
 					/* Wait 1s until next retry */
 					vTaskDelay(5000);
 				}
@@ -352,22 +352,22 @@ void tcp_ShortConnect_MainFunction(void)
 #endif
 
 			USART_PRINTF_S((" net_connect Ok \n\r"));
-			Setcp_client_u_cnntSt = CLIENT_SHORTCNNT_TXPCKT;//Á¬½Ó½¨Á¢³É¹¦£¬×¼±¸·¢ËÍÊı¾İ
+			Setcp_client_u_cnntSt = CLIENT_SHORTCNNT_TXPCKT;//è¿æ¥å»ºç«‹æˆåŠŸï¼Œå‡†å¤‡å‘é€æ•°æ®
 		}
 	}
 
-	/**********·¢ËÍÊı¾İ**********/
+	/**********å‘é€æ•°æ®**********/
 	if(CLIENT_SHORTCNNT_TXPCKT == Setcp_client_u_cnntSt)
 	{
 #ifdef SHORTCNNT_HTTPS
 		/* Initialize the SSL context */
 		//if(0U == Se_u_sslInitFlag)
-		{//sslÎ´³õÊ¼»¯
+		{//sslæœªåˆå§‹åŒ–
 			ret = ssl_init(&ssl);
 			if(ret != 0)
 			{
 				/* SSL initialization failed */
-				USART_PRINTF_D("\r\nErrorLogging£ºfailed \n\r ! ssl_init returned %d\n\r", -ret);
+				USART_PRINTF_D("\r\nErrorLoggingï¼šfailed \n\r ! ssl_init returned %d\n\r", -ret);
 				Setcp_client_u_cnntSt = CLIENT_SHORTCNNT_DISCNNT;
 				goto shortCnnt_exit;
 			}
@@ -394,18 +394,18 @@ void tcp_ShortConnect_MainFunction(void)
 		char *position;
 		uint16_t Le_w_temp;
 		size_t len;
-		if(client_TxFlag.InitFlag == 0U)//Éè±¸Î´³õÊ¼»¯
+		if(client_TxFlag.InitFlag == 0U)//è®¾å¤‡æœªåˆå§‹åŒ–
 		{
 			char Letcp_u_InitTxbuf[265] = {0};
 			client_TxFlag.InitFlag = 2U;
 			Setcp_client_u_TxBusyFlg = 1U;
-			USART_PRINTF_S("Éè±¸³õÊ¼»¯ĞÅÏ¢ÍÆËÍ");
+			USART_PRINTF_S("è®¾å¤‡åˆå§‹åŒ–ä¿¡æ¯æ¨é€");
 			Json_HexToStr(DeviceInit.doorID,sminfo1.door_id,16);
-			//memset(Setcp_u_shortCnntTxbuf,0,sizeof(Setcp_u_shortCnntTxbuf));//Çå0
+			//memset(Setcp_u_shortCnntTxbuf,0,sizeof(Setcp_u_shortCnntTxbuf));//æ¸…0
 			if(DeviceInit.addrRecombineFlg == 0U)
 			{
 				tcp_client_MacRecombine(&DeviceInit.Blemac[0]);
-				//Ê¹ÓÃÀ¶ÑÀmacÊ±£¬´Ë´¦Blemac¸´ÖÆµ½mac
+				//ä½¿ç”¨è“ç‰™macæ—¶ï¼Œæ­¤å¤„Blemacå¤åˆ¶åˆ°mac
 				for(Le_w_i = 0U;Le_w_i < 18U;Le_w_i++)
 				{
 					DeviceInit.mac[Le_w_i] = DeviceInit.Blemac[Le_w_i];
@@ -417,11 +417,11 @@ void tcp_ShortConnect_MainFunction(void)
 			tcp_client_httpPostRequest("POST /device/initForBand HTTP/1.1\n",Le_u_TxData,&Le_w_lng, \
 									   Letcp_u_InitTxbuf,1U);
 #ifdef SHORTCNNT_HTTPS
-			ret = tcp_ShortConnect_SendMsg(&ssl,Letcp_u_InitTxbuf,Le_w_lng);//Êı¾İ·¢ËÍ
-			//ret = ssl_write(&ssl,Setcp_u_shortCnntTxbuf,Le_w_lng);//Êı¾İ·¢ËÍ
+			ret = tcp_ShortConnect_SendMsg(&ssl,Letcp_u_InitTxbuf,Le_w_lng);//æ•°æ®å‘é€
+			//ret = ssl_write(&ssl,Setcp_u_shortCnntTxbuf,Le_w_lng);//æ•°æ®å‘é€
 			if(0U == ret)
-			{//·¢ËÍÊ§°Ü
-				USART_PRINTF_S("\r\nErrorLogging£º'Éè±¸³õÊ¼»¯'Êı¾İ·¢ËÍÊ§°Ü\r\n");
+			{//å‘é€å¤±è´¥
+				USART_PRINTF_S("\r\nErrorLoggingï¼š'è®¾å¤‡åˆå§‹åŒ–'æ•°æ®å‘é€å¤±è´¥\r\n");
 				Setcp_client_u_cnntSt = CLIENT_SHORTCNNT_DISCNNT;
 				goto shortCnnt_exit;
 			}
@@ -430,60 +430,58 @@ void tcp_ShortConnect_MainFunction(void)
 			USART_PRINTF_S("\n\r<= Read from server :");;
 			ret = tcp_ShortConnect_RcvMsg(&ssl, ShortRecev_buf, len);
 			if(0U == ret)
-			{//¶ÁÈ¡Êı¾İÊ§°Ü
-				USART_PRINTF_S("\r\nErrorLogging£º'Éè±¸³õÊ¼»¯'Ê±Î´ÊÕµ½·şÎñÆ÷ÏìÓ¦\r\n");
+			{//è¯»å–æ•°æ®å¤±è´¥
+				USART_PRINTF_S("\r\nErrorLoggingï¼š'è®¾å¤‡åˆå§‹åŒ–'æ—¶æœªæ”¶åˆ°æœåŠ¡å™¨å“åº”\r\n");
 				Setcp_client_u_cnntSt = CLIENT_SHORTCNNT_DISCNNT;
 				goto shortCnnt_exit;
 			}
 #else
-			err = netconn_write(tcp_clientconn ,Letcp_u_InitTxbuf,Le_w_lng,NETCONN_COPY); //·¢ËÍtcp_server_sentbufÖĞµÄÊı¾İ
+			err = netconn_write(tcp_clientconn ,Letcp_u_InitTxbuf,Le_w_lng,NETCONN_COPY); //å‘é€tcp_server_sentbufä¸­çš„æ•°æ®
 			if(err != ERR_OK)
 			{
-				USART_PRINTF_S("·¢ËÍÊ§°Ü\r\n");
+				USART_PRINTF_S("å‘é€å¤±è´¥\r\n");
 				SetAudioIO_PlayFile(AudioIO_DeInitFail,2U);
 				Setcp_client_u_cnntSt = CLIENT_SHORTCNNT_DISCNNT;
 				goto shortCnnt_exit;
 			}
 			
-			if((err = netconn_recv(tcp_clientconn,&recvbuf)) == ERR_OK)  //½ÓÊÕµ½Êı¾İ
+			if((err = netconn_recv(tcp_clientconn,&recvbuf)) == ERR_OK)  //æ¥æ”¶åˆ°æ•°æ®
 			{	
-				memset(ShortRecev_buf, 0, sizeof(ShortRecev_buf));//Êı¾İ½ÓÊÕ»º³åÇøÇåÁã
-				for(q=recvbuf->p;q!=NULL;q=q->next)  //±éÀúÍêÕû¸öpbufÁ´±í
+				memset(ShortRecev_buf, 0, sizeof(ShortRecev_buf));//æ•°æ®æ¥æ”¶ç¼“å†²åŒºæ¸…é›¶
+				for(q=recvbuf->p;q!=NULL;q=q->next)  //éå†å®Œæ•´ä¸ªpbufé“¾è¡¨
 				{
-					//ÅĞ¶ÏÒª¿½±´µ½TCP_CLIENT_RX_BUFSIZEÖĞµÄÊı¾İÊÇ·ñ´óÓÚTCP_CLIENT_RX_BUFSIZEµÄÊ£Óà¿Õ¼ä£¬Èç¹û´óÓÚ
-					//µÄ»°¾ÍÖ»¿½±´TCP_CLIENT_RX_BUFSIZEÖĞÊ£Óà³¤¶ÈµÄÊı¾İ£¬·ñÔòµÄ»°¾Í¿½±´ËùÓĞµÄÊı¾İ
+					//åˆ¤æ–­è¦æ‹·è´åˆ°TCP_CLIENT_RX_BUFSIZEä¸­çš„æ•°æ®æ˜¯å¦å¤§äºTCP_CLIENT_RX_BUFSIZEçš„å‰©ä½™ç©ºé—´ï¼Œå¦‚æœå¤§äº
+					//çš„è¯å°±åªæ‹·è´TCP_CLIENT_RX_BUFSIZEä¸­å‰©ä½™é•¿åº¦çš„æ•°æ®ï¼Œå¦åˆ™çš„è¯å°±æ‹·è´æ‰€æœ‰çš„æ•°æ®
 					if(q->len > (sizeof(ShortRecev_buf)-data_len)) 
 					{
-						memcpy(ShortRecev_buf+data_len,q->payload,(sizeof(ShortRecev_buf)-data_len));//¿½±´Êı¾İ
+						memcpy(ShortRecev_buf+data_len,q->payload,(sizeof(ShortRecev_buf)-data_len));//æ‹·è´æ•°æ®
 					}
 					else 
 					{
 						memcpy(ShortRecev_buf+data_len,q->payload,q->len);
 					}
 					data_len += q->len;  	
-					if(data_len > sizeof(ShortRecev_buf)) break; //³¬³öTCP¿Í»§¶Ë½ÓÊÕÊı×é,Ìø³ö	
+					if(data_len > sizeof(ShortRecev_buf)) break; //è¶…å‡ºTCPå®¢æˆ·ç«¯æ¥æ”¶æ•°ç»„,è·³å‡º	
 				}
-				data_len=0;  //¸´ÖÆÍê³Éºódata_lenÒªÇåÁã
+				data_len=0;  //å¤åˆ¶å®Œæˆådata_lenè¦æ¸…é›¶
 				netbuf_delete(recvbuf);
 			}
-			else if(err == ERR_CLSD)  //¹Ø±ÕÁ¬½Ó
+			else  //å…³é—­è¿æ¥
 			{
 				SetAudioIO_PlayFile(AudioIO_DeInitFail,2U);
 				Setcp_client_u_cnntSt = CLIENT_SHORTCNNT_DISCNNT;
 				goto shortCnnt_exit;
 			}
-			else
-			{}
 #endif
 			//USART_PRINTF_S("\n\r---------------------------------------------------------\n\r");
 			//USART_PRINTF_S(ShortRecev_buf);
 			//USART_PRINTF_S("\n\r---------------------------------------------------------\n\r");
-			//´Óhttp±¨ÎÄÖĞ½âÎö³öÊı¾İÌå
-			position = strchr(ShortRecev_buf, '\{');//Ê×´Î³öÏÖ'\{'µÄµØÖ·
+			//ä»httpæŠ¥æ–‡ä¸­è§£æå‡ºæ•°æ®ä½“
+			position = strchr(ShortRecev_buf, '\{');//é¦–æ¬¡å‡ºç°'\{'çš„åœ°å€
 			if(position != NULL)
 			{
-				Le_w_temp = position - (char*)ShortRecev_buf;//'\{'Î»ÖÃµÄÏÂ±ê
-				USART_PRINTF_S("½ÓÊÕµ½µÄJson¸ñÊ½Êı¾İÈçÏÂ£º");
+				Le_w_temp = position - (char*)ShortRecev_buf;//'\{'ä½ç½®çš„ä¸‹æ ‡
+				USART_PRINTF_S("æ¥æ”¶åˆ°çš„Jsonæ ¼å¼æ•°æ®å¦‚ä¸‹ï¼š");
 				USART_PRINTF_S(&ShortRecev_buf[Le_w_temp]);
 				
 				(void)tcp_ShortConnect_parseJson(&ShortRecev_buf[Le_w_temp]);
@@ -491,40 +489,40 @@ void tcp_ShortConnect_MainFunction(void)
 			Setcp_client_u_cnntSt = CLIENT_SHORTCNNT_DISCNNT;
 			goto shortCnnt_exit;
 		}
-		else if(client_TxFlag.InitFlag == 1U)//Éè±¸³õÊ¼»¯Íê³É
-		{//Éè±¸ÒÑ³õÊ¼»¯
+		else if(client_TxFlag.InitFlag == 1U)//è®¾å¤‡åˆå§‹åŒ–å®Œæˆ
+		{//è®¾å¤‡å·²åˆå§‹åŒ–
 #ifdef SHORTCNNT_HEART
-			/*·¢ËÍĞÄÌø*/
+			/*å‘é€å¿ƒè·³*/
 			//if((client_TxFlag.HeartFlag == 1U) && (0U == client_TxFlag.BusyFlag))
 			if(client_TxFlag.HeartFlag == 1U)
 			{
 				client_TxFlag.HeartFlag = 0U;
 				Json_HexToJson(Setcp_Alias.Alias,&Le_w_lng,JSON_HEART_BEAT,Setcp_u_shortCnntTxbuf);
-				tcp_ShortConnect_sendMsg(Setcp_u_shortCnntTxbuf,Le_w_lng);//Êı¾İ·¢ËÍ
+				tcp_ShortConnect_sendMsg(Setcp_u_shortCnntTxbuf,Le_w_lng);//æ•°æ®å‘é€
 				//client_TxFlag.PcktType = Pckt_Heart;
 				//Setcp_client_w_TxTimer = 0U;
-				//client_TxFlag.BusyFlag = 1U;//ÖÃ·¢ËÍÃ¦
-				//client_TxFlag.EchoFlag = 1U;//µÈ´ıÏìÓ¦
+				//client_TxFlag.BusyFlag = 1U;//ç½®å‘é€å¿™
+				//client_TxFlag.EchoFlag = 1U;//ç­‰å¾…å“åº”
 			}
 #endif	
 		
-			/*·¢ËÍÃÅËø×´Ì¬*/
+			/*å‘é€é—¨é”çŠ¶æ€*/
 			if(1U == client_TxFlag.DoorStFlag)
 			{
-				USART_PRINTF_S("·¢ËÍÃÅËø×´Ì¬");
+				USART_PRINTF_S("å‘é€é—¨é”çŠ¶æ€");
 				Setcp_client_u_TxBusyFlg = 1U;
 				client_TxFlag.DoorStFlag = 0U;
-				//ÉÏ±¨ÃÅËø×´Ì¬
-				memset(Setcp_u_shortCnntTxbuf,0,sizeof(Setcp_u_shortCnntTxbuf));//Çå0
+				//ä¸ŠæŠ¥é—¨é”çŠ¶æ€
+				memset(Setcp_u_shortCnntTxbuf,0,sizeof(Setcp_u_shortCnntTxbuf));//æ¸…0
 				//Se_h_doorSt.state = Gettcp_client_u_DoorSt;
 				Json_HexToJson(&Se_h_doorSt,&Le_w_lng,JSON_REPORT_DOORST,Le_u_TxData);
 				tcp_client_httpPostRequest("POST /door/lockState HTTP/1.1\n",Le_u_TxData, \
 										   &Le_w_lng,Setcp_u_shortCnntTxbuf,1U);
 #ifdef SHORTCNNT_HTTPS
-				ret = tcp_ShortConnect_SendMsg(&ssl,Setcp_u_shortCnntTxbuf,Le_w_lng);//Êı¾İ·¢ËÍ
+				ret = tcp_ShortConnect_SendMsg(&ssl,Setcp_u_shortCnntTxbuf,Le_w_lng);//æ•°æ®å‘é€
 				if(0U == ret)
-				{//·¢ËÍÊ§°Ü
-					USART_PRINTF_S("\r\nErrorLogging£º·¢ËÍ'ÃÅËø×´Ì¬'Êı¾İÊ§°Ü\r\n");
+				{//å‘é€å¤±è´¥
+					USART_PRINTF_S("\r\nErrorLoggingï¼šå‘é€'é—¨é”çŠ¶æ€'æ•°æ®å¤±è´¥\r\n");
 					Setcp_client_u_cnntSt = CLIENT_SHORTCNNT_DISCNNT;
 					goto shortCnnt_exit;
 				}
@@ -533,59 +531,57 @@ void tcp_ShortConnect_MainFunction(void)
 				USART_PRINTF_S("\n\r<= Read from server :");;
 				ret = tcp_ShortConnect_RcvMsg(&ssl, ShortRecev_buf, len);
 				if(0U == ret)
-				{//¶ÁÈ¡Êı¾İÊ§°Ü
-					USART_PRINTF_S("\r\nErrorLogging£º·¢ËÍ'ÃÅËø×´Ì¬'Ê±Î´ÊÕµ½·şÎñÆ÷ÏìÓ¦\r\n");
+				{//è¯»å–æ•°æ®å¤±è´¥
+					USART_PRINTF_S("\r\nErrorLoggingï¼šå‘é€'é—¨é”çŠ¶æ€'æ—¶æœªæ”¶åˆ°æœåŠ¡å™¨å“åº”\r\n");
 					Setcp_client_u_cnntSt = CLIENT_SHORTCNNT_DISCNNT;
 					goto shortCnnt_exit;
 				}
 				
 #else
-				err = netconn_write(tcp_clientconn ,Setcp_u_shortCnntTxbuf,Le_w_lng,NETCONN_COPY); //·¢ËÍtcp_server_sentbufÖĞµÄÊı¾İ
+				err = netconn_write(tcp_clientconn ,Setcp_u_shortCnntTxbuf,Le_w_lng,NETCONN_COPY); //å‘é€tcp_server_sentbufä¸­çš„æ•°æ®
 				if(err != ERR_OK)
 				{
-					USART_PRINTF_S("·¢ËÍÊ§°Ü\r\n");
+					USART_PRINTF_S("å‘é€å¤±è´¥\r\n");
 					Setcp_client_u_cnntSt = CLIENT_SHORTCNNT_DISCNNT;
 					goto shortCnnt_exit;
 				}
 				
-				if((err = netconn_recv(tcp_clientconn,&recvbuf)) == ERR_OK)  //½ÓÊÕµ½Êı¾İ
+				if((err = netconn_recv(tcp_clientconn,&recvbuf)) == ERR_OK)  //æ¥æ”¶åˆ°æ•°æ®
 				{	
-					memset(ShortRecev_buf, 0, sizeof(ShortRecev_buf));//Êı¾İ½ÓÊÕ»º³åÇøÇåÁã
-					for(q=recvbuf->p;q!=NULL;q=q->next)  //±éÀúÍêÕû¸öpbufÁ´±í
+					memset(ShortRecev_buf, 0, sizeof(ShortRecev_buf));//æ•°æ®æ¥æ”¶ç¼“å†²åŒºæ¸…é›¶
+					for(q=recvbuf->p;q!=NULL;q=q->next)  //éå†å®Œæ•´ä¸ªpbufé“¾è¡¨
 					{
-						//ÅĞ¶ÏÒª¿½±´µ½TCP_CLIENT_RX_BUFSIZEÖĞµÄÊı¾İÊÇ·ñ´óÓÚTCP_CLIENT_RX_BUFSIZEµÄÊ£Óà¿Õ¼ä£¬Èç¹û´óÓÚ
-						//µÄ»°¾ÍÖ»¿½±´TCP_CLIENT_RX_BUFSIZEÖĞÊ£Óà³¤¶ÈµÄÊı¾İ£¬·ñÔòµÄ»°¾Í¿½±´ËùÓĞµÄÊı¾İ
+						//åˆ¤æ–­è¦æ‹·è´åˆ°TCP_CLIENT_RX_BUFSIZEä¸­çš„æ•°æ®æ˜¯å¦å¤§äºTCP_CLIENT_RX_BUFSIZEçš„å‰©ä½™ç©ºé—´ï¼Œå¦‚æœå¤§äº
+						//çš„è¯å°±åªæ‹·è´TCP_CLIENT_RX_BUFSIZEä¸­å‰©ä½™é•¿åº¦çš„æ•°æ®ï¼Œå¦åˆ™çš„è¯å°±æ‹·è´æ‰€æœ‰çš„æ•°æ®
 						if(q->len > (sizeof(ShortRecev_buf)-data_len)) 
 						{
-							memcpy(ShortRecev_buf+data_len,q->payload,(sizeof(ShortRecev_buf)-data_len));//¿½±´Êı¾İ
+							memcpy(ShortRecev_buf+data_len,q->payload,(sizeof(ShortRecev_buf)-data_len));//æ‹·è´æ•°æ®
 						}
 						else 
 						{
 							memcpy(ShortRecev_buf+data_len,q->payload,q->len);
 						}
 						data_len += q->len;  	
-						if(data_len > sizeof(ShortRecev_buf)) break; //³¬³öTCP¿Í»§¶Ë½ÓÊÕÊı×é,Ìø³ö	
+						if(data_len > sizeof(ShortRecev_buf)) break; //è¶…å‡ºTCPå®¢æˆ·ç«¯æ¥æ”¶æ•°ç»„,è·³å‡º	
 					}
-					data_len=0;  //¸´ÖÆÍê³Éºódata_lenÒªÇåÁã
+					data_len=0;  //å¤åˆ¶å®Œæˆådata_lenè¦æ¸…é›¶
 					netbuf_delete(recvbuf);
 				}
-				else if(err == ERR_CLSD)  //¹Ø±ÕÁ¬½Ó
+				else  //å…³é—­è¿æ¥
 				{
 					Setcp_client_u_cnntSt = CLIENT_SHORTCNNT_DISCNNT;
 					goto shortCnnt_exit;
 				}
-				else
-				{}
 #endif
 				//USART_PRINTF_S("\n\r---------------------------------------------------------\n\r");
 				//USART_PRINTF_S(ShortRecev_buf);
 				//USART_PRINTF_S("\n\r---------------------------------------------------------\n\r");
-				//´Óhttp±¨ÎÄÖĞ½âÎö³öÊı¾İÌå
-				position = strchr(ShortRecev_buf, '\{');//Ê×´Î³öÏÖ'\{'µÄµØÖ·
+				//ä»httpæŠ¥æ–‡ä¸­è§£æå‡ºæ•°æ®ä½“
+				position = strchr(ShortRecev_buf, '\{');//é¦–æ¬¡å‡ºç°'\{'çš„åœ°å€
 				if(position != NULL)
 				{
-					Le_w_temp = position - (char*)ShortRecev_buf;//'\{'Î»ÖÃµÄÏÂ±ê
-					USART_PRINTF_S("½ÓÊÕµ½µÄJson¸ñÊ½Êı¾İÈçÏÂ£º");
+					Le_w_temp = position - (char*)ShortRecev_buf;//'\{'ä½ç½®çš„ä¸‹æ ‡
+					USART_PRINTF_S("æ¥æ”¶åˆ°çš„Jsonæ ¼å¼æ•°æ®å¦‚ä¸‹ï¼š");
 					USART_PRINTF_S(&ShortRecev_buf[Le_w_temp]);
 					
 					(void)tcp_ShortConnect_parseJson(&ShortRecev_buf[Le_w_temp]);
@@ -594,25 +590,25 @@ void tcp_ShortConnect_MainFunction(void)
 				goto shortCnnt_exit;
 			}
 			
-			/*·¢ËÍÁÙÊ±»º´æÇøÊı¾İ*/
+			/*å‘é€ä¸´æ—¶ç¼“å­˜åŒºæ•°æ®*/
 			//if((TxTempBuf.dtAlidity == 1U) && (0U == client_TxFlag.BusyFlag) \
-			  && (0U == TxTempBuf.txflag))//ÁÙÊ±»º´æÇøÊı¾İÓĞĞ§,²¢ÇÒÎ´·¢ËÍ¹ı
-			if(TxTempBuf.dtAlidity == 1U)//ÁÙÊ±»º´æÇøÊı¾İÓĞĞ§
+			  && (0U == TxTempBuf.txflag))//ä¸´æ—¶ç¼“å­˜åŒºæ•°æ®æœ‰æ•ˆ,å¹¶ä¸”æœªå‘é€è¿‡
+			if(TxTempBuf.dtAlidity == 1U)//ä¸´æ—¶ç¼“å­˜åŒºæ•°æ®æœ‰æ•ˆ
 			{
-				USART_PRINTF_S("·¢ËÍÁÙÊ±»º´æÇøÊı¾İ");
+				USART_PRINTF_S("å‘é€ä¸´æ—¶ç¼“å­˜åŒºæ•°æ®");
 				Setcp_client_u_TxBusyFlg = 1U;
 				TxTempBuf.dtAlidity = 0U;
-				memset(Setcp_u_shortCnntTxbuf,0,sizeof(Setcp_u_shortCnntTxbuf));//Çå0
+				memset(Setcp_u_shortCnntTxbuf,0,sizeof(Setcp_u_shortCnntTxbuf));//æ¸…0
 				for(Le_w_i = 0U;Le_w_i < TxTempBuf.lng;Le_w_i++)
 				{
 					Setcp_u_shortCnntTxbuf[Le_w_i] = TxTempBuf.data[Le_w_i];
 				}
 				USART_PRINTF_S(Setcp_u_shortCnntTxbuf);
 #ifdef SHORTCNNT_HTTPS
-				ret = tcp_ShortConnect_SendMsg(&ssl,Setcp_u_shortCnntTxbuf,TxTempBuf.lng);//Êı¾İ·¢ËÍ
+				ret = tcp_ShortConnect_SendMsg(&ssl,Setcp_u_shortCnntTxbuf,TxTempBuf.lng);//æ•°æ®å‘é€
 				if(0U == ret)
-				{//·¢ËÍÊ§°Ü
-					USART_PRINTF_S("\r\nErrorLogging£º·¢ËÍ'ÁÙÊ±Êı¾İ»º´æÇø'Êı¾İÊ§°Ü\r\n");
+				{//å‘é€å¤±è´¥
+					USART_PRINTF_S("\r\nErrorLoggingï¼šå‘é€'ä¸´æ—¶æ•°æ®ç¼“å­˜åŒº'æ•°æ®å¤±è´¥\r\n");
 					TxTempBuf.dtAlidity = 1U;
 					Setcp_client_u_cnntSt = CLIENT_SHORTCNNT_DISCNNT;
 					goto shortCnnt_exit;
@@ -622,58 +618,56 @@ void tcp_ShortConnect_MainFunction(void)
 				USART_PRINTF_S("\n\r<= Read from server :");;
 				ret = tcp_ShortConnect_RcvMsg(&ssl, ShortRecev_buf, len);
 				if(0U == ret)
-				{//¶ÁÈ¡Êı¾İÊ§°Ü
-					USART_PRINTF_S("\r\nErrorLogging£º·¢ËÍ'ÁÙÊ±Êı¾İ»º´æÇø'Êı¾İÊ±Î´ÊÕµ½·şÎñÆ÷ÏìÓ¦\r\n");
+				{//è¯»å–æ•°æ®å¤±è´¥
+					USART_PRINTF_S("\r\nErrorLoggingï¼šå‘é€'ä¸´æ—¶æ•°æ®ç¼“å­˜åŒº'æ•°æ®æ—¶æœªæ”¶åˆ°æœåŠ¡å™¨å“åº”\r\n");
 					Setcp_client_u_cnntSt = CLIENT_SHORTCNNT_DISCNNT;
 					goto shortCnnt_exit;
 				}
 #else
-				err = netconn_write(tcp_clientconn ,Setcp_u_shortCnntTxbuf,TxTempBuf.lng,NETCONN_COPY); //·¢ËÍtcp_server_sentbufÖĞµÄÊı¾İ
+				err = netconn_write(tcp_clientconn ,Setcp_u_shortCnntTxbuf,TxTempBuf.lng,NETCONN_COPY); //å‘é€tcp_server_sentbufä¸­çš„æ•°æ®
 				if(err != ERR_OK)
 				{
-					USART_PRINTF_S("·¢ËÍÊ§°Ü\r\n");
+					USART_PRINTF_S("å‘é€å¤±è´¥\r\n");
 					Setcp_client_u_cnntSt = CLIENT_SHORTCNNT_DISCNNT;
 					goto shortCnnt_exit;
 				}
 				
-				if((err = netconn_recv(tcp_clientconn,&recvbuf)) == ERR_OK)  //½ÓÊÕµ½Êı¾İ
+				if((err = netconn_recv(tcp_clientconn,&recvbuf)) == ERR_OK)  //æ¥æ”¶åˆ°æ•°æ®
 				{	
-					memset(ShortRecev_buf, 0, sizeof(ShortRecev_buf));//Êı¾İ½ÓÊÕ»º³åÇøÇåÁã
-					for(q=recvbuf->p;q!=NULL;q=q->next)  //±éÀúÍêÕû¸öpbufÁ´±í
+					memset(ShortRecev_buf, 0, sizeof(ShortRecev_buf));//æ•°æ®æ¥æ”¶ç¼“å†²åŒºæ¸…é›¶
+					for(q=recvbuf->p;q!=NULL;q=q->next)  //éå†å®Œæ•´ä¸ªpbufé“¾è¡¨
 					{
-						//ÅĞ¶ÏÒª¿½±´µ½TCP_CLIENT_RX_BUFSIZEÖĞµÄÊı¾İÊÇ·ñ´óÓÚTCP_CLIENT_RX_BUFSIZEµÄÊ£Óà¿Õ¼ä£¬Èç¹û´óÓÚ
-						//µÄ»°¾ÍÖ»¿½±´TCP_CLIENT_RX_BUFSIZEÖĞÊ£Óà³¤¶ÈµÄÊı¾İ£¬·ñÔòµÄ»°¾Í¿½±´ËùÓĞµÄÊı¾İ
+						//åˆ¤æ–­è¦æ‹·è´åˆ°TCP_CLIENT_RX_BUFSIZEä¸­çš„æ•°æ®æ˜¯å¦å¤§äºTCP_CLIENT_RX_BUFSIZEçš„å‰©ä½™ç©ºé—´ï¼Œå¦‚æœå¤§äº
+						//çš„è¯å°±åªæ‹·è´TCP_CLIENT_RX_BUFSIZEä¸­å‰©ä½™é•¿åº¦çš„æ•°æ®ï¼Œå¦åˆ™çš„è¯å°±æ‹·è´æ‰€æœ‰çš„æ•°æ®
 						if(q->len > (sizeof(ShortRecev_buf)-data_len)) 
 						{
-							memcpy(ShortRecev_buf+data_len,q->payload,(sizeof(ShortRecev_buf)-data_len));//¿½±´Êı¾İ
+							memcpy(ShortRecev_buf+data_len,q->payload,(sizeof(ShortRecev_buf)-data_len));//æ‹·è´æ•°æ®
 						}
 						else 
 						{
 							memcpy(ShortRecev_buf+data_len,q->payload,q->len);
 						}
 						data_len += q->len;  	
-						if(data_len > sizeof(ShortRecev_buf)) break; //³¬³öTCP¿Í»§¶Ë½ÓÊÕÊı×é,Ìø³ö	
+						if(data_len > sizeof(ShortRecev_buf)) break; //è¶…å‡ºTCPå®¢æˆ·ç«¯æ¥æ”¶æ•°ç»„,è·³å‡º	
 					}
-					data_len=0;  //¸´ÖÆÍê³Éºódata_lenÒªÇåÁã
+					data_len=0;  //å¤åˆ¶å®Œæˆådata_lenè¦æ¸…é›¶
 					netbuf_delete(recvbuf);
 				}
-				else if(err == ERR_CLSD)  //¹Ø±ÕÁ¬½Ó
+				else //å…³é—­è¿æ¥
 				{
 					Setcp_client_u_cnntSt = CLIENT_SHORTCNNT_DISCNNT;
 					goto shortCnnt_exit;
 				}
-				else
-				{}
 #endif			
 				//USART_PRINTF_S("\n\r---------------------------------------------------------\n\r");
 				//USART_PRINTF_S(ShortRecev_buf);
 				//USART_PRINTF_S("\n\r---------------------------------------------------------\n\r");
-				//´Óhttp±¨ÎÄÖĞ½âÎö³öÊı¾İÌå
-				position = strchr(ShortRecev_buf, '\{');//Ê×´Î³öÏÖ'\{'µÄµØÖ·
+				//ä»httpæŠ¥æ–‡ä¸­è§£æå‡ºæ•°æ®ä½“
+				position = strchr(ShortRecev_buf, '\{');//é¦–æ¬¡å‡ºç°'\{'çš„åœ°å€
 				if(position != NULL)
 				{
-					Le_w_temp = position - (char*)ShortRecev_buf;//'\{'Î»ÖÃµÄÏÂ±ê
-					USART_PRINTF_S("½ÓÊÕµ½µÄJson¸ñÊ½Êı¾İÈçÏÂ£º");
+					Le_w_temp = position - (char*)ShortRecev_buf;//'\{'ä½ç½®çš„ä¸‹æ ‡
+					USART_PRINTF_S("æ¥æ”¶åˆ°çš„Jsonæ ¼å¼æ•°æ®å¦‚ä¸‹ï¼š");
 					USART_PRINTF_S(&ShortRecev_buf[Le_w_temp]);
 					
 					if(1U != tcp_ShortConnect_parseJson(&ShortRecev_buf[Le_w_temp]))
@@ -685,7 +679,7 @@ void tcp_ShortConnect_MainFunction(void)
 				goto shortCnnt_exit;
 			}
 	
-			/*·¢ËÍ¿ªÃÅ¼ÇÂ¼*/
+			/*å‘é€å¼€é—¨è®°å½•*/
 			//if((1U == client_TxFlag.ReportFlag)&& (0U == client_TxFlag.BusyFlag) \
 				&&(TxTempBuf.dtAlidity == 0U))
 			if(1U == client_TxFlag.ReportFlag)
@@ -694,12 +688,12 @@ void tcp_ShortConnect_MainFunction(void)
 				Setcp_client_u_TxBusyFlg = 1U;
 				if(1U == Gettcp_client_u_LogAvild)
 				{
-					USART_PRINTF_S("·¢ËÍ¿ªÃÅ¼ÇÂ¼Êı¾İ");
+					USART_PRINTF_S("å‘é€å¼€é—¨è®°å½•æ•°æ®");
 					for(Le_w_i = 0U;Le_w_i < CLIENT_LOGRECORD_NUM;Le_w_i++)
 					{
 						if(1U == Gettcp_client_u_LogAvild)
 						{
-							Gettcp_client_doorLog(&Setcp_h_OpenLog.Log[Le_w_i]);//»ñÈ¡¿ªËø¼ÇÂ¼
+							Gettcp_client_doorLog(&Setcp_h_OpenLog.Log[Le_w_i]);//è·å–å¼€é”è®°å½•
 						}
 						else
 						{
@@ -708,7 +702,7 @@ void tcp_ShortConnect_MainFunction(void)
 					}	
 					Setcp_h_OpenLog.LogNum = Le_w_i;
 					Json_HexToJson(&Setcp_h_OpenLog,&Le_w_lng,JSON_REPORT_UNLOCKLOG,Le_u_TxData);
-					memset(Setcp_u_shortCnntTxbuf,0,sizeof(Setcp_u_shortCnntTxbuf));//Çå0
+					memset(Setcp_u_shortCnntTxbuf,0,sizeof(Setcp_u_shortCnntTxbuf));//æ¸…0
 					tcp_client_httpPostRequest("POST /door/openLog2 HTTP/1.1\n",Le_u_TxData, \
 											   &Le_w_lng,Setcp_u_shortCnntTxbuf,1U);
 					TxTempBuf.lng = Le_w_lng;
@@ -718,12 +712,12 @@ void tcp_ShortConnect_MainFunction(void)
 						TxTempBuf.data[Le_w_i] = Setcp_u_shortCnntTxbuf[Le_w_i];
 					}
 					//client_TxFlag.PcktType = Pckt_OpenReport;	
-					//tcp_ShortConnect_sendMsg(Setcp_u_shortCnntTxbuf,Le_w_lng);//Êı¾İ·¢ËÍ
+					//tcp_ShortConnect_sendMsg(Setcp_u_shortCnntTxbuf,Le_w_lng);//æ•°æ®å‘é€
 #ifdef SHORTCNNT_HTTPS
-					ret = tcp_ShortConnect_SendMsg(&ssl,Setcp_u_shortCnntTxbuf,Le_w_lng);//Êı¾İ·¢ËÍ
+					ret = tcp_ShortConnect_SendMsg(&ssl,Setcp_u_shortCnntTxbuf,Le_w_lng);//æ•°æ®å‘é€
 					if(0U == ret)
-					{//·¢ËÍÊ§°Ü
-						USART_PRINTF_S("\r\nErrorLogging£º·¢ËÍ'¿ªÃÅ¼ÇÂ¼'Êı¾İÊ§°Ü\r\n");
+					{//å‘é€å¤±è´¥
+						USART_PRINTF_S("\r\nErrorLoggingï¼šå‘é€'å¼€é—¨è®°å½•'æ•°æ®å¤±è´¥\r\n");
 						Setcp_client_u_cnntSt = CLIENT_SHORTCNNT_DISCNNT;
 						goto shortCnnt_exit;
 					}
@@ -732,58 +726,56 @@ void tcp_ShortConnect_MainFunction(void)
 					USART_PRINTF_S("\n\r<= Read from server :");;
 					ret = tcp_ShortConnect_RcvMsg(&ssl, ShortRecev_buf, len);
 					if(0U == ret)
-					{//¶ÁÈ¡Êı¾İÊ§°Ü
-						USART_PRINTF_S("\r\nErrorLogging£º·¢ËÍ'¿ªÃÅ¼ÇÂ¼'Êı¾İÊ±Î´ÊÕµ½·şÎñÆ÷ÏìÓ¦\r\n");
+					{//è¯»å–æ•°æ®å¤±è´¥
+						USART_PRINTF_S("\r\nErrorLoggingï¼šå‘é€'å¼€é—¨è®°å½•'æ•°æ®æ—¶æœªæ”¶åˆ°æœåŠ¡å™¨å“åº”\r\n");
 						Setcp_client_u_cnntSt = CLIENT_SHORTCNNT_DISCNNT;
 						goto shortCnnt_exit;
 					}
 #else
-					err = netconn_write(tcp_clientconn ,Setcp_u_shortCnntTxbuf,Le_w_lng,NETCONN_COPY); //·¢ËÍtcp_server_sentbufÖĞµÄÊı¾İ
+					err = netconn_write(tcp_clientconn ,Setcp_u_shortCnntTxbuf,Le_w_lng,NETCONN_COPY); //å‘é€tcp_server_sentbufä¸­çš„æ•°æ®
 					if(err != ERR_OK)
 					{
-						USART_PRINTF_S("·¢ËÍÊ§°Ü\r\n");
+						USART_PRINTF_S("å‘é€å¤±è´¥\r\n");
 						Setcp_client_u_cnntSt = CLIENT_SHORTCNNT_DISCNNT;
 						goto shortCnnt_exit;
 					}
 					
-					if((err = netconn_recv(tcp_clientconn,&recvbuf)) == ERR_OK)  //½ÓÊÕµ½Êı¾İ
+					if((err = netconn_recv(tcp_clientconn,&recvbuf)) == ERR_OK)  //æ¥æ”¶åˆ°æ•°æ®
 					{	
-						memset(ShortRecev_buf, 0, sizeof(ShortRecev_buf));//Êı¾İ½ÓÊÕ»º³åÇøÇåÁã
-						for(q=recvbuf->p;q!=NULL;q=q->next)  //±éÀúÍêÕû¸öpbufÁ´±í
+						memset(ShortRecev_buf, 0, sizeof(ShortRecev_buf));//æ•°æ®æ¥æ”¶ç¼“å†²åŒºæ¸…é›¶
+						for(q=recvbuf->p;q!=NULL;q=q->next)  //éå†å®Œæ•´ä¸ªpbufé“¾è¡¨
 						{
-							//ÅĞ¶ÏÒª¿½±´µ½TCP_CLIENT_RX_BUFSIZEÖĞµÄÊı¾İÊÇ·ñ´óÓÚTCP_CLIENT_RX_BUFSIZEµÄÊ£Óà¿Õ¼ä£¬Èç¹û´óÓÚ
-							//µÄ»°¾ÍÖ»¿½±´TCP_CLIENT_RX_BUFSIZEÖĞÊ£Óà³¤¶ÈµÄÊı¾İ£¬·ñÔòµÄ»°¾Í¿½±´ËùÓĞµÄÊı¾İ
+							//åˆ¤æ–­è¦æ‹·è´åˆ°TCP_CLIENT_RX_BUFSIZEä¸­çš„æ•°æ®æ˜¯å¦å¤§äºTCP_CLIENT_RX_BUFSIZEçš„å‰©ä½™ç©ºé—´ï¼Œå¦‚æœå¤§äº
+							//çš„è¯å°±åªæ‹·è´TCP_CLIENT_RX_BUFSIZEä¸­å‰©ä½™é•¿åº¦çš„æ•°æ®ï¼Œå¦åˆ™çš„è¯å°±æ‹·è´æ‰€æœ‰çš„æ•°æ®
 							if(q->len > (sizeof(ShortRecev_buf)-data_len)) 
 							{
-								memcpy(ShortRecev_buf+data_len,q->payload,(sizeof(ShortRecev_buf)-data_len));//¿½±´Êı¾İ
+								memcpy(ShortRecev_buf+data_len,q->payload,(sizeof(ShortRecev_buf)-data_len));//æ‹·è´æ•°æ®
 							}
 							else 
 							{
 								memcpy(ShortRecev_buf+data_len,q->payload,q->len);
 							}
 							data_len += q->len;  	
-							if(data_len > sizeof(ShortRecev_buf)) break; //³¬³öTCP¿Í»§¶Ë½ÓÊÕÊı×é,Ìø³ö	
+							if(data_len > sizeof(ShortRecev_buf)) break; //è¶…å‡ºTCPå®¢æˆ·ç«¯æ¥æ”¶æ•°ç»„,è·³å‡º	
 						}
-						data_len=0;  //¸´ÖÆÍê³Éºódata_lenÒªÇåÁã
+						data_len=0;  //å¤åˆ¶å®Œæˆådata_lenè¦æ¸…é›¶
 						netbuf_delete(recvbuf);
 					}
-					else if(err == ERR_CLSD)  //¹Ø±ÕÁ¬½Ó
+					else   //å…³é—­è¿æ¥
 					{
 						Setcp_client_u_cnntSt = CLIENT_SHORTCNNT_DISCNNT;
 						goto shortCnnt_exit;
 					}
-					else
-					{}
 #endif					
 					//USART_PRINTF_S("\n\r---------------------------------------------------------\n\r");
 					//USART_PRINTF_S(ShortRecev_buf);
 					//USART_PRINTF_S("\n\r---------------------------------------------------------\n\r");
-					//´Óhttp±¨ÎÄÖĞ½âÎö³öÊı¾İÌå
-					position = strchr(ShortRecev_buf, '\{');//Ê×´Î³öÏÖ'\{'µÄµØÖ·
+					//ä»httpæŠ¥æ–‡ä¸­è§£æå‡ºæ•°æ®ä½“
+					position = strchr(ShortRecev_buf, '\{');//é¦–æ¬¡å‡ºç°'\{'çš„åœ°å€
 					if(position != NULL)
 					{
-						Le_w_temp = position - (char*)ShortRecev_buf;//'\{'Î»ÖÃµÄÏÂ±ê
-						USART_PRINTF_S("½ÓÊÕµ½µÄJson¸ñÊ½Êı¾İÈçÏÂ£º");
+						Le_w_temp = position - (char*)ShortRecev_buf;//'\{'ä½ç½®çš„ä¸‹æ ‡
+						USART_PRINTF_S("æ¥æ”¶åˆ°çš„Jsonæ ¼å¼æ•°æ®å¦‚ä¸‹ï¼š");
 						USART_PRINTF_S(&ShortRecev_buf[Le_w_temp]);
 						
 						if(1U == tcp_ShortConnect_parseJson(&ShortRecev_buf[Le_w_temp]))
@@ -795,22 +787,22 @@ void tcp_ShortConnect_MainFunction(void)
 					goto shortCnnt_exit;
 				}
 				else
-				{//ÎŞ¿ªÃÅËø¼ÇÂ¼
+				{//æ— å¼€é—¨é”è®°å½•
 					Setcp_client_u_cnntSt = CLIENT_SHORTCNNT_DISCNNT;
 					goto shortCnnt_exit;
 				}	
 			}
 			
-			/*À­È¡ºÚÃûµ¥*/
+			/*æ‹‰å–é»‘åå•*/
 			//if((client_TxFlag.BListFlag == 1U) && (0U == client_TxFlag.BusyFlag) \
 			  &&(TxTempBuf.dtAlidity == 0U))
 			if(client_TxFlag.BListFlag == 1U)
 			{
-				USART_PRINTF_S("À­È¡ºÚÃûµ¥");
+				USART_PRINTF_S("æ‹‰å–é»‘åå•");
 				client_TxFlag.BListFlag = 0U;
 				Setcp_client_u_TxBusyFlg = 1U;
-				memset(Setcp_u_shortCnntTxbuf,0,sizeof(Setcp_u_shortCnntTxbuf));//Çå0
-				Json_HexToJson(&BListPull,&Le_w_lng,JSON_GET_BLIST,Le_u_TxData);//À­È¡ºÚÃûµ¥·â×°
+				memset(Setcp_u_shortCnntTxbuf,0,sizeof(Setcp_u_shortCnntTxbuf));//æ¸…0
+				Json_HexToJson(&BListPull,&Le_w_lng,JSON_GET_BLIST,Le_u_TxData);//æ‹‰å–é»‘åå•å°è£…
 				tcp_client_httpPostRequest("POST /doorcard/getPassList HTTP/1.1\n",Le_u_TxData, \
 										   &Le_w_lng,Setcp_u_shortCnntTxbuf,1U);
 				TxTempBuf.lng = Le_w_lng;
@@ -820,12 +812,12 @@ void tcp_ShortConnect_MainFunction(void)
 					TxTempBuf.data[Le_w_i] = Setcp_u_shortCnntTxbuf[Le_w_i];
 				}
 				//client_TxFlag.PcktType = Pckt_BList;
-				//tcp_ShortConnect_sendMsg(Setcp_u_shortCnntTxbuf,Le_w_lng);//Êı¾İ·¢ËÍ
+				//tcp_ShortConnect_sendMsg(Setcp_u_shortCnntTxbuf,Le_w_lng);//æ•°æ®å‘é€
 #ifdef SHORTCNNT_HTTPS
-				ret = tcp_ShortConnect_SendMsg(&ssl,Setcp_u_shortCnntTxbuf,Le_w_lng);//Êı¾İ·¢ËÍ
+				ret = tcp_ShortConnect_SendMsg(&ssl,Setcp_u_shortCnntTxbuf,Le_w_lng);//æ•°æ®å‘é€
 				if(0U == ret)
-				{//·¢ËÍÊ§°Ü
-					USART_PRINTF_S("\r\nErrorLogging£º·¢ËÍ'À­È¡ºÚÃûµ¥'ÇëÇóÊı¾İÊ§°Ü\r\n");
+				{//å‘é€å¤±è´¥
+					USART_PRINTF_S("\r\nErrorLoggingï¼šå‘é€'æ‹‰å–é»‘åå•'è¯·æ±‚æ•°æ®å¤±è´¥\r\n");
 					Setcp_client_u_cnntSt = CLIENT_SHORTCNNT_DISCNNT;
 					goto shortCnnt_exit;
 				}
@@ -834,58 +826,56 @@ void tcp_ShortConnect_MainFunction(void)
 				USART_PRINTF_S("\n\r<= Read from server :");;
 				ret = tcp_ShortConnect_RcvMsg(&ssl, ShortRecev_buf, len);
 				if(0U == ret)
-				{//¶ÁÈ¡Êı¾İÊ§°Ü
-					USART_PRINTF_S("\r\nErrorLogging£º·¢ËÍ'À­È¡ºÚÃûµ¥'ÇëÇóÊı¾İÊ±Î´ÊÕµ½·şÎñÆ÷ÏìÓ¦\r\n");
+				{//è¯»å–æ•°æ®å¤±è´¥
+					USART_PRINTF_S("\r\nErrorLoggingï¼šå‘é€'æ‹‰å–é»‘åå•'è¯·æ±‚æ•°æ®æ—¶æœªæ”¶åˆ°æœåŠ¡å™¨å“åº”\r\n");
 					Setcp_client_u_cnntSt = CLIENT_SHORTCNNT_DISCNNT;
 					goto shortCnnt_exit;
 				}
 	#else
-				err = netconn_write(tcp_clientconn ,Setcp_u_shortCnntTxbuf,Le_w_lng,NETCONN_COPY); //·¢ËÍtcp_server_sentbufÖĞµÄÊı¾İ
+				err = netconn_write(tcp_clientconn ,Setcp_u_shortCnntTxbuf,Le_w_lng,NETCONN_COPY); //å‘é€tcp_server_sentbufä¸­çš„æ•°æ®
 				if(err != ERR_OK)
 				{
-					USART_PRINTF_S("·¢ËÍÊ§°Ü\r\n");
+					USART_PRINTF_S("å‘é€å¤±è´¥\r\n");
 					Setcp_client_u_cnntSt = CLIENT_SHORTCNNT_DISCNNT;
 					goto shortCnnt_exit;
 				}
 				
-				if((err = netconn_recv(tcp_clientconn,&recvbuf)) == ERR_OK)  //½ÓÊÕµ½Êı¾İ
+				if((err = netconn_recv(tcp_clientconn,&recvbuf)) == ERR_OK)  //æ¥æ”¶åˆ°æ•°æ®
 				{	
-					memset(ShortRecev_buf, 0, sizeof(ShortRecev_buf));//Êı¾İ½ÓÊÕ»º³åÇøÇåÁã
-					for(q=recvbuf->p;q!=NULL;q=q->next)  //±éÀúÍêÕû¸öpbufÁ´±í
+					memset(ShortRecev_buf, 0, sizeof(ShortRecev_buf));//æ•°æ®æ¥æ”¶ç¼“å†²åŒºæ¸…é›¶
+					for(q=recvbuf->p;q!=NULL;q=q->next)  //éå†å®Œæ•´ä¸ªpbufé“¾è¡¨
 					{
-						//ÅĞ¶ÏÒª¿½±´µ½TCP_CLIENT_RX_BUFSIZEÖĞµÄÊı¾İÊÇ·ñ´óÓÚTCP_CLIENT_RX_BUFSIZEµÄÊ£Óà¿Õ¼ä£¬Èç¹û´óÓÚ
-						//µÄ»°¾ÍÖ»¿½±´TCP_CLIENT_RX_BUFSIZEÖĞÊ£Óà³¤¶ÈµÄÊı¾İ£¬·ñÔòµÄ»°¾Í¿½±´ËùÓĞµÄÊı¾İ
+						//åˆ¤æ–­è¦æ‹·è´åˆ°TCP_CLIENT_RX_BUFSIZEä¸­çš„æ•°æ®æ˜¯å¦å¤§äºTCP_CLIENT_RX_BUFSIZEçš„å‰©ä½™ç©ºé—´ï¼Œå¦‚æœå¤§äº
+						//çš„è¯å°±åªæ‹·è´TCP_CLIENT_RX_BUFSIZEä¸­å‰©ä½™é•¿åº¦çš„æ•°æ®ï¼Œå¦åˆ™çš„è¯å°±æ‹·è´æ‰€æœ‰çš„æ•°æ®
 						if(q->len > (sizeof(ShortRecev_buf)-data_len)) 
 						{
-							memcpy(ShortRecev_buf+data_len,q->payload,(sizeof(ShortRecev_buf)-data_len));//¿½±´Êı¾İ
+							memcpy(ShortRecev_buf+data_len,q->payload,(sizeof(ShortRecev_buf)-data_len));//æ‹·è´æ•°æ®
 						}
 						else 
 						{
 							memcpy(ShortRecev_buf+data_len,q->payload,q->len);
 						}
 						data_len += q->len;  	
-						if(data_len > sizeof(ShortRecev_buf)) break; //³¬³öTCP¿Í»§¶Ë½ÓÊÕÊı×é,Ìø³ö	
+						if(data_len > sizeof(ShortRecev_buf)) break; //è¶…å‡ºTCPå®¢æˆ·ç«¯æ¥æ”¶æ•°ç»„,è·³å‡º	
 					}
-					data_len=0;  //¸´ÖÆÍê³Éºódata_lenÒªÇåÁã
+					data_len=0;  //å¤åˆ¶å®Œæˆådata_lenè¦æ¸…é›¶
 					netbuf_delete(recvbuf);
 				}
-				else if(err == ERR_CLSD)  //¹Ø±ÕÁ¬½Ó
+				else  //å…³é—­è¿æ¥
 				{
 					Setcp_client_u_cnntSt = CLIENT_SHORTCNNT_DISCNNT;
 					goto shortCnnt_exit;
 				}
-				else
-				{}
 #endif
 				//USART_PRINTF_S("\n\r---------------------------------------------------------\n\r");
 				//USART_PRINTF_S(ShortRecev_buf);
 				//USART_PRINTF_S("\n\r---------------------------------------------------------\n\r");
-				//´Óhttp±¨ÎÄÖĞ½âÎö³öÊı¾İÌå
-				position = strchr(ShortRecev_buf, '\{');//Ê×´Î³öÏÖ'\{'µÄµØÖ·
+				//ä»httpæŠ¥æ–‡ä¸­è§£æå‡ºæ•°æ®ä½“
+				position = strchr(ShortRecev_buf, '\{');//é¦–æ¬¡å‡ºç°'\{'çš„åœ°å€
 				if(position != NULL)
 				{
-					Le_w_temp = position - (char*)ShortRecev_buf;//'\{'Î»ÖÃµÄÏÂ±ê
-					USART_PRINTF_S("½ÓÊÕµ½µÄJson¸ñÊ½Êı¾İÈçÏÂ£º");
+					Le_w_temp = position - (char*)ShortRecev_buf;//'\{'ä½ç½®çš„ä¸‹æ ‡
+					USART_PRINTF_S("æ¥æ”¶åˆ°çš„Jsonæ ¼å¼æ•°æ®å¦‚ä¸‹ï¼š");
 					USART_PRINTF_S(&ShortRecev_buf[Le_w_temp]);
 					
 					if(1U == tcp_ShortConnect_parseJson(&ShortRecev_buf[Le_w_temp]))
@@ -898,7 +888,7 @@ void tcp_ShortConnect_MainFunction(void)
 			}	
 		}
 		else
-		{//Éè±¸Î´³É¹¦³õÊ¼»¯
+		{//è®¾å¤‡æœªæˆåŠŸåˆå§‹åŒ–
 			Setcp_client_u_cnntSt = CLIENT_SHORTCNNT_DISCNNT;
 			goto shortCnnt_exit;
 		}
@@ -907,7 +897,7 @@ void tcp_ShortConnect_MainFunction(void)
 shortCnnt_exit:
 	if(Setcp_client_u_cnntSt == CLIENT_SHORTCNNT_DISCNNT)
 	{
-		USART_PRINTF_S("¶Ï¿ªÁ¬½Ó...");
+		USART_PRINTF_S("æ–­å¼€è¿æ¥...");
 #ifdef SHORTCNNT_HTTPS
 		net_close(server_fd);
 		ssl_free(&ssl);
@@ -923,18 +913,18 @@ shortCnnt_exit:
 }
 
 /*
-	·¢ËÍÊı¾İ
+	å‘é€æ•°æ®
 */
 static uint8_t tcp_ShortConnect_SendMsg( ssl_context *ssl, const unsigned char *buf, size_t len )
 {
 	int ret;
-	ret = ssl_write(ssl,buf,len);//Êı¾İ·¢ËÍ
+	ret = ssl_write(ssl,buf,len);//æ•°æ®å‘é€
 	while(ret <= 0)
 	{
 		if( ret != POLARSSL_ERR_NET_WANT_READ && ret != POLARSSL_ERR_NET_WANT_WRITE )
 		{
 			/* Write to SSL server failed */
-			USART_PRINTF_D( "ErrorLogging£ºfailed \n\r! ssl_write returned %d\n\r", -ret);
+			USART_PRINTF_D( "ErrorLoggingï¼šfailed \n\r! ssl_write returned %d\n\r", -ret);
 			return 0;
 		}
 	}
@@ -943,7 +933,7 @@ static uint8_t tcp_ShortConnect_SendMsg( ssl_context *ssl, const unsigned char *
 
 
 /*
-	½ÓÊÕÊı¾İ
+	æ¥æ”¶æ•°æ®
 */
 static uint8_t tcp_ShortConnect_RcvMsg( ssl_context *ssl, unsigned char *buf, size_t len )
 {
@@ -968,7 +958,7 @@ static uint8_t tcp_ShortConnect_RcvMsg( ssl_context *ssl, unsigned char *buf, si
 
 		if( ret <= 0 )
 		{
-			USART_PRINTF_D( "ErrorLogging£ºfailed\n  ! ssl_read returned %d\r\n", ret );
+			USART_PRINTF_D( "ErrorLoggingï¼šfailed\n  ! ssl_read returned %d\r\n", ret );
 			return 0U;
 		}
 		break;
@@ -1009,7 +999,7 @@ u8_t Gettcp_shortCnntTxSt(void)
 }
 
 /**
-  * @brief http·â×°
+  * @brief httpå°è£…
   * @param 
   * @param
   * @retval None
@@ -1036,8 +1026,8 @@ static void tcp_client_httpPostRequest(char* postAddr,char* Le_u_in,u16_t * Le_u
 	{
 		strcat(Le_u_out, "Connection: close\n");
 	}
-	strcat(Le_u_out, "\n");//ĞèÒª¿ÕÒ»ĞĞ
-	//Le_u_in µÄÖµÎªpostµÄÊı¾İ
+	strcat(Le_u_out, "\n");//éœ€è¦ç©ºä¸€è¡Œ
+	//Le_u_in çš„å€¼ä¸ºpostçš„æ•°æ®
 	strcat(Le_u_out, Le_u_in);
 	strcat(Le_u_out, "\r\n\r\n");
 	*Le_u_len = strlen(Le_u_out);
@@ -1045,7 +1035,7 @@ static void tcp_client_httpPostRequest(char* postAddr,char* Le_u_in,u16_t * Le_u
 }
 
 /*
-	¶ÌÁ¬½Ó½ÓÊÕ±¨ÎÄ½âÎö
+	çŸ­è¿æ¥æ¥æ”¶æŠ¥æ–‡è§£æ
 */
 static uint8 tcp_ShortConnect_parseJson(char * pMsg)
 {
@@ -1054,14 +1044,14 @@ static uint8 tcp_ShortConnect_parseJson(char * pMsg)
 	if(NULL == pJson)                                                                                         
 	{
 		// parse faild, return
-		USART_PRINTF_S("\r\nErrorLogging£º½ÓÊÕÊı¾İ½âÎö³Éjson¸ñÊ½Ê§°Ü\r\n");
+		USART_PRINTF_S("\r\nErrorLoggingï¼šæ¥æ”¶æ•°æ®è§£ææˆjsonæ ¼å¼å¤±è´¥\r\n");
 		return 0U;
 	}
 	// get string from json
 	cJSON * pSub_err = cJSON_GetObjectItem(pJson, "error");
 	if(NULL == pSub_err)
 	{
-		USART_PRINTF_S("\r\nErrorLogging£º»ñÈ¡³ÉÔ± error Ê§°Ü\r\n");
+		USART_PRINTF_S("\r\nErrorLoggingï¼šè·å–æˆå‘˜ error å¤±è´¥\r\n");
 		cJSON_Delete(pJson);
 		return 0U;
 	}
@@ -1075,39 +1065,39 @@ static uint8 tcp_ShortConnect_parseJson(char * pMsg)
 	{
 		case 0:
 		{
-			USART_PRINTF_S("×´Ì¬ÂëÕıÈ·");
+			USART_PRINTF_S("çŠ¶æ€ç æ­£ç¡®");
 			ret = 1;
 			//client_TxFlag.EchoFlag = 2U;
 			cJSON * pSub_token = cJSON_GetObjectItem(pJson, "token");
 			if(NULL != pSub_token)
-			{//ÊÕµ½³õÊ¼»¯ÏìÓ¦
+			{//æ”¶åˆ°åˆå§‹åŒ–å“åº”
 				memcpy(BListPull.token,pSub_token->valuestring,39U);
 				memcpy(Setcp_h_OpenLog.token,pSub_token->valuestring,39U);
 				memcpy(Se_h_doorSt.token,pSub_token->valuestring,39U);
 				memcpy(Vetcp_client_u_token,pSub_token->valuestring,39U);
 				if(TxTempBuf.dtAlidity == 1U)
-				{//ÁÙÊ±»º´æÇøÊı¾İÓĞĞ§£¬ËµÃ÷´Ë´ÎÊÇtoken¹ıÆÚºóÖØĞÂ³õÊ¼»¯Éè±¸µÄÏìÓ¦£¬Ğè¸üĞÂ»º´æÇøÊı¾İµÄtokenÖµ
+				{//ä¸´æ—¶ç¼“å­˜åŒºæ•°æ®æœ‰æ•ˆï¼Œè¯´æ˜æ­¤æ¬¡æ˜¯tokenè¿‡æœŸåé‡æ–°åˆå§‹åŒ–è®¾å¤‡çš„å“åº”ï¼Œéœ€æ›´æ–°ç¼“å­˜åŒºæ•°æ®çš„tokenå€¼
 					char *position;
 					u16_t Le_w_temp;
 					u8_t Le_u_i;
-					position = strchr(TxTempBuf.data, '\{');//Ê×´Î³öÏÖ'\{'µÄµØÖ·
-					Le_w_temp = position - TxTempBuf.data;//'\{'Î»ÖÃµÄÏÂ±ê
-					Le_w_temp = Le_w_temp + 10U;//tokenÖµÓòÆğÊ¼Î»ÖÃ
+					position = strchr(TxTempBuf.data, '\{');//é¦–æ¬¡å‡ºç°'\{'çš„åœ°å€
+					Le_w_temp = position - TxTempBuf.data;//'\{'ä½ç½®çš„ä¸‹æ ‡
+					Le_w_temp = Le_w_temp + 10U;//tokenå€¼åŸŸèµ·å§‹ä½ç½®
 					for(Le_u_i = 0;Le_u_i < 39U;Le_u_i++)
 					{
 						TxTempBuf.data[Le_w_temp + Le_u_i] = pSub_token->valuestring[Le_u_i];
 					}
 				}
-				USART_PRINTF_S("\r\ntokenĞÅÏ¢Ğ´Èëflash\r\n");
-				(void)MemIf_WriteEE(EepromCfg_tokenInfo,Vetcp_client_u_token,sizeof(Vetcp_client_u_token));//tokenÖµĞ´µ½flash
-				client_TxFlag.InitFlag = 1U;//Éè±¸³õÊ¼»¯ok
+				USART_PRINTF_S("\r\ntokenä¿¡æ¯å†™å…¥flash\r\n");
+				(void)MemIf_WriteEE(EepromCfg_tokenInfo,Vetcp_client_u_token,sizeof(Vetcp_client_u_token));//tokenå€¼å†™åˆ°flash
+				client_TxFlag.InitFlag = 1U;//è®¾å¤‡åˆå§‹åŒ–ok
 				SetAudioIO_PlayFile(AudioIO_DeInitFinish,2U);
 			}
 			else
 			{		
 				cJSON * pSub_list = cJSON_GetObjectItem(pJson, "list");
 				if(NULL != pSub_list)
-				{//ºÚÃûµ¥ÏìÓ¦Êı¾İ
+				{//é»‘åå•å“åº”æ•°æ®
 					cJSON * pSub_total = cJSON_GetObjectItem(pJson, "total");
 					cJSON * pSub_timestamp = cJSON_GetObjectItem(pJson, "timeStamp");
 					if(pSub_total->type == cJSON_String)
@@ -1130,13 +1120,13 @@ static uint8 tcp_ShortConnect_parseJson(char * pMsg)
 							BListPull.page++;
 							Se_dw_BListPullTimer = SHORTCNNT_PULLBLIST_PERIOD - (3000U/SHORTCNNT_SCHEDULING_CYCLE);
 						}
-						//USART_PRINTF_D("À­È¡Ò³Âë£º%d\n",BListPull.page);
-						/*ÍøÂç·¢À´µÄÊ±¼äĞ£×¼±¾µØÊ±ÖÓĞ¾Æ¬*/
-						//timestamp_strBJtime((BListPull.timestamp/1000),timelist);//Ê±¼ä´Á×ª»»ÎªÊ±¼ä£¨×Ö·û´®¸ñÊ½£©
-						//timestamp_timeCalibration(timelist,TIME_STAMP_UNT);//Ğ£×¼Ê±ÖÓĞ¾Æ¬Ê±¼ä	
-						/*ÌáÈ¡ÍøÂçºÚÃûµ¥Êı¾İ*/
+						//USART_PRINTF_D("æ‹‰å–é¡µç ï¼š%d\n",BListPull.page);
+						/*ç½‘ç»œå‘æ¥çš„æ—¶é—´æ ¡å‡†æœ¬åœ°æ—¶é’ŸèŠ¯ç‰‡*/
+						//timestamp_strBJtime((BListPull.timestamp/1000),timelist);//æ—¶é—´æˆ³è½¬æ¢ä¸ºæ—¶é—´ï¼ˆå­—ç¬¦ä¸²æ ¼å¼ï¼‰
+						//timestamp_timeCalibration(timelist,TIME_STAMP_UNT);//æ ¡å‡†æ—¶é’ŸèŠ¯ç‰‡æ—¶é—´	
+						/*æå–ç½‘ç»œé»‘åå•æ•°æ®*/
 						unsigned int BList_size = cJSON_GetArraySize(pSub_list);
-						//USART_PRINTF_D("£ººÚÃûµ¥¿¨ºÅÊıÁ¿%d\n",BList_size);
+						//USART_PRINTF_D("ï¼šé»‘åå•å¡å·æ•°é‡%d\n",BList_size);
 						unsigned int BList_i = 0;
 						unsigned char BList_j = 0;
 						uint8_t BList_cardNum[CLIENT_SHORTCNNT_CARDNUM_LNG];
@@ -1151,12 +1141,12 @@ static uint8 tcp_ShortConnect_parseJson(char * pMsg)
 							{
 								if(BList_cardNumLen > 8U)
 								{
-									//USART_PRINTF_D("¿¨ºÅ±àºÅ %s³¤¶È²»·û\n£º",BList_item->valuestring);
+									//USART_PRINTF_D("å¡å·ç¼–å· %sé•¿åº¦ä¸ç¬¦\nï¼š",BList_item->valuestring);
 									continue;
 								}
 								else
-								{//¿¨ºÅ³¤¶ÈÉÙÓÚ4×Ö½Ú£¬Ç°Ãæ²¹0
-									memset(BList_cardNumString,'0',8U);//Çå'0'
+								{//å¡å·é•¿åº¦å°‘äº4å­—èŠ‚ï¼Œå‰é¢è¡¥0
+									memset(BList_cardNumString,'0',8U);//æ¸…'0'
 									for(BList_j = 0U;BList_j < BList_cardNumLen;BList_j++)
 									{
 										BList_cardNumString[8-BList_cardNumLen+BList_j] = BList_item->valuestring[BList_j];
@@ -1169,7 +1159,7 @@ static uint8 tcp_ShortConnect_parseJson(char * pMsg)
 								tcp_shortConnect_StrToHex(BList_item->valuestring,BList_cardNum);
 							}
 							WrBListCache_BListQueue(BList_cardNum);
-							//USART_PRINTF_D("¿¨ºÅ±àºÅ %d ×ª»»ÎªHex¸ñÊ½¿¨ºÅ£º",BList_i);
+							//USART_PRINTF_D("å¡å·ç¼–å· %d è½¬æ¢ä¸ºHexæ ¼å¼å¡å·ï¼š",BList_i);
 							//USART_PRINTF_CARD_NUM("%x%x%x%x\n",BList_cardNum[0U],BList_cardNum[1U],BList_cardNum[2U], \
 												  BList_cardNum[3U]);
 						}
@@ -1184,7 +1174,7 @@ static uint8 tcp_ShortConnect_parseJson(char * pMsg)
 					{
 						BListPull.Oldtimestamp = BListPull.timestamp;
 						BListPull.Oldpage = BListPull.page;
-						(void)MemIf_WriteEE(EepromCfg_timestamp_page,&BListPull,sizeof(BListPull));//ºÚÃûµ¥Ê±¼ä´Á¡¢Ò³ÂëµÈĞÅÏ¢Ğ´Èë·ÇÒ×Ê§ĞÔ´æ´¢Æ÷
+						(void)MemIf_WriteEE(EepromCfg_timestamp_page,&BListPull,sizeof(BListPull));//é»‘åå•æ—¶é—´æˆ³ã€é¡µç ç­‰ä¿¡æ¯å†™å…¥éæ˜“å¤±æ€§å­˜å‚¨å™¨
 					}
 #endif
 				}
@@ -1192,37 +1182,37 @@ static uint8 tcp_ShortConnect_parseJson(char * pMsg)
 		}
 		break;
 		case 308:
-		{//token ¹ıÆÚ
-			USART_PRINTF_S("\r\nErrorLogging£ºtoken¹ıÆÚ\r\n");
+		{//token è¿‡æœŸ
+			USART_PRINTF_S("\r\nErrorLoggingï¼štokenè¿‡æœŸ\r\n");
 			//client_TxFlag.tokenOverdueFlag = 1U;
-			client_TxFlag.InitFlag = 0U;//ÉèÖÃÉè±¸ÖØĞÂ³õÊ¼»¯
+			client_TxFlag.InitFlag = 0U;//è®¾ç½®è®¾å¤‡é‡æ–°åˆå§‹åŒ–
 			ret = 0;
 		}
 		break;
 		case 406:
-		{//ÃÅidÎ´ÔÚºóÌ¨°ó¶¨Éè±¸
-			USART_PRINTF_S("\r\nErrorLogging£ºÃÅidÎ´ÔÚºóÌ¨°ó¶¨Éè±¸\r\n");
+		{//é—¨idæœªåœ¨åå°ç»‘å®šè®¾å¤‡
+			USART_PRINTF_S("\r\nErrorLoggingï¼šé—¨idæœªåœ¨åå°ç»‘å®šè®¾å¤‡\r\n");
 			SetAudioIO_PlayFile(AudioIO_DeInitFailLostId,2U);
 			ret = 0;
 		}
 		break;
 		case 428:
-		{//ÃÅidÒÑÔÚºóÌ¨°ó¶¨Éè±¸
-			USART_PRINTF_S("\r\nErrorLogging£ºÃÅidÒÑÔÚºóÌ¨°ó¶¨Éè±¸\r\n");
+		{//é—¨idå·²åœ¨åå°ç»‘å®šè®¾å¤‡
+			USART_PRINTF_S("\r\nErrorLoggingï¼šé—¨idå·²åœ¨åå°ç»‘å®šè®¾å¤‡\r\n");
 			SetAudioIO_PlayFile(AudioIO_DeInitFailExistId,2U);
 			ret = 0;
 		}
 		break;
 		case 319:
-		{//Êı¾İ²»ÕıÈ·»òÊı¾İ²»ÍêÕû
-			USART_PRINTF_S("\r\nErrorLogging£ºÊı¾İ²»ÕıÈ·»òÊı¾İ²»ÍêÕû\r\n");
+		{//æ•°æ®ä¸æ­£ç¡®æˆ–æ•°æ®ä¸å®Œæ•´
+			USART_PRINTF_S("\r\nErrorLoggingï¼šæ•°æ®ä¸æ­£ç¡®æˆ–æ•°æ®ä¸å®Œæ•´\r\n");
 			TxTempBuf.dtAlidity = 0U;
 			ret = 0;
 		}
 		break;
 		default:
 		{
-			USART_PRINTF_D( "\r\nErrorLogging£º×´Ì¬Âë´íÎó£¬µ±Ç°×´Ì¬ÂëÎª %d\r\n",pSub_err->valueint);
+			USART_PRINTF_D( "\r\nErrorLoggingï¼šçŠ¶æ€ç é”™è¯¯ï¼Œå½“å‰çŠ¶æ€ç ä¸º %d\r\n",pSub_err->valueint);
 			ret = 0;
 		}
 		break;
@@ -1232,7 +1222,7 @@ static uint8 tcp_ShortConnect_parseJson(char * pMsg)
 }
 
 /*
-	ÉèÖÃÖØĞÂ³õÊ¼»¯Éè±¸
+	è®¾ç½®é‡æ–°åˆå§‹åŒ–è®¾å¤‡
 */
 void Settcp_client_DeviceInit(void)
 {
@@ -1241,7 +1231,7 @@ void Settcp_client_DeviceInit(void)
 
 
 /*
-	ºÚÃûµ¥¸üĞÂ×´Ì¬
+	é»‘åå•æ›´æ–°çŠ¶æ€
 */
 uint8_t tcp_client_BListUpdataSt(void)
 {
@@ -1249,15 +1239,15 @@ uint8_t tcp_client_BListUpdataSt(void)
 }
 
 /******************************************************
-*º¯ÊıÃû£ºGettcp_client_u_XOR
+*å‡½æ•°åï¼šGettcp_client_u_XOR
 
-*ĞÎ  ²Î£º
+*å½¢  å‚ï¼š
 
-*·µ»ØÖµ£º
+*è¿”å›å€¼ï¼š
 
-*Ãè  Êö£ºÒì»òÈ¡·´Ğ£Ñé
+*æ  è¿°ï¼šå¼‚æˆ–å–åæ ¡éªŒ
 
-*±¸  ×¢£º
+*å¤‡  æ³¨ï¼š
 ******************************************************/
 static uint8 Gettcp_client_u_XOR(uint8* Le_u_Dt,uint16 Le_w_Lng)
 {
@@ -1273,7 +1263,7 @@ static uint8 Gettcp_client_u_XOR(uint8* Le_u_Dt,uint16 Le_w_Lng)
 
 
 /**
-  * @brief macµØÖ·²åÈë':'
+  * @brief macåœ°å€æ’å…¥':'
   * @param 
   * @param 
   * @retval None
@@ -1302,7 +1292,7 @@ static void tcp_client_MacRecombine(char* Le_u_mac)
 }
 
 /*
-	×Ö·û´®×ªHex¸ñÊ½:AABBCCDD×ªÎª0xAA,0xBB,0xCC,0xDD
+	å­—ç¬¦ä¸²è½¬Hexæ ¼å¼:AABBCCDDè½¬ä¸º0xAA,0xBB,0xCC,0xDD
 */
 static void tcp_shortConnect_StrToHex(char* Le_in, uint8_t* Le_out)
 {
@@ -1331,7 +1321,7 @@ static void tcp_shortConnect_StrToHex(char* Le_in, uint8_t* Le_out)
 
 
 /*
-//	ÉèÖÃÈ«Á¿¸üĞÂºÚÃûµ¥µÄÊ±¼ä
+//	è®¾ç½®å…¨é‡æ›´æ–°é»‘åå•çš„æ—¶é—´
 */
 static uint8_t Settcp_shortConnect_UpdataBLTime(void)
 { 
@@ -1340,7 +1330,7 @@ static uint8_t Settcp_shortConnect_UpdataBLTime(void)
 #ifdef  HYM8563
 	(void)hym8563_read_datetime(&Le_h_tm);
 #else
-	Read_RTC_TimeAndDate(&Le_h_tm);//¶ÁÈ¡ÈÕÆÚÊ±¼ä
+	Read_RTC_TimeAndDate(&Le_h_tm);//è¯»å–æ—¥æœŸæ—¶é—´
 #endif
 	//tm.tm_year, tm.tm_mon, tm.tm_mday, tm.wday,tm.tm_hour, tm.tm_min, tm.tm_sec);
 	if(Le_h_tm.tm_year >= 2018U)
@@ -1354,7 +1344,7 @@ static uint8_t Settcp_shortConnect_UpdataBLTime(void)
 		//Se_h_UpdateBList.sec = Le_h_tm.tm_sec;
 		ret = 1U;
 #ifdef UART_DEBUG
-		printf("\nÈ«Á¿¸üĞÂºÚÃûµ¥Ê±¼ä£º%d:%d:%d\n",Se_h_UpdateBList.hour,Se_h_UpdateBList.min,Se_h_UpdateBList.sec);
+		printf("\nå…¨é‡æ›´æ–°é»‘åå•æ—¶é—´ï¼š%d:%d:%d\n",Se_h_UpdateBList.hour,Se_h_UpdateBList.min,Se_h_UpdateBList.sec);
 #endif
 	}
 	return ret;
@@ -1362,7 +1352,7 @@ static uint8_t Settcp_shortConnect_UpdataBLTime(void)
 
 
 /*
-//	È«Á¿¸üĞÂºÚÃûµ¥
+//	å…¨é‡æ›´æ–°é»‘åå•
 */
 static void tcp_shortConnect_UpdataBList(void)
 { 
@@ -1372,15 +1362,15 @@ static void tcp_shortConnect_UpdataBList(void)
 	{
 		Se_h_UpdateBList.Timer = 0U;
 #ifdef  HYM8563
-		(void)hym8563_read_datetime(&Le_h_tm);/*¶ÁÈ¡µ±Ç°Ê±¼ä*/
+		(void)hym8563_read_datetime(&Le_h_tm);/*è¯»å–å½“å‰æ—¶é—´*/
 #else
-		Read_RTC_TimeAndDate(&Le_h_tm);//¶ÁÈ¡ÈÕÆÚÊ±¼ä
+		Read_RTC_TimeAndDate(&Le_h_tm);//è¯»å–æ—¥æœŸæ—¶é—´
 #endif
 		if((Se_h_UpdateBList.hour == Le_h_tm.tm_hour) && (Le_h_tm.tm_min == Se_h_UpdateBList.min))
-		{//È«Á¿¸üĞÂºÚÃûµ¥¡£[×¢£ºÊ±ÖÓÎó²î´ó£¬Í¬Ê±ÔÚÍøÂçĞ£Ê±Çé¿öÏÂ»á³öÏÖÌø¹ıÈ«Á¿¸üĞÂºÚÃûµ¥¹ı³Ì]
+		{//å…¨é‡æ›´æ–°é»‘åå•ã€‚[æ³¨ï¼šæ—¶é’Ÿè¯¯å·®å¤§ï¼ŒåŒæ—¶åœ¨ç½‘ç»œæ ¡æ—¶æƒ…å†µä¸‹ä¼šå‡ºç°è·³è¿‡å…¨é‡æ›´æ–°é»‘åå•è¿‡ç¨‹]
 			if(0U == Se_h_UpdateBList.flag)
 			{
-				ClrBListMng_ListData();//ÇåºÚÃûµ¥ÁĞ±í
+				ClrBListMng_ListData();//æ¸…é»‘åå•åˆ—è¡¨
 				Se_h_UpdateBList.flag = 1U;
 				BListPull.timestamp = 0;
 				BListPull.page = 1U;
@@ -1396,7 +1386,7 @@ static void tcp_shortConnect_UpdataBList(void)
 
 
 /*
-//hex ip×ª»»³Éx.x.x.x  
+//hex ipè½¬æ¢æˆx.x.x.x  
 */
 static void tcp_shortConnect_HexIPtoStr(struct ip_addr Le_dw_in,char* Le_u_out)
 { 
