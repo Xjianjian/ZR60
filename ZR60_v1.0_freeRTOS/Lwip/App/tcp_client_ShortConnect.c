@@ -210,7 +210,7 @@ void tcp_ShortConnect_MainFunction(void)
 	uint16 Le_w_i;
 	uint16 Le_w_lng;
 	//uint8  Le_u_ret;
-	char Le_u_TxData[500U] = {0};
+	char Le_u_TxData[450U] = {0};
 	//char Recev_Tempbuf[512] = {0};
 	
 	if(0 == GET_PHY_LINK_STATUS())/* Get Ethernet link status*/
@@ -396,11 +396,12 @@ void tcp_ShortConnect_MainFunction(void)
 		size_t len;
 		if(client_TxFlag.InitFlag == 0U)//设备未初始化
 		{
+			char Letcp_u_InitTxbuf[265] = {0};
 			client_TxFlag.InitFlag = 2U;
 			Setcp_client_u_TxBusyFlg = 1U;
 			USART_PRINTF_S("设备初始化信息推送");
 			Json_HexToStr(DeviceInit.doorID,sminfo1.door_id,16);
-			memset(Setcp_u_shortCnntTxbuf,0,sizeof(Setcp_u_shortCnntTxbuf));//清0
+			//memset(Setcp_u_shortCnntTxbuf,0,sizeof(Setcp_u_shortCnntTxbuf));//清0
 			if(DeviceInit.addrRecombineFlg == 0U)
 			{
 				tcp_client_MacRecombine(&DeviceInit.Blemac[0]);
@@ -414,9 +415,9 @@ void tcp_ShortConnect_MainFunction(void)
 			}
 			Json_HexToJson(&DeviceInit,&Le_w_lng,JSON_DEVICE_INIT,Le_u_TxData);
 			tcp_client_httpPostRequest("POST /device/initForBand HTTP/1.1\n",Le_u_TxData,&Le_w_lng, \
-									   Setcp_u_shortCnntTxbuf,1U);
+									   Letcp_u_InitTxbuf,1U);
 #ifdef SHORTCNNT_HTTPS
-			ret = tcp_ShortConnect_SendMsg(&ssl,Setcp_u_shortCnntTxbuf,Le_w_lng);//数据发送
+			ret = tcp_ShortConnect_SendMsg(&ssl,Letcp_u_InitTxbuf,Le_w_lng);//数据发送
 			//ret = ssl_write(&ssl,Setcp_u_shortCnntTxbuf,Le_w_lng);//数据发送
 			if(0U == ret)
 			{//发送失败
@@ -435,7 +436,7 @@ void tcp_ShortConnect_MainFunction(void)
 				goto shortCnnt_exit;
 			}
 #else
-			err = netconn_write(tcp_clientconn ,Setcp_u_shortCnntTxbuf,Le_w_lng,NETCONN_COPY); //发送tcp_server_sentbuf中的数据
+			err = netconn_write(tcp_clientconn ,Letcp_u_InitTxbuf,Le_w_lng,NETCONN_COPY); //发送tcp_server_sentbuf中的数据
 			if(err != ERR_OK)
 			{
 				USART_PRINTF_S("发送失败\r\n");
@@ -601,9 +602,14 @@ void tcp_ShortConnect_MainFunction(void)
 				USART_PRINTF_S("发送临时缓存区数据");
 				Setcp_client_u_TxBusyFlg = 1U;
 				TxTempBuf.dtAlidity = 0U;
+				memset(Setcp_u_shortCnntTxbuf,0,sizeof(Setcp_u_shortCnntTxbuf));//清0
+				for(Le_w_i = 0U;Le_w_i < TxTempBuf.lng;Le_w_i++)
+				{
+					Setcp_u_shortCnntTxbuf[Le_w_i] = TxTempBuf.data[Le_w_i];
+				}
 				USART_PRINTF_S(Setcp_u_shortCnntTxbuf);
 #ifdef SHORTCNNT_HTTPS
-				ret = tcp_ShortConnect_SendMsg(&ssl,Setcp_u_shortCnntTxbuf,Le_w_lng);//数据发送
+				ret = tcp_ShortConnect_SendMsg(&ssl,Setcp_u_shortCnntTxbuf,TxTempBuf.lng);//数据发送
 				if(0U == ret)
 				{//发送失败
 					USART_PRINTF_S("\r\nErrorLogging：发送'临时数据缓存区'数据失败\r\n");
@@ -622,7 +628,7 @@ void tcp_ShortConnect_MainFunction(void)
 					goto shortCnnt_exit;
 				}
 #else
-				err = netconn_write(tcp_clientconn ,Setcp_u_shortCnntTxbuf,Le_w_lng,NETCONN_COPY); //发送tcp_server_sentbuf中的数据
+				err = netconn_write(tcp_clientconn ,Setcp_u_shortCnntTxbuf,TxTempBuf.lng,NETCONN_COPY); //发送tcp_server_sentbuf中的数据
 				if(err != ERR_OK)
 				{
 					USART_PRINTF_S("发送失败\r\n");

@@ -242,11 +242,19 @@ void RTC_CLK_Config_Backup(void)
 	RTC_InitStructure.RTC_SynchPrediv = 0xFF;	
 	RTC_InitStructure.RTC_HourFormat = RTC_HourFormat_24; 
 	/* 用RTC_InitStructure的内容初始化RTC寄存器 */
-	if (RTC_Init(&RTC_InitStructure) == ERROR)
+	StartUpCounter = 3U;
+	while(StartUpCounter--)
 	{
-		printf("\n\r RTC 时钟初始化失败 \r\n");
+		if(RTC_Init(&RTC_InitStructure) == ERROR)
+		{
+			printf("\n\r RTC 时钟初始化失败 \r\n");
+		}
+		else
+		{
+			printf("\n\r RTC 时钟初始化完成 \r\n");
+			break;
+		}
 	}
-	printf("\n\r RTC 时钟初始化完成 \r\n");
 }
 
 
