@@ -27,15 +27,205 @@ Project File Date:  12/06/2018
 <h2>Output:</h2>
 *** Using Compiler 'V5.06 update 4 (build 422)', folder: 'd:\Keil_v5\ARM\ARMCC\Bin'
 Build target 'ZR60'
+compiling ZR60_Ctrl.c...
+..\..\APP\ZR60_Ctrl\ZR60_Ctrl.c(513): warning:  #167-D: argument of type "char *" is incompatible with parameter of type "unsigned char *"
+  			Json_HexToStr(Le_u_UnlockInfo,SeReadcard_h_CardID.CardID,SeReadcard_h_CardID.lng);
+..\..\APP\ZR60_Ctrl\ZR60_Ctrl.c(837): warning:  #167-D: argument of type "u8 *" is incompatible with parameter of type "char *restrict"
+  							strncpy(key_buf,test_buf,6);
+..\..\APP\ZR60_Ctrl\ZR60_Ctrl.c(837): warning:  #167-D: argument of type "uint8_t *" is incompatible with parameter of type "const char *restrict"
+  							strncpy(key_buf,test_buf,6);
+..\..\APP\ZR60_Ctrl\ZR60_Ctrl.c(843): warning:  #167-D: argument of type "uint8_t *" is incompatible with parameter of type "const char *"
+  							if(strcmp(test_buf,"110911060")==0)
+..\..\APP\ZR60_Ctrl\ZR60_Ctrl.c(849): warning:  #167-D: argument of type "uint8_t *" is incompatible with parameter of type "const char *"
+  							else if(strcmp(test_buf,"110911061")==0)
+..\..\APP\ZR60_Ctrl\ZR60_Ctrl.c(32): warning:  #550-D: variable "sec_count"  was set but never used
+  static uint8_t 	sec_count = 0;
+..\..\APP\ZR60_Ctrl\ZR60_Ctrl.c(1121): warning:  #177-D: function "Lcd1062_MainFunction"  was declared but never referenced
+  static void  Lcd1062_MainFunction(void)//lcd1062
+..\..\APP\ZR60_Ctrl\ZR60_Ctrl.c(1399): warning:  #177-D: function "GetZR60Ctrl_u_XOR"  was declared but never referenced
+  static uint8 GetZR60Ctrl_u_XOR(uint8* Le_u_Dt,uint16 Le_w_Lng)
+..\..\APP\ZR60_Ctrl\ZR60_Ctrl.c(551): warning:  #177-D: function "OpenDoor_Sound_MainFunction"  was declared but never referenced
+  static void  OpenDoor_Sound_MainFunction(void)
+..\..\APP\ZR60_Ctrl\ZR60_Ctrl.c(1411): warning:  #177-D: function "ZR60Ctrl_u_IsBrdcstAddr"  was declared but never referenced
+  static uint8 ZR60Ctrl_u_IsBrdcstAddr(uint8* Le_u_Addr)
+..\..\APP\ZR60_Ctrl\ZR60_Ctrl.c: 10 warnings, 0 errors
+linking...
+..\..\Output\app.sct(13): warning: L6314W: No section matches pattern system_stm32f4xx.o(ZI).
+..\..\Output\app.sct(13): warning: L6329W: Pattern system_stm32f4xx.o(RW) only matches removed unused sections.
+..\..\Output\app.sct(14): warning: L6314W: No section matches pattern misc.o(ZI).
+..\..\Output\app.sct(14): warning: L6314W: No section matches pattern misc.o(RW).
+..\..\Output\app.sct(15): warning: L6314W: No section matches pattern stm32f4xx_adc.o(ZI).
+..\..\Output\app.sct(15): warning: L6314W: No section matches pattern stm32f4xx_adc.o(RW).
+..\..\Output\app.sct(16): warning: L6314W: No section matches pattern stm32f4xx_can.o(ZI).
+..\..\Output\app.sct(16): warning: L6314W: No section matches pattern stm32f4xx_can.o(RW).
+..\..\Output\app.sct(17): warning: L6314W: No section matches pattern stm32f4xx_cec.o(ZI).
+..\..\Output\app.sct(17): warning: L6314W: No section matches pattern stm32f4xx_cec.o(RW).
+..\..\Output\app.sct(18): warning: L6314W: No section matches pattern stm32f4xx_crc.o(ZI).
+..\..\Output\app.sct(18): warning: L6314W: No section matches pattern stm32f4xx_crc.o(RW).
+..\..\Output\app.sct(19): warning: L6314W: No section matches pattern stm32f4xx_cryp.o(ZI).
+..\..\Output\app.sct(19): warning: L6314W: No section matches pattern stm32f4xx_cryp.o(RW).
+..\..\Output\app.sct(20): warning: L6314W: No section matches pattern stm32f4xx_cryp_aes.o(ZI).
+..\..\Output\app.sct(20): warning: L6314W: No section matches pattern stm32f4xx_cryp_aes.o(RW).
+..\..\Output\app.sct(21): warning: L6314W: No section matches pattern stm32f4xx_cryp_des.o(ZI).
+..\..\Output\app.sct(21): warning: L6314W: No section matches pattern stm32f4xx_cryp_des.o(RW).
+..\..\Output\app.sct(22): warning: L6314W: No section matches pattern stm32f4xx_cryp_tdes.o(ZI).
+..\..\Output\app.sct(22): warning: L6314W: No section matches pattern stm32f4xx_cryp_tdes.o(RW).
+..\..\Output\app.sct(23): warning: L6314W: No section matches pattern stm32f4xx_dac.o(ZI).
+..\..\Output\app.sct(23): warning: L6314W: No section matches pattern stm32f4xx_dac.o(RW).
+..\..\Output\app.sct(24): warning: L6314W: No section matches pattern stm32f4xx_dbgmcu.o(ZI).
+..\..\Output\app.sct(24): warning: L6314W: No section matches pattern stm32f4xx_dbgmcu.o(RW).
+..\..\Output\app.sct(25): warning: L6314W: No section matches pattern stm32f4xx_dcmi.o(ZI).
+..\..\Output\app.sct(25): warning: L6314W: No section matches pattern stm32f4xx_dcmi.o(RW).
+..\..\Output\app.sct(26): warning: L6314W: No section matches pattern stm32f4xx_dma.o(ZI).
+..\..\Output\app.sct(26): warning: L6314W: No section matches pattern stm32f4xx_dma.o(RW).
+..\..\Output\app.sct(27): warning: L6314W: No section matches pattern stm32f4xx_exti.o(ZI).
+..\..\Output\app.sct(27): warning: L6314W: No section matches pattern stm32f4xx_exti.o(RW).
+..\..\Output\app.sct(28): warning: L6314W: No section matches pattern stm32f4xx_flash.o(ZI).
+..\..\Output\app.sct(28): warning: L6314W: No section matches pattern stm32f4xx_flash.o(RW).
+..\..\Output\app.sct(29): warning: L6314W: No section matches pattern stm32f4xx_flash_ramfunc.o(ZI).
+..\..\Output\app.sct(29): warning: L6314W: No section matches pattern stm32f4xx_flash_ramfunc.o(RW).
+..\..\Output\app.sct(30): warning: L6314W: No section matches pattern stm32f4xx_fmpi2c.o(ZI).
+..\..\Output\app.sct(30): warning: L6314W: No section matches pattern stm32f4xx_fmpi2c.o(RW).
+..\..\Output\app.sct(31): warning: L6314W: No section matches pattern stm32f4xx_fsmc.o(ZI).
+..\..\Output\app.sct(31): warning: L6314W: No section matches pattern stm32f4xx_fsmc.o(RW).
+..\..\Output\app.sct(32): warning: L6314W: No section matches pattern stm32f4xx_gpio.o(ZI).
+..\..\Output\app.sct(32): warning: L6314W: No section matches pattern stm32f4xx_gpio.o(RW).
+..\..\Output\app.sct(33): warning: L6314W: No section matches pattern stm32f4xx_hash.o(ZI).
+..\..\Output\app.sct(33): warning: L6314W: No section matches pattern stm32f4xx_hash.o(RW).
+..\..\Output\app.sct(34): warning: L6314W: No section matches pattern stm32f4xx_hash_md5.o(ZI).
+..\..\Output\app.sct(34): warning: L6314W: No section matches pattern stm32f4xx_hash_md5.o(RW).
+..\..\Output\app.sct(35): warning: L6314W: No section matches pattern stm32f4xx_hash_sha1.o(ZI).
+..\..\Output\app.sct(35): warning: L6314W: No section matches pattern stm32f4xx_hash_sha1.o(RW).
+..\..\Output\app.sct(36): warning: L6314W: No section matches pattern stm32f4xx_i2c.o(ZI).
+..\..\Output\app.sct(36): warning: L6314W: No section matches pattern stm32f4xx_i2c.o(RW).
+..\..\Output\app.sct(37): warning: L6314W: No section matches pattern stm32f4xx_iwdg.o(ZI).
+..\..\Output\app.sct(37): warning: L6314W: No section matches pattern stm32f4xx_iwdg.o(RW).
+..\..\Output\app.sct(38): warning: L6314W: No section matches pattern stm32f4xx_pwr.o(ZI).
+..\..\Output\app.sct(38): warning: L6314W: No section matches pattern stm32f4xx_pwr.o(RW).
+..\..\Output\app.sct(39): warning: L6314W: No section matches pattern stm32f4xx_qspi.o(ZI).
+..\..\Output\app.sct(39): warning: L6314W: No section matches pattern stm32f4xx_qspi.o(RW).
+..\..\Output\app.sct(41): warning: L6314W: No section matches pattern stm32f4xx_rng.o(ZI).
+..\..\Output\app.sct(41): warning: L6314W: No section matches pattern stm32f4xx_rng.o(RW).
+..\..\Output\app.sct(42): warning: L6314W: No section matches pattern stm32f4xx_rtc.o(ZI).
+..\..\Output\app.sct(42): warning: L6314W: No section matches pattern stm32f4xx_rtc.o(RW).
+..\..\Output\app.sct(43): warning: L6314W: No section matches pattern stm32f4xx_sai.o(ZI).
+..\..\Output\app.sct(43): warning: L6314W: No section matches pattern stm32f4xx_sai.o(RW).
+..\..\Output\app.sct(44): warning: L6314W: No section matches pattern stm32f4xx_sdio.o(ZI).
+..\..\Output\app.sct(44): warning: L6314W: No section matches pattern stm32f4xx_sdio.o(RW).
+..\..\Output\app.sct(45): warning: L6314W: No section matches pattern stm32f4xx_spdifrx.o(ZI).
+..\..\Output\app.sct(45): warning: L6314W: No section matches pattern stm32f4xx_spdifrx.o(RW).
+..\..\Output\app.sct(46): warning: L6314W: No section matches pattern stm32f4xx_spi.o(ZI).
+..\..\Output\app.sct(46): warning: L6314W: No section matches pattern stm32f4xx_spi.o(RW).
+..\..\Output\app.sct(47): warning: L6314W: No section matches pattern stm32f4xx_syscfg.o(ZI).
+..\..\Output\app.sct(47): warning: L6314W: No section matches pattern stm32f4xx_syscfg.o(RW).
+..\..\Output\app.sct(48): warning: L6314W: No section matches pattern stm32f4xx_tim.o(ZI).
+..\..\Output\app.sct(48): warning: L6314W: No section matches pattern stm32f4xx_tim.o(RW).
+..\..\Output\app.sct(49): warning: L6314W: No section matches pattern stm32f4xx_usart.o(ZI).
+..\..\Output\app.sct(49): warning: L6314W: No section matches pattern stm32f4xx_usart.o(RW).
+..\..\Output\app.sct(50): warning: L6314W: No section matches pattern stm32f4xx_wwdg.o(ZI).
+..\..\Output\app.sct(50): warning: L6314W: No section matches pattern stm32f4xx_wwdg.o(RW).
+..\..\Output\app.sct(51): warning: L6314W: No section matches pattern diskio.o(ZI).
+..\..\Output\app.sct(51): warning: L6314W: No section matches pattern diskio.o(RW).
+..\..\Output\app.sct(52): warning: L6314W: No section matches pattern cc936.o(ZI).
+..\..\Output\app.sct(52): warning: L6314W: No section matches pattern cc936.o(RW).
+..\..\Output\app.sct(53): warning: L6314W: No section matches pattern ff.o(ZI).
+..\..\Output\app.sct(53): warning: L6329W: Pattern ff.o(RW) only matches removed unused sections.
+..\..\Output\app.sct(54): warning: L6314W: No section matches pattern tm_stm32f4_fatfs.o(ZI).
+..\..\Output\app.sct(54): warning: L6314W: No section matches pattern tm_stm32f4_fatfs.o(RW).
+..\..\Output\app.sct(56): warning: L6314W: No section matches pattern display.o(ZI).
+..\..\Output\app.sct(56): warning: L6329W: Pattern display.o(RW) only matches removed unused sections.
+..\..\Output\app.sct(58): warning: L6329W: Pattern wdata.o(ZI) only matches removed unused sections.
+..\..\Output\app.sct(58): warning: L6329W: Pattern wdata.o(RW) only matches removed unused sections.
+..\..\Output\app.sct(60): warning: L6314W: No section matches pattern usart3.o(ZI).
+..\..\Output\app.sct(60): warning: L6314W: No section matches pattern usart3.o(RW).
+..\..\Output\app.sct(61): warning: L6314W: No section matches pattern usart4.o(ZI).
+..\..\Output\app.sct(61): warning: L6314W: No section matches pattern usart4.o(RW).
+..\..\Output\app.sct(62): warning: L6314W: No section matches pattern usart5.o(ZI).
+..\..\Output\app.sct(62): warning: L6314W: No section matches pattern usart5.o(RW).
+..\..\Output\app.sct(63): warning: L6314W: No section matches pattern bsp_debug_usart.o(ZI).
+..\..\Output\app.sct(63): warning: L6314W: No section matches pattern bsp_debug_usart.o(RW).
+..\..\Output\app.sct(64): warning: L6314W: No section matches pattern bsp_i2c_gpio.o(ZI).
+..\..\Output\app.sct(64): warning: L6314W: No section matches pattern bsp_i2c_gpio.o(RW).
+..\..\Output\app.sct(65): warning: L6314W: No section matches pattern bsp_led.o(ZI).
+..\..\Output\app.sct(65): warning: L6314W: No section matches pattern bsp_led.o(RW).
+..\..\Output\app.sct(66): warning: L6314W: No section matches pattern bsp_SysTick.o(ZI).
+..\..\Output\app.sct(66): warning: L6329W: Pattern bsp_SysTick.o(RW) only matches removed unused sections.
+..\..\Output\app.sct(67): warning: L6314W: No section matches pattern bsp_exti.o(ZI).
+..\..\Output\app.sct(67): warning: L6314W: No section matches pattern bsp_exti.o(RW).
+..\..\Output\app.sct(69): warning: L6314W: No section matches pattern bsp_clkconfig.o(ZI).
+..\..\Output\app.sct(69): warning: L6314W: No section matches pattern bsp_clkconfig.o(RW).
+..\..\Output\app.sct(70): warning: L6314W: No section matches pattern bsp_iwdg.o(ZI).
+..\..\Output\app.sct(70): warning: L6314W: No section matches pattern bsp_iwdg.o(RW).
+..\..\Output\app.sct(73): warning: L6314W: No section matches pattern hym8563.o(ZI).
+..\..\Output\app.sct(73): warning: L6314W: No section matches pattern hym8563.o(RW).
+..\..\Output\app.sct(74): warning: L6314W: No section matches pattern bsp_basic_tim.o(ZI).
+..\..\Output\app.sct(74): warning: L6314W: No section matches pattern bsp_basic_tim.o(RW).
+..\..\Output\app.sct(75): warning: L6314W: No section matches pattern bsp_rtc.o(ZI).
+..\..\Output\app.sct(75): warning: L6314W: No section matches pattern bsp_rtc.o(RW).
+..\..\Output\app.sct(80): warning: L6314W: No section matches pattern api_lib.o(ZI).
+..\..\Output\app.sct(80): warning: L6314W: No section matches pattern api_lib.o(RW).
+..\..\Output\app.sct(81): warning: L6314W: No section matches pattern api_msg.o(ZI).
+..\..\Output\app.sct(81): warning: L6314W: No section matches pattern api_msg.o(RW).
+..\..\Output\app.sct(82): warning: L6314W: No section matches pattern err.o(ZI).
+..\..\Output\app.sct(82): warning: L6314W: No section matches pattern err.o(RW).
+..\..\Output\app.sct(83): warning: L6314W: No section matches pattern netbuf.o(ZI).
+..\..\Output\app.sct(83): warning: L6314W: No section matches pattern netbuf.o(RW).
+..\..\Output\app.sct(84): warning: L6329W: Pattern netdb.o(ZI) only matches removed unused sections.
+..\..\Output\app.sct(84): warning: L6329W: Pattern netdb.o(RW) only matches removed unused sections.
+..\..\Output\app.sct(85): warning: L6314W: No section matches pattern netifapi.o(ZI).
+..\..\Output\app.sct(85): warning: L6314W: No section matches pattern netifapi.o(RW).
+..\..\Output\app.sct(88): warning: L6314W: No section matches pattern autoip.o(ZI).
+..\..\Output\app.sct(88): warning: L6314W: No section matches pattern autoip.o(RW).
+..\..\Output\app.sct(89): warning: L6314W: No section matches pattern icmp.o(ZI).
+..\..\Output\app.sct(89): warning: L6314W: No section matches pattern icmp.o(RW).
+..\..\Output\app.sct(90): warning: L6314W: No section matches pattern igmp.o(ZI).
+..\..\Output\app.sct(90): warning: L6314W: No section matches pattern igmp.o(RW).
+..\..\Output\app.sct(91): warning: L6314W: No section matches pattern inet.o(ZI).
+..\..\Output\app.sct(91): warning: L6314W: No section matches pattern inet.o(RW).
+..\..\Output\app.sct(92): warning: L6314W: No section matches pattern inet_chksum.o(ZI).
+..\..\Output\app.sct(92): warning: L6314W: No section matches pattern inet_chksum.o(RW).
+..\..\Output\app.sct(94): warning: L6329W: Pattern ip_addr.o(ZI) only matches removed unused sections.
+..\..\Output\app.sct(94): warning: L6314W: No section matches pattern ip_addr.o(RW).
+..\..\Output\app.sct(96): warning: L6314W: No section matches pattern def.o(ZI).
+..\..\Output\app.sct(96): warning: L6314W: No section matches pattern def.o(RW).
+..\..\Output\app.sct(99): warning: L6314W: No section matches pattern init.o(ZI).
+..\..\Output\app.sct(99): warning: L6314W: No section matches pattern init.o(RW).
+..\..\Output\app.sct(105): warning: L6314W: No section matches pattern stats.o(ZI).
+..\..\Output\app.sct(105): warning: L6314W: No section matches pattern stats.o(RW).
+..\..\Output\app.sct(106): warning: L6314W: No section matches pattern sys.o(ZI).
+..\..\Output\app.sct(106): warning: L6314W: No section matches pattern sys.o(RW).
+..\..\Output\app.sct(109): warning: L6314W: No section matches pattern tcp_out.o(ZI).
+..\..\Output\app.sct(109): warning: L6314W: No section matches pattern tcp_out.o(RW).
+..\..\Output\app.sct(113): warning: L6314W: No section matches pattern ethernetif.o(ZI).
+..\..\Output\app.sct(113): warning: L6314W: No section matches pattern ethernetif.o(RW).
+..\..\Output\app.sct(117): warning: L6314W: No section matches pattern dhcpClient.o(ZI).
+..\..\Output\app.sct(117): warning: L6314W: No section matches pattern dhcpClient.o(RW).
+..\..\Output\app.sct(121): warning: L6314W: No section matches pattern NetConnIf.o(ZI).
+..\..\Output\app.sct(121): warning: L6314W: No section matches pattern NetConnIf.o(RW).
+..\..\Output\app.sct(124): warning: L6314W: No section matches pattern BtnFltr_Cfg.o(ZI).
+..\..\Output\app.sct(124): warning: L6314W: No section matches pattern BtnFltr_Cfg.o(RW).
+..\..\Output\app.sct(127): warning: L6314W: No section matches pattern MemIf_cfg.o(ZI).
+..\..\Output\app.sct(127): warning: L6314W: No section matches pattern MemIf_cfg.o(RW).
+..\..\Output\app.sct(129): warning: L6314W: No section matches pattern JsonIf.o(ZI).
+..\..\Output\app.sct(129): warning: L6314W: No section matches pattern JsonIf.o(RW).
+..\..\Output\app.sct(132): warning: L6314W: No section matches pattern STD_ADFliterCfg.o(ZI).
+..\..\Output\app.sct(132): warning: L6314W: No section matches pattern STD_ADFliterCfg.o(RW).
+..\..\Output\app.sct(134): warning: L6314W: No section matches pattern PSFltr_Cfg.o(ZI).
+..\..\Output\app.sct(134): warning: L6314W: No section matches pattern PSFltr_Cfg.o(RW).
+..\..\Output\app.sct(135): warning: L6329W: Pattern crc32.o(ZI) only matches removed unused sections.
+..\..\Output\app.sct(135): warning: L6329W: Pattern crc32.o(RW) only matches removed unused sections.
+Program Size: Code=155604 RO-data=7160 RW-data=1288 ZI-data=185752  
+Finished: 0 information, 164 warning and 0 error messages.
+FromELF: creating hex file...
 After Build - User command #1: D:\Keil_v5\ARM\ARMCC\bin\fromelf.exe --bin -o "..\..\Output\app.bin" "..\..\Output\app.axf"
-"..\..\Output\app.axf" - 0 Error(s), 0 Warning(s).
+"..\..\Output\app.axf" - 0 Error(s), 174 Warning(s).
 
 <h2>Collection of Component include folders:</h2>
   .\RTE\_ZR60
   d:\Keil_v5\ARM\PACK\Keil\STM32F4xx_DFP\2.12.0\Drivers\CMSIS\Device\ST\STM32F4xx\Include
 
 <h2>Collection of Component Files used:</h2>
-Build Time Elapsed:  00:00:01
+Build Time Elapsed:  00:00:05
 </pre>
 </body>
 </html>

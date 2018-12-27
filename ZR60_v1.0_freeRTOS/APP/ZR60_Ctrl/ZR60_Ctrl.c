@@ -18,7 +18,7 @@ description： global variable definitions
 /*******************************************************
 description： static variable definitions
 *******************************************************/
-const char CeZR60Ctrl_u_SoftVersion[10U] = {'Z','R','6','0','_','v','1','.','0','\0'};//软件版本
+const char CeZR60Ctrl_u_SoftVersion[10U] = {'Z','R','6','0','_','v','1','.','1','\0'};//软件版本
 /*
 sm3密码生成使用的数据信息
 围墙机：community_id为小区id前4字节；build_num和cell_num全F
