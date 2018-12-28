@@ -71,6 +71,8 @@ struct rtc_time Ve_h_tm;//日期
 
 static uint8_t  SeCardSet_u_MasterCtrlIap = 0U;//主控在线升级标志
 static uint8_t  SeCardSet_u_CardReaderIap = 0U;//读卡器模块在线升级标志
+
+static uint8_t  SeZR60_u_DoorOpenLedEvent = 0U;//指示灯事件：0--无；1--触发一次开锁指示灯事件
 /*******************************************************
 description： function declaration
 *******************************************************/
@@ -91,6 +93,7 @@ static void  OpenDoor_Fire_MainFunction(void);
 static void  OpenDoor_Ble_MainFunction(void);
 static uint8 ZR60Ctrl_u_IsBrdcstAddr(uint8* Le_u_Addr);
 static void ZR60Ctrl_u_RecordUnlockInfo(char* Le_u_UnlockInfo,uint8 Le_u_UnlockEvent);
+static void ZR60Ctrl_u_LedDisplay(void);
 /******************************************************
 description： function code
 ******************************************************/
@@ -236,15 +239,7 @@ void TskZR60Ctrl_MainFunction(void)
 	/*************************************************
 	*		            门锁状态指示灯控制
 	*************************************************/	
-	if(1U == SeZR60_u_DoorLockRelaySt)
-	{//开锁状态下，点亮绿灯
-		LED_GREEN;
-	}
-	
-	if(0U == SeZR60_u_DoorLockRelaySt)
-	{//闭锁状态下，点亮蓝灯
-		LED_RED;
-	}
+	ZR60Ctrl_u_LedDisplay();
 	
 	/*************************************************
 	*		            延时关门控制
@@ -496,6 +491,7 @@ static void  OpenDoor_IC_MainFunction(void)//开锁
 			{//门锁关闭状态
 				LOCK_ON;
 				SeZR60_u_DoorLockRelaySt = 1U;
+				SeZR60_u_DoorOpenLedEvent = 1U;
 				Se_w_LockDoorTimer = 0;	
 				ZR60_CTRL_AUTOSEARCHCARD = 1;//开启自动寻卡
 				w_SetAutoCard_DelayTime = 0U;
@@ -582,6 +578,7 @@ static void  OpenDoor_Sound_MainFunction(void)
 				//LED_RED;
 				LOCK_ON;
 				SeZR60_u_DoorLockRelaySt = 1U;
+				SeZR60_u_DoorOpenLedEvent = 1U;
 				Se_w_LockDoorTimer = 0;
 				SetAudioIO_PlayFile(AudioIO_WelBack,2U);		
 			}
@@ -666,6 +663,7 @@ static void  OpenDoor_Ble_MainFunction(void)
 					//LED_RED;
 					LOCK_ON;
 					SeZR60_u_DoorLockRelaySt = 1U;
+					SeZR60_u_DoorOpenLedEvent = 1U;
 					SeZR60_u_BleUnlockflag = 1U;
 					SeZR60_u_BleLogFltrflag = 1U;
 					Se_w_LockDoorTimer = 0;
@@ -707,6 +705,7 @@ static void  OpenDoor_Ble_MainFunction(void)
 					//LED_RED;
 					LOCK_ON;
 					SeZR60_u_DoorLockRelaySt = 1U;
+					SeZR60_u_DoorOpenLedEvent = 1U;
 					SeZR60_u_BleUnlockflag = 1U;
 					SeZR60_u_BleLogFltrflag = 1U;
 					Se_w_LockDoorTimer = 0;
@@ -924,6 +923,7 @@ static void  OpenDoor_Password_MainFunction(void)//密码验证
 			{//门锁关闭状态
 				LOCK_ON;
 				SeZR60_u_DoorLockRelaySt = 1U;
+				SeZR60_u_DoorOpenLedEvent = 1U;
 				Se_w_LockDoorTimer = 0;
 				memset(key_buf,0,6);
 				SetAudioIO_PlayFile(AudioIO_WelBack,2U);
@@ -978,6 +978,7 @@ static void  OpenDoor_Switch_MainFunction(void)
 			LOCK_ON;
 			Se_w_LockDoorTimer = 0;
 			SeZR60_u_DoorLockRelaySt = 1U;
+			SeZR60_u_DoorOpenLedEvent = 1U;
 			SetAudioIO_PlayFile(AudioIO_BonVoyage,2U);	
 		}
 		else
@@ -1075,6 +1076,7 @@ static void  OpenDoor_Net_MainFunction(void)
 			{//门锁关闭状态
 				LOCK_ON;
 				SeZR60_u_DoorLockRelaySt = 1U;
+				SeZR60_u_DoorOpenLedEvent = 1U;
 				SeZR60_u_NetUnlockflag = 1U;
 				Se_w_LockDoorTimer = 0;
 				SetAudioIO_PlayFile(AudioIO_WelBack,2U);
@@ -1096,6 +1098,7 @@ static void  OpenDoor_Net_MainFunction(void)
 			{//门锁关闭状态
 				LOCK_ON;
 				SeZR60_u_DoorLockRelaySt = 1U;
+				SeZR60_u_DoorOpenLedEvent = 1U;
 				SeZR60_u_NetUnlockflag = 1U;
 				Se_w_LockDoorTimer = 0;
 				SetAudioIO_PlayFile(AudioIO_WelBack,2U);
@@ -1437,6 +1440,95 @@ static void ZR60Ctrl_u_RecordUnlockInfo(char* Le_u_UnlockInfo,uint8 Le_u_UnlockE
 #endif
 	WrUnlockLogCache_Queue(&Time,Le_u_UnlockInfo,Le_u_UnlockEvent);//开锁日志记录写入缓存队列
 }
+
+
+/*
+	指示灯状态显示
+*/
+static void ZR60Ctrl_u_LedDisplay(void)
+{
+	static uint8_t Le_u_cnt = 0U;
+	static uint8_t Le_u_LedSt = 0U;//0--熄灭；1--点亮
+	static uint16_t Le_w_timer = 0U;
+	if((0 != GET_PHY_LINK_STATUS()) && (Se_u_FireALARM == 0U))//正常工作状态
+	{
+		switch(SeZR60_u_DoorOpenLedEvent)
+		{
+			case 0:
+			{
+				LED_GREEN;
+				Le_u_LedSt = 1U;
+			}
+			break;
+			case 1:
+			{
+				LED_RGBOFF;
+				Le_u_LedSt = 0U;
+				Le_u_cnt = 0;
+				Le_w_timer = 0U;
+				SeZR60_u_DoorOpenLedEvent = 2;
+			}
+			break;
+			case 2:
+			{
+				if(Le_w_timer >= (100/ZR60CTRL_SCHEDULING_CYCLE))//大概100ms
+				{
+					Le_w_timer = 0U;
+					if(1 == Le_u_LedSt)
+					{
+						LED_RGBOFF;
+						Le_u_LedSt = 0U;
+					}
+					else
+					{
+						LED_GREEN;
+						Le_u_LedSt = 1U;
+						Le_u_cnt++;
+					}
+					
+					if(Le_u_cnt >= 3)
+					{
+						Le_u_cnt = 0;
+						Le_w_timer = 0U;
+						SeZR60_u_DoorOpenLedEvent = 0;
+					}
+				}
+				else
+				{
+					Le_w_timer++;
+				}
+			}
+			break;
+			default:
+			{
+				SeZR60_u_DoorOpenLedEvent = 0;
+			}
+			break;
+		}
+	}
+	else//故障状态
+	{//绿灯持续闪烁（间隔200ms）
+		if(Le_w_timer >= (200/ZR60CTRL_SCHEDULING_CYCLE))//大概200ms
+		{
+			Le_w_timer = 0U;
+			if(1 == Le_u_LedSt)
+			{
+				LED_RGBOFF;
+				Le_u_LedSt = 0U;
+			}
+			else
+			{
+				LED_GREEN;
+				Le_u_LedSt = 1U;
+			}
+		}
+		else
+		{
+			Le_w_timer++;
+		}
+	}
+}
+
 
 /******************************************************
 *函数名：GetZR60Ctrl_u_MastCtrlIapSt
