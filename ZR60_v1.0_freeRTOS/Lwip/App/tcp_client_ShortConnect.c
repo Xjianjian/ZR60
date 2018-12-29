@@ -466,14 +466,12 @@ void tcp_ShortConnect_MainFunction(void)
 				data_len=0;  //复制完成后data_len要清零
 				netbuf_delete(recvbuf);
 			}
-			else if(err == ERR_CLSD)  //关闭连接
+			else//关闭连接
 			{
 				SetAudioIO_PlayFile(AudioIO_DeInitFail,2U);
 				Setcp_client_u_cnntSt = CLIENT_SHORTCNNT_DISCNNT;
 				goto shortCnnt_exit;
 			}
-			else
-			{}
 #endif
 			//USART_PRINTF_S("\n\r---------------------------------------------------------\n\r");
 			//USART_PRINTF_S(ShortRecev_buf);
@@ -569,13 +567,11 @@ void tcp_ShortConnect_MainFunction(void)
 					data_len=0;  //复制完成后data_len要清零
 					netbuf_delete(recvbuf);
 				}
-				else if(err == ERR_CLSD)  //关闭连接
+				else//关闭连接
 				{
 					Setcp_client_u_cnntSt = CLIENT_SHORTCNNT_DISCNNT;
 					goto shortCnnt_exit;
 				}
-				else
-				{}
 #endif
 				//USART_PRINTF_S("\n\r---------------------------------------------------------\n\r");
 				//USART_PRINTF_S(ShortRecev_buf);
@@ -657,13 +653,11 @@ void tcp_ShortConnect_MainFunction(void)
 					data_len=0;  //复制完成后data_len要清零
 					netbuf_delete(recvbuf);
 				}
-				else if(err == ERR_CLSD)  //关闭连接
+				else//关闭连接
 				{
 					Setcp_client_u_cnntSt = CLIENT_SHORTCNNT_DISCNNT;
 					goto shortCnnt_exit;
 				}
-				else
-				{}
 #endif			
 				//USART_PRINTF_S("\n\r---------------------------------------------------------\n\r");
 				//USART_PRINTF_S(ShortRecev_buf);
@@ -767,13 +761,11 @@ void tcp_ShortConnect_MainFunction(void)
 						data_len=0;  //复制完成后data_len要清零
 						netbuf_delete(recvbuf);
 					}
-					else if(err == ERR_CLSD)  //关闭连接
+					else//关闭连接
 					{
 						Setcp_client_u_cnntSt = CLIENT_SHORTCNNT_DISCNNT;
 						goto shortCnnt_exit;
 					}
-					else
-					{}
 #endif					
 					//USART_PRINTF_S("\n\r---------------------------------------------------------\n\r");
 					//USART_PRINTF_S(ShortRecev_buf);
@@ -869,13 +861,11 @@ void tcp_ShortConnect_MainFunction(void)
 					data_len=0;  //复制完成后data_len要清零
 					netbuf_delete(recvbuf);
 				}
-				else if(err == ERR_CLSD)  //关闭连接
+				else//关闭连接
 				{
 					Setcp_client_u_cnntSt = CLIENT_SHORTCNNT_DISCNNT;
 					goto shortCnnt_exit;
 				}
-				else
-				{}
 #endif
 				//USART_PRINTF_S("\n\r---------------------------------------------------------\n\r");
 				//USART_PRINTF_S(ShortRecev_buf);

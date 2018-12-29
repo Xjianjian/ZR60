@@ -70,6 +70,7 @@ extern void tcp_LngConnect_Parameter(void);
 extern void tcp_LngConnect_MainFunction(void);
 extern uint8 Gettcp_u_LngConnect_Timeout(void);
 extern void tcp_client_LngConnect_callback(void);
+extern void Gettcp_LngConnect_PhoneNo(char* Le_u_dt);
 #endif /**/
 
 /************************ (C) COPYRIGHT STMicroelectronics *****END OF FILE****/

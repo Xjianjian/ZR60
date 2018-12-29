@@ -1088,7 +1088,7 @@ static void  OpenDoor_Net_MainFunction(void)
 				Se_w_LockDoorTimer = 0;
 				SetAudioIO_PlayFile(AudioIO_DoorOpen,2U);
 			}
-			
+			Gettcp_LngConnect_PhoneNo(Le_u_UnlockInfo);
 			/*记录开锁信息*/
 			ZR60Ctrl_u_RecordUnlockInfo(Le_u_UnlockInfo,UNLOCKLOGCACHE_REMOTE);
 		}
@@ -1102,7 +1102,7 @@ static void  OpenDoor_Net_MainFunction(void)
 				SeZR60_u_NetUnlockflag = 1U;
 				Se_w_LockDoorTimer = 0;
 				SetAudioIO_PlayFile(AudioIO_WelBack,2U);
-						
+				Gettcp_LngConnect_PhoneNo(Le_u_UnlockInfo);		
 				/*记录开锁信息*/
 				ZR60Ctrl_u_RecordUnlockInfo(Le_u_UnlockInfo,UNLOCKLOGCACHE_REMOTE);
 			}

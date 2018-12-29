@@ -61,7 +61,7 @@ static u16_t Setcp_client_w_CnntTimeout = 0U;//连接超时计时器
 static u8_t  Se_u_CnntTimeoutFlg = 0U;//连接超时标志
 static u8_t  Se_u_CnntTimeoutCnt = 0U;//连接超时计数
 
-
+static char   Setcp_client_u_PhoneNo[12] = {0};
 /* Private function prototypes -----------------------------------------------*/
 static uint8 tcp_LngConnect_parseJson(char * pMsg);
 static char tcp_LngConnect_HexToChar(uint8_t temp);
@@ -286,6 +286,8 @@ static uint8 tcp_LngConnect_parseJson(char * pMsg)
 		break;
 		case 5://远程开门
 		{
+			USART_PRINTF_S("远程开门数据帧：");
+			USART_PRINTF_S(pMsg);
 			cJSON * pSubMsg = cJSON_GetObjectItem(pJson, "msg");
 			if(NULL == pSubMsg)
 			{
@@ -307,6 +309,7 @@ static uint8 tcp_LngConnect_parseJson(char * pMsg)
 			if(NULL == pJsonMsg)                                                                                         
 			{
 				// parse faild, return
+				cJSON_Delete(pJson);
 				return 0U;
 			}
 
@@ -316,10 +319,14 @@ static uint8 tcp_LngConnect_parseJson(char * pMsg)
 				cJSON_Delete(pJsonMsg);
 				cJSON_Delete(pJson);
 				return 0U;
-			}	
+			}
 			
 			if(0 == strcmp("open", cJSON_GetObjectItem(pSub_ex,"m")->valuestring))
 			{//接收到远程开锁请求
+				for(Le_w_i = 0U;Le_w_i < 11U;Le_w_i++)
+				{
+					Setcp_client_u_PhoneNo[Le_w_i] = cJSON_GetObjectItem(pSub_ex,"p")->valuestring[Le_w_i];
+				}
 				Setcp_client_u_Open = 1U;//远程开锁标志
 				cJSON * pSubMid = cJSON_GetObjectItem(pJson, "mid");
 				Json_HexToJson(pSubMid,&Le_u_Lng,JSON_DEVICE_ECHO_REMOTEUNLOCK,La_u_TxMsg);
@@ -480,6 +487,17 @@ void tcp_client_LngConnect_callback(void)
 	}
 }
 
+/*
+	读取电话号码
+*/
+void Gettcp_LngConnect_PhoneNo(char* Le_u_dt)
+{
+	uint8_t Le_u_i;
+	for(Le_u_i = 0U;Le_u_i < 12U;Le_u_i++)
+	{
+		Le_u_dt[Le_u_i] = Setcp_client_u_PhoneNo[Le_u_i];
+	}
+}
 #endif /* LWIP_TCP */
 
 /************************ (C) COPYRIGHT STMicroelectronics *****END OF FILE****/
