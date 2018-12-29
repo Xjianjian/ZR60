@@ -88,8 +88,14 @@ void tcp_LngConnect_Parameter(void)
 		Setcp_Alias.Alias[34U] =  '_';
 	}
 	
-	sprintf(La_u_suffix,"%d",sminfo1.suffix); 
+	if(sminfo1.suffix > 999)
+	{
+		sminfo1.suffix = 999;
+	}
+	sprintf(La_u_suffix,"%d",sminfo1.suffix);
+	USART_PRINTF_S(La_u_suffix);
 	strcat(Setcp_Alias.Alias, La_u_suffix);
+	USART_PRINTF_S(Setcp_Alias.Alias);
 	for(Le_u_i = 0U;Le_u_i < 39U;Le_u_i++)
 	{//大写字母转小写
 		if((Setcp_Alias.Alias[Le_u_i] >= 'A') && (Setcp_Alias.Alias[Le_u_i] <= 'Z'))
@@ -248,6 +254,7 @@ static uint8 tcp_LngConnect_parseJson(char * pMsg)
 	{
 		// parse faild, return
 		USART_PRINTF_S("\r\nErrorLogging：接收数据解析成json格式失败\r\n");
+		USART_PRINTF_S(pMsg);
 		return 0U;
 	}
 	// get string from json
@@ -256,6 +263,7 @@ static uint8 tcp_LngConnect_parseJson(char * pMsg)
 	{
 		//get object named "t" faild
 		USART_PRINTF_S("\r\nErrorLogging：获取成员 t 失败\r\n");
+		USART_PRINTF_S(pMsg);
 		cJSON_Delete(pJson);
 		return 0U;
 	}

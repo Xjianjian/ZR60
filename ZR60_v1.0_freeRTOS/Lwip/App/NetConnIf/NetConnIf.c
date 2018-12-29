@@ -239,6 +239,7 @@ static err_t NetConnIf_recv(void *arg, struct tcp_pcb *tpcb, struct pbuf *p, err
 		else
 		{
 			NETCONNIF_PRINTF_D("\r\nErrorLogging：连接对象 %d 接收数据长度溢出\r\n",((NetConnIf_arg*)arg)->Object);
+			NETCONNIF_PRINTF_S(p->payload);
 		}
 		/* free received pbuf*/
 		pbuf_free(p);

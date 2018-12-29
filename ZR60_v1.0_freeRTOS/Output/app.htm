@@ -3,7 +3,7 @@
 <title>Static Call Graph - [..\..\Output\app.axf]</title></head>
 <body><HR>
 <H1>Static Call Graph for image ..\..\Output\app.axf</H1><HR>
-<BR><P>#&#060CALLGRAPH&#062# ARM Linker, 5060422: Last Updated: Fri Dec 28 14:16:08 2018
+<BR><P>#&#060CALLGRAPH&#062# ARM Linker, 5060422: Last Updated: Sat Dec 29 14:07:13 2018
 <BR><P>
 <H3>Maximum Stack Usage =       5264 bytes + Unknown(Cycles, Untraceable Function Pointers)</H3><H3>
 Call chain for Maximum Stack Depth:</H3>
@@ -3092,6 +3092,7 @@ Global Symbols
 <LI><a href="#[436]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;tcp_ShortConnect_RcvMsg
 <LI><a href="#[22f]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Settcp_shortConnect_UpdataBLTime
 <LI><a href="#[1ee]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;NetConnIf_Connect
+<LI><a href="#[137]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;tcp_LngConnect_Parameter
 <LI><a href="#[1cd]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;tcp_LngConnect_MainFunction
 <LI><a href="#[428]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;tcp_LngConnect_parseJson
 <LI><a href="#[235]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;TskAudioIO_MainFunction
@@ -7299,7 +7300,7 @@ Global Symbols
 <BR>[Called By]<UL><LI><a href="#[68]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Lwip_app_100msTask
 </UL>
 
-<P><STRONG><a name="[137]"></a>tcp_LngConnect_Parameter</STRONG> (Thumb, 156 bytes, Stack size 16 bytes, tcp_client_lngconnect.o(i.tcp_LngConnect_Parameter))
+<P><STRONG><a name="[137]"></a>tcp_LngConnect_Parameter</STRONG> (Thumb, 188 bytes, Stack size 16 bytes, tcp_client_lngconnect.o(i.tcp_LngConnect_Parameter))
 <BR><BR>[Stack]<UL><LI>Max Depth = 464<LI>Call Chain = tcp_LngConnect_Parameter &rArr; Json_HexToJson &rArr; cJSON_PrintUnformatted &rArr; print &rArr; print_value &rArr; print_number &rArr; __0sscanf &rArr; __vfscanf_char &rArr; __vfscanf &rArr; _scanf_real
 </UL>
 <BR>[Calls]<UL><LI><a href="#[427]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;NetConnIf_rxConfig
@@ -7308,6 +7309,7 @@ Global Symbols
 <LI><a href="#[307]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;strcat
 <LI><a href="#[f8]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__aeabi_memclr
 <LI><a href="#[3b0]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__2sprintf
+<LI><a href="#[139]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;__2printf
 </UL>
 <BR>[Called By]<UL><LI><a href="#[130]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;CardSet_MainFunction
 <LI><a href="#[1d4]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Mcu_Init
@@ -8650,7 +8652,7 @@ Local Symbols
 <LI><a href="#[31b]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;rtc_month_days
 </UL>
 
-<P><STRONG><a name="[428]"></a>tcp_LngConnect_parseJson</STRONG> (Thumb, 274 bytes, Stack size 56 bytes, tcp_client_lngconnect.o(i.tcp_LngConnect_parseJson))
+<P><STRONG><a name="[428]"></a>tcp_LngConnect_parseJson</STRONG> (Thumb, 292 bytes, Stack size 56 bytes, tcp_client_lngconnect.o(i.tcp_LngConnect_parseJson))
 <BR><BR>[Stack]<UL><LI>Max Depth = 504<LI>Call Chain = tcp_LngConnect_parseJson &rArr; Json_HexToJson &rArr; cJSON_PrintUnformatted &rArr; print &rArr; print_value &rArr; print_number &rArr; __0sscanf &rArr; __vfscanf_char &rArr; __vfscanf &rArr; _scanf_real
 </UL>
 <BR>[Calls]<UL><LI><a href="#[27d]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;cJSON_Parse
@@ -9879,7 +9881,7 @@ Local Symbols
 <P><STRONG><a name="[76]"></a>NetConnIf_poll</STRONG> (Thumb, 4 bytes, Stack size 0 bytes, netconnif.o(i.NetConnIf_poll))
 <BR>[Address Reference Count : 1]<UL><LI> netconnif.o(i.NetConnIf_connected)
 </UL>
-<P><STRONG><a name="[75]"></a>NetConnIf_recv</STRONG> (Thumb, 190 bytes, Stack size 24 bytes, netconnif.o(i.NetConnIf_recv))
+<P><STRONG><a name="[75]"></a>NetConnIf_recv</STRONG> (Thumb, 198 bytes, Stack size 24 bytes, netconnif.o(i.NetConnIf_recv))
 <BR><BR>[Stack]<UL><LI>Max Depth = 464<LI>Call Chain = NetConnIf_recv &rArr; tcp_recved &rArr; tcp_output &rArr; tcp_output_segment &rArr; ip_output &rArr; ip_output_if &rArr; ip_frag &rArr; pbuf_alloc &rArr; pbuf_free &rArr; mem_free &rArr; sys_arch_sem_wait &rArr; xQueueGenericReceive &rArr; xTaskResumeAll &rArr; xTaskIncrementTick
 </UL>
 <BR>[Calls]<UL><LI><a href="#[1fa]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;tcp_recved
@@ -10190,7 +10192,7 @@ Local Symbols
 <LI><a href="#[292]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;readBlock
 </UL>
 
-<P><STRONG><a name="[290]"></a>decodeReadBlock</STRONG> (Thumb, 682 bytes, Stack size 56 bytes, readcard.o(i.decodeReadBlock))
+<P><STRONG><a name="[290]"></a>decodeReadBlock</STRONG> (Thumb, 690 bytes, Stack size 56 bytes, readcard.o(i.decodeReadBlock))
 <BR><BR>[Stack]<UL><LI>Max Depth = 292<LI>Call Chain = decodeReadBlock &rArr; SetAudioIO_PlayFile &rArr; AudioIO_VoicePlaying &rArr; wm8978_CfgAudioPath &rArr; wm8978_Reset &rArr; wm8978_WriteReg &rArr; i2c_CfgGpio &rArr; GPIO_Init
 </UL>
 <BR>[Calls]<UL><LI><a href="#[134]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;SetAudioIO_PlayFile

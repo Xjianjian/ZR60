@@ -450,7 +450,9 @@ static void decodeReadBlock(RebackInfo rebackInfo)
 			else
 			{
 				//("об╠Й:");
-				sminfo.suffix = rebackInfo.Dt.DtSrt.ValidDt[0U];	
+				sminfo.suffix = 0U;
+				sminfo.suffix = rebackInfo.Dt.DtSrt.ValidDt[0];
+				sminfo.suffix = ((sminfo.suffix << 8U) | rebackInfo.Dt.DtSrt.ValidDt[1]);
 				setcard = 1U;
 			}
 		}

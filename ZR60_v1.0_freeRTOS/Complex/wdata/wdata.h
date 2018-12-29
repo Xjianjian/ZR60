@@ -10,7 +10,7 @@ struct comm_info //楼栋信息
 	unsigned char build_numTwo[16];//楼栋编号列表2(0x16)
 	unsigned char build_id[16];//楼栋id
 	unsigned char door_id[16];//门id
-	unsigned char suffix;//下标
+	unsigned short suffix;//下标
 	//unsigned char BListFlag;//黑白名单标志:0--黑名单；1--白名单
 };
 
