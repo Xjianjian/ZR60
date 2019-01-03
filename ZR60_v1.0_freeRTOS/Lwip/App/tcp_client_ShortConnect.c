@@ -140,9 +140,10 @@ void tcp_ShortConnect_parameter(void)
 	BListPull.page = 1U;
 	BListPull.Listtype = 0;
 	BListPull.pageSize = SHORTCNNT_BLIST_PULLNUM;//默认最多拉取卡号数量
-	Se_dw_BListPullTimer = SHORTCNNT_PULLBLIST_PERIOD - (90000U/SHORTCNNT_SCHEDULING_CYCLE);
+	Se_dw_BListPullTimer = SHORTCNNT_PULLBLIST_PERIOD - (10000U/SHORTCNNT_SCHEDULING_CYCLE);
+	Setcp_client_w_DoorStTimer = CLIENT_DOORST_PERIOD - (5000U/SHORTCNNT_SCHEDULING_CYCLE);
 	//client_TxFlag.TskFlag = 0U;//任务标志
-	Se_h_doorSt.state = 0xff;
+	Se_h_doorSt.state = STD_OFF;
 	
 	client_TxFlag.InitFlag = 0U;//
 	Letcp_ShortConnect_u_Xor = GetMemIf_u_CheckSum(EepromCfg_tokenInfo);//读取mac地址数据校验和
@@ -209,7 +210,7 @@ void tcp_ShortConnect_MainFunction(void)
 	//struct rtc_time Le_h_tm;
 	uint16 Le_w_i;
 	uint16 Le_w_lng;
-	//uint8  Le_u_ret;
+	//uint8  Le_u_DoorSt;
 	char Le_u_TxData[450U] = {0};
 	//char Recev_Tempbuf[512] = {0};
 	
@@ -262,11 +263,7 @@ void tcp_ShortConnect_MainFunction(void)
 	if(Setcp_client_w_DoorStTimer > CLIENT_DOORST_PERIOD)
 	{
 		Setcp_client_w_DoorStTimer = 0U;
-		if(Se_h_doorSt.state != Gettcp_client_u_DoorSt)
-		{//门锁状态改变时，上报门锁状态
-			Se_h_doorSt.state = Gettcp_client_u_DoorSt;
-			client_TxFlag.DoorStFlag = 1U;//
-		}	
+		client_TxFlag.DoorStFlag = 1U;//
 		//client_TxFlag.TskFlag = 1U;
 	}
 	
@@ -514,7 +511,7 @@ void tcp_ShortConnect_MainFunction(void)
 				client_TxFlag.DoorStFlag = 0U;
 				//上报门锁状态
 				memset(Setcp_u_shortCnntTxbuf,0,sizeof(Setcp_u_shortCnntTxbuf));//清0
-				//Se_h_doorSt.state = Gettcp_client_u_DoorSt;
+				Se_h_doorSt.state = Gettcp_client_u_DoorSt;
 				Json_HexToJson(&Se_h_doorSt,&Le_w_lng,JSON_REPORT_DOORST,Le_u_TxData);
 				tcp_client_httpPostRequest("POST /door/lockState HTTP/1.1\n",Le_u_TxData, \
 										   &Le_w_lng,Setcp_u_shortCnntTxbuf,1U);
@@ -586,6 +583,7 @@ void tcp_ShortConnect_MainFunction(void)
 					
 					(void)tcp_ShortConnect_parseJson(&ShortRecev_buf[Le_w_temp]);
 				}
+
 				Setcp_client_u_cnntSt = CLIENT_SHORTCNNT_DISCNNT;
 				goto shortCnnt_exit;
 			}
@@ -1236,6 +1234,15 @@ void Settcp_client_DeviceInit(void)
 uint8_t tcp_client_BListUpdataSt(void)
 {
 	return BListPull.UpdataFlag;
+}
+
+/*
+	更新黑名单
+*/
+void tcp_client_BListUpdata(void)
+{
+	client_TxFlag.BListFlag = 1U;
+	Se_dw_BListPullTimer = 0U;
 }
 
 /******************************************************

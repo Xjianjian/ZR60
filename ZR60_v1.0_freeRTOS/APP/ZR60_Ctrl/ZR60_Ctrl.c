@@ -18,7 +18,7 @@ description： global variable definitions
 /*******************************************************
 description： static variable definitions
 *******************************************************/
-const char CeZR60Ctrl_u_SoftVersion[10U] = {'Z','R','6','0','_','v','1','.','1','\0'};//软件版本
+const char CeZR60Ctrl_u_SoftVersion[10U] = {'Z','R','6','0','_','v','1','.','2','\0'};//软件版本
 /*
 sm3密码生成使用的数据信息
 围墙机：community_id为小区id前4字节；build_num和cell_num全F
@@ -487,23 +487,13 @@ static void  OpenDoor_IC_MainFunction(void)//开锁
 		{	
 			USART_PRINTF_S("ic卡 -> 开门");
 			open_door = 0;
-			if(0U == SeZR60_u_DoorLockRelaySt)
-			{//门锁关闭状态
-				LOCK_ON;
-				SeZR60_u_DoorLockRelaySt = 1U;
-				SeZR60_u_DoorOpenLedEvent = 1U;
-				Se_w_LockDoorTimer = 0;	
-				ZR60_CTRL_AUTOSEARCHCARD = 1;//开启自动寻卡
-				w_SetAutoCard_DelayTime = 0U;
-				SetAudioIO_PlayFile(AudioIO_WelBack,2U);	
-			}
-			else
-			{
-				Se_w_LockDoorTimer = 0;//清延时关闭计时器
-				ZR60_CTRL_AUTOSEARCHCARD = 1;//开启自动寻卡
-				w_SetAutoCard_DelayTime = 0U;
-				SetAudioIO_PlayFile(AudioIO_DoorOpen,2U);	
-			}
+			LOCK_ON;
+			SeZR60_u_DoorLockRelaySt = 1U;
+			SeZR60_u_DoorOpenLedEvent = 1U;
+			Se_w_LockDoorTimer = 0;	
+			ZR60_CTRL_AUTOSEARCHCARD = 1;//开启自动寻卡
+			w_SetAutoCard_DelayTime = 0U;
+			SetAudioIO_PlayFile(AudioIO_DoorOpen,2U);	
 			
 			/*记录开锁信息*/
 			Json_HexToStr(Le_u_UnlockInfo,SeReadcard_h_CardID.CardID,SeReadcard_h_CardID.lng);
@@ -639,44 +629,34 @@ static void  OpenDoor_Ble_MainFunction(void)
 		ble_flag = 0;
 		if(SeZR60_u_NetUnlockflag != 1U)//表示一段时间内无网络开门
 		{
-			if(0U == SeZR60_u_DoorLockRelaySt)
-			{//门锁关闭状态
 #ifdef  HYM8563
-				(void)hym8563_read_datetime(&Le_h_tm);//读取hym8563日期时间
+			(void)hym8563_read_datetime(&Le_h_tm);//读取hym8563日期时间
 #else
-				Read_RTC_TimeAndDate(&Le_h_tm);//读取日期时间
+			Read_RTC_TimeAndDate(&Le_h_tm);//读取日期时间
 #endif
-				USART_PRINTF_DATE("读取的时间：%d.%d.%d %d:%d:%d\n",Le_h_tm.tm_year,Le_h_tm.tm_mon, \
-								  Le_h_tm.tm_mday,Le_h_tm.tm_hour,Le_h_tm.tm_min,Le_h_tm.tm_sec);
-				SeCardSet_dw_nowtime = GetTick(&Le_h_tm);//生成时间戳
-				Se_u_PasswordCmpFlag = sm3_time_PasswordAuth(SeCardSet_dw_nowtime,&sm,TIME_STAMP_BLE,machine_type);
-				if(Se_u_PasswordCmpFlag!= 1)//表示收到密码比对没有成功
-				{
-					USART_PRINTF_S("蓝牙密码验证失败 X");
-					USART_PRINTF_D("set_time_flag:%d\n",set_time_flag);
-					USART_PRINTF_D("蓝牙时间:%s\n",timelist);
-					SetAudioIO_PlayFile(AudioIO_ErrKey,1U);
-				}
-				else
-				{
-					USART_PRINTF_S("蓝牙 -> 开门");
-					//LED_RED;
-					LOCK_ON;
-					SeZR60_u_DoorLockRelaySt = 1U;
-					SeZR60_u_DoorOpenLedEvent = 1U;
-					SeZR60_u_BleUnlockflag = 1U;
-					SeZR60_u_BleLogFltrflag = 1U;
-					Se_w_LockDoorTimer = 0;
-					SetAudioIO_PlayFile(AudioIO_WelBack,2U);
-				}
+			USART_PRINTF_DATE("读取的时间：%d.%d.%d %d:%d:%d\n",Le_h_tm.tm_year,Le_h_tm.tm_mon, \
+							  Le_h_tm.tm_mday,Le_h_tm.tm_hour,Le_h_tm.tm_min,Le_h_tm.tm_sec);
+			SeCardSet_dw_nowtime = GetTick(&Le_h_tm);//生成时间戳
+			Se_u_PasswordCmpFlag = sm3_time_PasswordAuth(SeCardSet_dw_nowtime,&sm,TIME_STAMP_BLE,machine_type);
+			if(Se_u_PasswordCmpFlag!= 1)//表示收到密码比对没有成功
+			{
+				USART_PRINTF_S("蓝牙密码验证失败 X");
+				USART_PRINTF_D("set_time_flag:%d\n",set_time_flag);
+				USART_PRINTF_D("蓝牙时间:%s\n",timelist);
+				SetAudioIO_PlayFile(AudioIO_ErrKey,1U);
 			}
 			else
 			{
-				USART_PRINTF_S("门锁已开");
+				USART_PRINTF_S("蓝牙 -> 开门");
+				//LED_RED;
+				LOCK_ON;
+				SeZR60_u_DoorLockRelaySt = 1U;
+				SeZR60_u_DoorOpenLedEvent = 1U;
 				SeZR60_u_BleUnlockflag = 1U;
 				SeZR60_u_BleLogFltrflag = 1U;
 				Se_w_LockDoorTimer = 0;
-				SetAudioIO_PlayFile(AudioIO_DoorOpen,2U);	
+				//SetAudioIO_PlayFile(AudioIO_WelBack,2U);
+				SetAudioIO_PlayFile(AudioIO_DoorOpen,2U);
 			}
 		}
 		else
@@ -709,7 +689,7 @@ static void  OpenDoor_Ble_MainFunction(void)
 					SeZR60_u_BleUnlockflag = 1U;
 					SeZR60_u_BleLogFltrflag = 1U;
 					Se_w_LockDoorTimer = 0;
-					SetAudioIO_PlayFile(AudioIO_WelBack,2U);
+					SetAudioIO_PlayFile(AudioIO_DoorOpen,2U);
 				}
 			}	
 		}
@@ -919,22 +899,12 @@ static void  OpenDoor_Password_MainFunction(void)//密码验证
 		else
 		{
 			USART_PRINTF_S("临时密码 -> 开门");
-			if(0U == SeZR60_u_DoorLockRelaySt)
-			{//门锁关闭状态
-				LOCK_ON;
-				SeZR60_u_DoorLockRelaySt = 1U;
-				SeZR60_u_DoorOpenLedEvent = 1U;
-				Se_w_LockDoorTimer = 0;
-				memset(key_buf,0,6);
-				SetAudioIO_PlayFile(AudioIO_WelBack,2U);
-			}
-			else
-			{
-				USART_PRINTF_S("门锁已开");
-				Se_w_LockDoorTimer = 0;
-				memset(key_buf,0,6);
-				SetAudioIO_PlayFile(AudioIO_DoorOpen,2U);	
-			}
+			LOCK_ON;
+			SeZR60_u_DoorLockRelaySt = 1U;
+			SeZR60_u_DoorOpenLedEvent = 1U;
+			Se_w_LockDoorTimer = 0;
+			memset(key_buf,0,6);
+			SetAudioIO_PlayFile(AudioIO_DoorOpen,2U);
 			
 			/*记录开锁信息*/
 			ZR60Ctrl_u_RecordUnlockInfo("unknown",UNLOCKLOGCACHE_PASSWORD);
@@ -973,23 +943,14 @@ static void  OpenDoor_Switch_MainFunction(void)
 	{
 		USART_PRINTF_S("门内开关 -> 开门");
 		ClrBtnFltr_BtnShrtValid(Key_Unlock);	
-		if(0U == SeZR60_u_DoorLockRelaySt)
-		{//门锁关闭状态
-			LOCK_ON;
-			Se_w_LockDoorTimer = 0;
-			SeZR60_u_DoorLockRelaySt = 1U;
-			SeZR60_u_DoorOpenLedEvent = 1U;
-			SetAudioIO_PlayFile(AudioIO_BonVoyage,2U);	
-		}
-		else
-		{
-			USART_PRINTF_S("门锁已开");
-			Se_w_LockDoorTimer = 0;
-			SetAudioIO_PlayFile(AudioIO_DoorOpen,2U);
-		}
+		LOCK_ON;
+		Se_w_LockDoorTimer = 0;
+		SeZR60_u_DoorLockRelaySt = 1U;
+		SeZR60_u_DoorOpenLedEvent = 1U;
+		SetAudioIO_PlayFile(AudioIO_DoorOpen,2U);	
 		
 		/*记录开锁信息*/
-		ZR60Ctrl_u_RecordUnlockInfo("unknown",UNLOCKLOGCACHE_DOORSWITCH);
+		//ZR60Ctrl_u_RecordUnlockInfo("unknown",UNLOCKLOGCACHE_DOORSWITCH);
 	}
 }
 
@@ -1026,7 +987,7 @@ static void  OpenDoor_Fire_MainFunction(void)
 				SeCardSet_dw_ALARMDlyTime = (2500/ZR60CTRL_SCHEDULING_CYCLE);
 				
 				//记录开锁信息
-				ZR60Ctrl_u_RecordUnlockInfo("unknown",UNLOCKLOGCACHE_FIREALARM);
+				//ZR60Ctrl_u_RecordUnlockInfo("unknown",UNLOCKLOGCACHE_FIREALARM);
 			}		
 		}
 		break;
@@ -1072,22 +1033,13 @@ static void  OpenDoor_Net_MainFunction(void)
 		ZR60_CTRL_REMOTE_UNLOCK = 0U;
 		if(SeZR60_u_BleUnlockflag != 1U)//表示一段时间内无蓝牙开门
 		{
-			if(0U == SeZR60_u_DoorLockRelaySt)
-			{//门锁关闭状态
-				LOCK_ON;
-				SeZR60_u_DoorLockRelaySt = 1U;
-				SeZR60_u_DoorOpenLedEvent = 1U;
-				SeZR60_u_NetUnlockflag = 1U;
-				Se_w_LockDoorTimer = 0;
-				SetAudioIO_PlayFile(AudioIO_WelBack,2U);
-			}
-			else
-			{
-				USART_PRINTF_S("门锁已开");
-				SeZR60_u_NetUnlockflag = 1U;
-				Se_w_LockDoorTimer = 0;
-				SetAudioIO_PlayFile(AudioIO_DoorOpen,2U);
-			}
+			LOCK_ON;
+			SeZR60_u_DoorLockRelaySt = 1U;
+			SeZR60_u_DoorOpenLedEvent = 1U;
+			SeZR60_u_NetUnlockflag = 1U;
+			Se_w_LockDoorTimer = 0;
+			SetAudioIO_PlayFile(AudioIO_DoorOpen,2U);
+
 			Gettcp_LngConnect_PhoneNo(Le_u_UnlockInfo);
 			/*记录开锁信息*/
 			ZR60Ctrl_u_RecordUnlockInfo(Le_u_UnlockInfo,UNLOCKLOGCACHE_REMOTE);
@@ -1101,7 +1053,7 @@ static void  OpenDoor_Net_MainFunction(void)
 				SeZR60_u_DoorOpenLedEvent = 1U;
 				SeZR60_u_NetUnlockflag = 1U;
 				Se_w_LockDoorTimer = 0;
-				SetAudioIO_PlayFile(AudioIO_WelBack,2U);
+				SetAudioIO_PlayFile(AudioIO_DoorOpen,2U);
 				Gettcp_LngConnect_PhoneNo(Le_u_UnlockInfo);		
 				/*记录开锁信息*/
 				ZR60Ctrl_u_RecordUnlockInfo(Le_u_UnlockInfo,UNLOCKLOGCACHE_REMOTE);

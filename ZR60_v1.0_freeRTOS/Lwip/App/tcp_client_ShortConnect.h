@@ -44,7 +44,7 @@
 #define  CLIENT_SHORTCNNT_CARDNUM_LNG     4U
 #define  CLIENT_SHORTCNNT_LNG   	      640U//发送数据长度
 #define  CLIENT_LOGRECORD_PERIOD   	  	  (15000U/SHORTCNNT_SCHEDULING_CYCLE)//开锁记录周期，15s
-#define  CLIENT_DOORST_PERIOD   	  	  (30000U/SHORTCNNT_SCHEDULING_CYCLE)//门锁状态上报周期30s
+#define  CLIENT_DOORST_PERIOD   	  	  (60000U/SHORTCNNT_SCHEDULING_CYCLE)//门锁状态上报周期60s
 #define  CLIENT_HEART_PERIOD   	  	  	  (30000U/SHORTCNNT_SCHEDULING_CYCLE)//心跳周期，30s
 #define  CLIENT_LOGRECORD_NUM   	      5U//一次上报的log记录条数
 #define  SHORTCNNT_PULLBLIST_PERIOD   	  (1800000U/SHORTCNNT_SCHEDULING_CYCLE)//增量拉取黑名单周期,0.5h
@@ -172,6 +172,7 @@ extern void tcp_ShortConnect_MainFunction(void);
 extern u8_t Gettcp_shortCnntTxSt(void);
 extern uint8_t tcp_client_BListUpdataSt(void);
 extern void Settcp_client_DeviceInit(void);
+extern void tcp_client_BListUpdata(void);
 #endif /*  */
 
 /************************ (C) COPYRIGHT STMicroelectronics *****END OF FILE****/

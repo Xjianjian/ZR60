@@ -112,7 +112,7 @@ void InitAudioIO_playconfig(void)
 void TskAudioIO_MainFunction(void)
 {
 	//if((0U == SPI_FLASH_WrInProgStatus()) && (0U == SeAudio_u_PlayFlag))//flashø’œ–
-	if((0U == SPI_FLASH_WrInProgStatus()) && (0U == SeAudio_u_PlayFlag))//flashø’œ–
+	if((0U == SPI_FLASH_WrInProgStatus()) && (0U == SeAudio_u_PlayFlag) && (1U == GetMemIf_u_Idle()))//flashø’œ–
 	{
 		AudioIO_VoicePlaying();
 	}

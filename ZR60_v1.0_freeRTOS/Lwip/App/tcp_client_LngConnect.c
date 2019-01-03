@@ -56,7 +56,7 @@ u8_t  volatile Setcp_client_u_Open = 0U;//远程开锁标志
 static u8_t  Setcp_client_u_cnntSt = 0U;//tcp连接状态:0--空闲
 static u8_t  Setcp_client_u_HeartFlg = 0U;//心跳发送完成标志
 static u16_t Setcp_client_w_DelayTimer = 0U;//开机延时连接计时器
-static u16_t Setcp_client_w_HeartTimer = 0U;//心跳计时器
+static u16_t Setcp_client_w_HeartTimer =  (28000U/LNGCNNT_SCHEDULING_CYCLE);//心跳计时器
 static u16_t Setcp_client_w_CnntTimeout = 0U;//连接超时计时器
 static u8_t  Se_u_CnntTimeoutFlg = 0U;//连接超时标志
 static u8_t  Se_u_CnntTimeoutCnt = 0U;//连接超时计数
@@ -334,6 +334,14 @@ static uint8 tcp_LngConnect_parseJson(char * pMsg)
 				USART_PRINTF_S("远程开门应答：");
 				USART_PRINTF_S(La_u_TxMsg);
 			}
+			else if((0 == strcmp("updatedoorcard", cJSON_GetObjectItem(pSub_ex,"m")->valuestring)) && \
+				   (0 == strcmp("doorcard", cJSON_GetObjectItem(pSub_ex,"a")->valuestring)))
+			{
+				USART_PRINTF_S("推送更新黑明单\n");
+				tcp_client_BListUpdata();
+			}
+			else
+			{}
 			
 			cJSON_Delete(pJsonMsg);
 		}

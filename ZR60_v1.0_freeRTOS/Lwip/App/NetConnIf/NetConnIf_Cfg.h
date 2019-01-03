@@ -26,7 +26,7 @@ description： macro definitions
 *******************************************************/
 /**********宏开关定义*********/
 //#define  NETCONN_NUM	1U//创建连接对象数量
-//#define  NETCONNIF_DEBUG
+#define  NETCONNIF_DEBUG
 /**********宏常量定义*********/
 
 

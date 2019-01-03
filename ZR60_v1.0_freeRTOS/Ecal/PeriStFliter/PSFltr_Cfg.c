@@ -18,7 +18,7 @@ description： function declaration
 /*Global function declaration*/
 const uint8 CaPSFltr_u_Active[PSFLTR_NUM] = /*开关有效配置参数，当采集数据跟配置一致则认为外设开启*/
 {
-	1U,/*门锁状态--开启*/
+	0U,/*门锁状态--开启*/
 	1U
 };
 

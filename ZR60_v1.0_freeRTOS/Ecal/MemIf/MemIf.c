@@ -23,6 +23,7 @@ description： static variable definitions
 static uint8  SeMemIf_u_EESt[EE_OBJECT_NUM];//非易失性存储器当前状态
 static uint8  SeMemIf_u_WrEEFlag[EE_OBJECT_NUM];//数据更新标志
 static uint8  SeMemIf_u_WrFlashFlag = 0U;//片上flash数据更新标志
+static uint8  SeMemIf_u_WrFlashBusy = 0U;//写片上flash忙标志
 static uint16 SeMemIf_w_Lng[EE_OBJECT_NUM];//数据长度
 static uint8  SeMemIf_u_VildFlag[EE_OBJECT_NUM];//数据有效性标志
 #ifdef EE_DEBUG
@@ -95,6 +96,7 @@ void TskMemIf_MainFunction(void)
 #ifdef MemIf_IntEE
 	if((1U == SeMemIf_u_WrFlashFlag) && (0U == GetAudioIO_u_PlaySt()))
 	{
+		SeMemIf_u_WrFlashBusy = 1U;
 		/* 擦除flash */
 		MemIf_EraseFlash(FLASH_Sector_4);//写之前先擦除。片上flash，用于存储母卡配置，mac地址等信息
 		USART_PRINTF_S("\r\n擦除片上flash扇区完成\r\n");
@@ -102,6 +104,7 @@ void TskMemIf_MainFunction(void)
 		USART_PRINTF_S("\r\n写数据到片上flash扇区\r\n");
 		(void)MemIf_u_wrFlash();
 		SeMemIf_u_WrFlashFlag = 0U;
+		SeMemIf_u_WrFlashBusy = 0U;
 	}
 #else
 	uint16 Le_w_Lng;
@@ -378,7 +381,7 @@ void SetMemIf_EEVild(uint8 Object)
 uint8 GetMemIf_u_Idle(void)
 {
 #ifdef MemIf_IntEE
-	if(1U == SeMemIf_u_WrFlashFlag)
+	if(1U == SeMemIf_u_WrFlashBusy)
 	{
 		return 0U;
 	}
