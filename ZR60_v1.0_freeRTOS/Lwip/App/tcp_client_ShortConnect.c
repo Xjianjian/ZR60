@@ -1237,12 +1237,14 @@ uint8_t tcp_client_BListUpdataSt(void)
 }
 
 /*
-	更新黑名单
+	全量更新黑名单
 */
 void tcp_client_BListUpdata(void)
 {
-	client_TxFlag.BListFlag = 1U;
-	Se_dw_BListPullTimer = 0U;
+	ClrBListMng_ListData();//清黑名单列表
+	BListPull.timestamp = 0;
+	BListPull.page = 1U;
+	Se_dw_BListPullTimer = SHORTCNNT_PULLBLIST_PERIOD;
 }
 
 /******************************************************

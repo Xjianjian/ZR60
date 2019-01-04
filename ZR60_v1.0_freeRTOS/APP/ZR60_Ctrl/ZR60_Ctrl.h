@@ -26,6 +26,7 @@ description£º macro definitions
 
 
 #define ZR60_CTRL_REMOTE_UNLOCK    Setcp_client_u_Open
+#define ZR60_CTRL_WX_UNLOCK    		Setcp_client_u_wxOpen
 
 #define ZR60_CTRL_AUTOSEARCHCARD   isSectedCard_flag
 #define ZR60_CTRL_SETKEY   		   Sereadcard_SetKeyflag

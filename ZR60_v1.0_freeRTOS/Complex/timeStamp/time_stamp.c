@@ -95,21 +95,24 @@ void timestamp_timeCalibration(char *tm,uint8_t tmType)
 	USART_PRINTF_DATE("设置的时间：%d.%d.%d %d:%d:%d\n",stm.tm_year,stm.tm_mon,  \
 					  stm.tm_mday,stm.tm_hour,stm.tm_min,stm.tm_sec);
 #ifdef  HYM8563
-	buf |= STOP;
-	if (hym8563_i2c_set_regs(RTC_CTL1, &buf, 1) == 0)
+	i = 5;
+	while(i--)
 	{
-		USART_PRINTF_S("关闭hym8563成功  √\n");
-	}
-	/****设置日期、时间****/	
-	if(hym8563_set_time(&stm) == 0)
-	{
-		USART_PRINTF_S("set hym8563 time成功  √\n");
-	}
-	/****读取日期、时间****/	
-	buf = 0U;
-	if (hym8563_i2c_set_regs(RTC_CTL1, &buf, 1) == 0)
-	{
-		USART_PRINTF_S("开启HYM863时钟  √\n");
+		buf |= STOP;
+		if (hym8563_i2c_set_regs(RTC_CTL1, &buf, 1) == 0)
+		{
+			USART_PRINTF_S("关闭hym8563成功  √\n");
+			/****设置日期、时间****/	
+			(void)hym8563_set_time(&stm);
+			
+			/****读取日期、时间****/	
+			buf = 0U;
+			if (hym8563_i2c_set_regs(RTC_CTL1, &buf, 1) == 0)
+			{
+				USART_PRINTF_S("开启HYM863时钟  √\n");
+				break;
+			}
+		}	
 	}
 #else
 	//使用片上rtc
@@ -203,7 +206,7 @@ uint8_t sm3_time_PasswordAuth(uint32_t now_time,struct sm3_info *sm,u8 n,u8 mach
 	u32 b_passwd;
 	u32 test = 0;
 	int i;	
-	
+	char BleValue[6];
 	USART_PRINTF_D("时间戳now_time is: %d\n",now_time);
 	 switch(n)
 	 {
@@ -223,6 +226,20 @@ uint8_t sm3_time_PasswordAuth(uint32_t now_time,struct sm3_info *sm,u8 n,u8 mach
 		 break;
 		 case TIME_STAMP_BLE:
 		 {
+			 if(mach_type == 2)//门口机
+			 {
+				 for(i = 0; i < 6;i++)
+				 {
+					BleValue[i]  = BleTempPassword[i];
+				 }
+			 }
+			 else//围墙机
+			 {
+				 for(i = 0; i < 6;i++)
+				 {
+					 BleValue[i]  = BleTempPassword[i + 6];
+				 }
+			 }
 			  passwd = 	check_passwd(atoi(BleValue),mach_type);
 			  i_num  = now_time/60 - 5;
 		 }

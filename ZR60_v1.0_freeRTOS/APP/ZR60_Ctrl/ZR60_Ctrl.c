@@ -94,6 +94,7 @@ static void  OpenDoor_Ble_MainFunction(void);
 static uint8 ZR60Ctrl_u_IsBrdcstAddr(uint8* Le_u_Addr);
 static void ZR60Ctrl_u_RecordUnlockInfo(char* Le_u_UnlockInfo,uint8 Le_u_UnlockEvent);
 static void ZR60Ctrl_u_LedDisplay(void);
+static void  OpenDoor_WX_MainFunction(void);
 /******************************************************
 description： function code
 ******************************************************/
@@ -237,6 +238,11 @@ void TskZR60Ctrl_MainFunction(void)
 	OpenDoor_Ble_MainFunction();
 	
 	/*************************************************
+	*		          微信开锁
+	*************************************************/		
+	OpenDoor_WX_MainFunction();
+	
+	/*************************************************
 	*		            门锁状态指示灯控制
 	*************************************************/	
 	ZR60Ctrl_u_LedDisplay();
@@ -264,9 +270,9 @@ void TskZR60Ctrl_MainFunction(void)
 					{
 						Se_w_DoorLockdelayT = 15*1000;
 					}
-					else if(Se_w_DoorLockdelayT <= 3U)
+					else if(Se_w_DoorLockdelayT <= 1U)
 					{
-						Se_w_DoorLockdelayT = 3*1000;
+						Se_w_DoorLockdelayT = 1*1000;
 					}
 					else
 					{
@@ -676,7 +682,7 @@ static void  OpenDoor_Ble_MainFunction(void)
 				{
 					USART_PRINTF_S("蓝牙密码验证失败 X");
 					USART_PRINTF_D("set_time_flag:%d\n",set_time_flag);
-					USART_PRINTF_D("蓝牙时间:%s\n",timelist);
+					//USART_PRINTF_D("蓝牙时间:%s\n",timelist);
 					SetAudioIO_PlayFile(AudioIO_ErrKey,1U);
 				}
 				else
@@ -907,7 +913,7 @@ static void  OpenDoor_Password_MainFunction(void)//密码验证
 			SetAudioIO_PlayFile(AudioIO_DoorOpen,2U);
 			
 			/*记录开锁信息*/
-			ZR60Ctrl_u_RecordUnlockInfo("unknown",UNLOCKLOGCACHE_PASSWORD);
+			ZR60Ctrl_u_RecordUnlockInfo("unknown",UNLOCKLOGCACHE_TEMPPSWORD);
 		}
 	}
 	
@@ -1058,6 +1064,40 @@ static void  OpenDoor_Net_MainFunction(void)
 				/*记录开锁信息*/
 				ZR60Ctrl_u_RecordUnlockInfo(Le_u_UnlockInfo,UNLOCKLOGCACHE_REMOTE);
 			}
+		}
+	}	
+}
+
+/******************************************************
+*函数名：OpenDoor_WX_MainFunction
+
+*形  参：
+
+*返回值：
+
+*描  述：微信公众号开门
+
+*备  注：
+******************************************************/
+static void  OpenDoor_WX_MainFunction(void)
+{
+	char Le_u_UnlockInfo[32U] = {0};
+	
+	if( 1U == ZR60_CTRL_WX_UNLOCK)
+	{
+		USART_PRINTF_S("微信公众号 -> 开门");
+		ZR60_CTRL_WX_UNLOCK = 0U;
+
+		LOCK_ON;
+		Se_w_LockDoorTimer = 0;
+		SeZR60_u_DoorLockRelaySt = 1U;
+		SeZR60_u_DoorOpenLedEvent = 1U;
+		SetAudioIO_PlayFile(AudioIO_DoorOpen,2U);
+
+		if(1 == Gettcp_LngConnect_WXOpenInfo(Le_u_UnlockInfo))
+		{
+			/*记录开锁信息*/
+			ZR60Ctrl_u_RecordUnlockInfo(Le_u_UnlockInfo,UNLOCKLOGCACHE_WECHAT);
 		}
 	}	
 }

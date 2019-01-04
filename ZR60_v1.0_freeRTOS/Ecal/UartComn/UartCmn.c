@@ -26,7 +26,7 @@ static uint8 		 SaUartCmn_u_RxBuff[UARTCMN_RX_PCKT_LNG];/*接收报文缓存区*/
 description： global variable definitions
 *******************************************************/
 static char BleTemp[120];
-char BleValue[6];
+char BleTempPassword[12];//蓝牙开门临时密码：0~5存门口机密码；6~11存围墙机密码
 char  timelist[15] = {0};
 uint8_t volatile blenum = 0;
 uint8_t volatile ble_flag = 0U;
@@ -701,43 +701,55 @@ void UartCmn_Rx_BleMsg(void)
 			{
 				switch(BleTemp[16])
 				{
-					case 0x1D:
+					case 0x1A://安卓接收临时密码
 					{
-						if( (BleTemp[17] == 0x02) && (BleTemp[20] == 0x09) && (BleTemp[22] == 0x57) && (BleTemp[23] == 0x5A) && (BleTemp[30] == 0x05) && (BleTemp[31] == 0x03) && (BleTemp[36] == 0x09))
-						{					
+						if((BleTemp[19] == 0x57) && (BleTemp[20] == 0x5A))
+						{
 							for(i = 0;i < 6;i++)
 							{
-								BleValue[i] = BleTemp[40+i];
+								BleTempPassword[i] = BleTemp[21+i];//门口机密码
+								BleTempPassword[i + 6] = BleTemp[37+i];//围墙机密码
 							}
 							ble_flag = 1;
 						}
+						else
+						{}
 					}
 					break;
-					case 0x08:	
+					case 0x0E://安卓接收手机号
+					{
+						if((BleTemp[18] == 0x77) && (BleTemp[19] == 0x7A))
+						{
+							for(i = 0;i < 11U;i++)
+							{
+								Se_u_PhoneNum[i] = BleTemp[20+i];
+							}
+							Se_u_PhoneNumFlg = 1;
+						}
+					}
+					break;
+					case 0x18://安卓校时
+					{
+						if((BleTemp[19] == 0x49) && (BleTemp[20] == 0x54))
+						{
+							strncpy(timelist,BleTemp+21,14);
+							set_time_flag = 1;
+						}
+					}						
+					case 0x08://苹果IOS接收临时密码
 					{
 						if((BleTemp[17] == 0x07) && (BleTemp[18] == 0x09))
 						{
 							for(i = 0;i < 6;i++)
 							{
-								BleValue[i] = BleTemp[19+i];
+								BleTempPassword[i] = BleTemp[19+i];//门口机密码
+								BleTempPassword[i + 6] = BleTemp[19+i];//围墙机密码
 							}
 							ble_flag = 1;
 						}
 					}
 					break;
-					case 0x18:
-					{
-						if(BleTemp[17] == 0x11)
-						{
-							if(strncmp(BleTemp+19,"IT",2) == 0 || strncmp(BleTemp+19,"TL",2) == 0)
-							{
-								strncpy(timelist,BleTemp+21,14);
-								set_time_flag = 1;
-							}
-						}
-					}
-					break;
-					case 0x12:
+					case 0x12://苹果IOS校时
 					{
 						if((BleTemp[17] == 0x11) && (BleTemp[18] == 0x09))
 						{
@@ -749,7 +761,7 @@ void UartCmn_Rx_BleMsg(void)
 						}
 					}
 					break;
-					case 0x1E://接收uuid
+					case 0x1E://苹果IOS接收手机号
 					{
 						if((BleTemp[26] == 0x00) && (BleTemp[27] == 0x0A))
 						{
@@ -766,18 +778,7 @@ void UartCmn_Rx_BleMsg(void)
 					break;
 					default:
 					{
-						for(i = 0;i< BleTemp[16];i++)
-						{
-							if((BleTemp[17+i] == 0x09) && (BleTemp[18+i] == 0xFF) && (BleTemp[19+i] == 0x57) && (BleTemp[20+i] == 0x5A ))
-							{
-								for(j = 0;j < 6;j++)
-								{
-									BleValue[j] = BleTemp[21+j];
-								}
-								ble_flag = 1;
-								break;
-							}
-						}
+						
 					}
 					break;				 					
 				}

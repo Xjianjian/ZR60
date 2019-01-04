@@ -45,13 +45,15 @@
 /* Private macro -------------------------------------------------------------*/
 /* Private variables ---------------------------------------------------------*/
 
-static char  LngRecev_buf[200] = {0};
+static char  LngRecev_buf[350] = {0};
 struct ip_addr LngConnect_DestIPaddr;
 tcp_client_Struct Setcp_Alias;
 static char   Setcp_client_u_TxBuf[60] = {0};
 static uint16_t se_w_lng;
 
 u8_t  volatile Setcp_client_u_Open = 0U;//远程开锁标志
+u8_t  volatile Setcp_client_u_wxOpen = 0U;//微信开锁标志
+static u8_t  Setcp_u_WxRxSuccess = 0U;//微信正常接收到消息标志
 
 static u8_t  Setcp_client_u_cnntSt = 0U;//tcp连接状态:0--空闲
 static u8_t  Setcp_client_u_HeartFlg = 0U;//心跳发送完成标志
@@ -62,10 +64,20 @@ static u8_t  Se_u_CnntTimeoutFlg = 0U;//连接超时标志
 static u8_t  Se_u_CnntTimeoutCnt = 0U;//连接超时计数
 
 static char   Setcp_client_u_PhoneNo[12] = {0};
+static char   Setcp_client_u_url[200] = {0};
+
+const char ENCODE_TABLE[64U] = {'A', 'b', 'C', 'd', 'I', 'f', 'G', 'h', 'E', 'j', \
+						   'K', 'l', 'M', 'a', 'B', 'c', 'D', 'e', 'F', 'g', \
+						   'H', 'i', 'J', 'k', 'L', 'm', 'P', 'o', 'N', 'q', \
+						   'R', 's', 'T', 'u', 'X', 'w', 'V', 'y', 'Z', 'n', \
+						   'O', 'p', 'Q', 'r', 'S', 't', 'U', 'v', 'W', 'x', \
+						   'Y', 'z', '9', '1', '2', '4', '3', '5', '6', '8', \
+						   '7', '0', '-', '_'};
 /* Private function prototypes -----------------------------------------------*/
 static uint8 tcp_LngConnect_parseJson(char * pMsg);
 static char tcp_LngConnect_HexToChar(uint8_t temp);
 static void tcp_LngConnect_StrToHex(char* Le_in, uint8_t* Le_out);
+static char getByte(char* nums, uint8_t index);
 /* Private functions ---------------------------------------------------------*/
 
 void tcp_LngConnect_Parameter(void)
@@ -106,7 +118,7 @@ void tcp_LngConnect_Parameter(void)
 	Setcp_Alias.lng = sizeof(Setcp_Alias.Alias);
 	memset(Setcp_client_u_TxBuf,0,sizeof(Setcp_client_u_TxBuf));//清0
 	Json_HexToJson(Setcp_Alias.Alias,&se_w_lng,JSON_HEART_BEAT,Setcp_client_u_TxBuf);//初始化心跳包
-	NetConnIf_rxConfig(TcpLngConnect,LngRecev_buf,200,tcp_client_LngConnect_callback);
+	NetConnIf_rxConfig(TcpLngConnect,LngRecev_buf,350,tcp_client_LngConnect_callback);
 }
 
 /******************************************************
@@ -249,6 +261,7 @@ static uint8 tcp_LngConnect_parseJson(char * pMsg)
 {
 	char La_u_TxMsg[35U] = {0};
 	uint16_t Le_u_Lng = 0U;
+	char *position;
 	cJSON * pJson = cJSON_Parse(pMsg);
 	if(NULL == pJson)                                                                                         
 	{
@@ -286,7 +299,7 @@ static uint8 tcp_LngConnect_parseJson(char * pMsg)
 		break;
 		case 5://远程开门
 		{
-			USART_PRINTF_S("远程开门数据帧：");
+			USART_PRINTF_S("长连接接收推送数据帧：");
 			USART_PRINTF_S(pMsg);
 			cJSON * pSubMsg = cJSON_GetObjectItem(pJson, "msg");
 			if(NULL == pSubMsg)
@@ -333,6 +346,48 @@ static uint8 tcp_LngConnect_parseJson(char * pMsg)
 				NetConnIf_sendMsg(TcpLngConnect,La_u_TxMsg,Le_u_Lng);
 				USART_PRINTF_S("远程开门应答：");
 				USART_PRINTF_S(La_u_TxMsg);
+			}
+			else if((0 == strcmp("thirdopen", cJSON_GetObjectItem(pSub_ex,"m")->valuestring)) && \
+				(0 == strcmp("door", cJSON_GetObjectItem(pSub_ex,"a")->valuestring)))
+			{//微信公众号开门	
+				Setcp_client_u_wxOpen = 1U;//微信开锁标志
+				
+				cJSON * pJsonObj = cJSON_GetObjectItem(pSub_ex, "p");
+				cJSON * urlStr = cJSON_GetObjectItem(pJsonObj,"url");
+				USART_PRINTF_S(urlStr->valuestring);
+				
+				position = strchr(urlStr->valuestring,'=');//=字符数值的起始位置
+				if(NULL != position)
+				{
+					Le_u_Lng = strlen(urlStr->valuestring) -(position - urlStr->valuestring + 1);
+					if(Le_u_Lng < 200)
+					{
+						memset(Setcp_client_u_url,0,200);//清0
+						for(Le_w_i = 0;Le_w_i < Le_u_Lng;Le_w_i++)
+						{
+							Setcp_client_u_url[Le_w_i] = urlStr->valuestring[Le_w_i + position - urlStr->valuestring + 1];
+						}
+						USART_PRINTF_S(Setcp_client_u_url);
+						Setcp_u_WxRxSuccess = 1U;
+						cJSON * pSubMid = cJSON_GetObjectItem(pJson, "mid");
+						Json_HexToJson(pSubMid,&Le_u_Lng,JSON_DEVICE_ECHO_REMOTEUNLOCK,La_u_TxMsg);
+						NetConnIf_sendMsg(TcpLngConnect,La_u_TxMsg,Le_u_Lng);
+						USART_PRINTF_S("微信开门应答：");
+						USART_PRINTF_S(La_u_TxMsg);
+					}
+					else//数据长度溢出
+					{
+						USART_PRINTF_S("微信推送数据长度溢出\n");
+						USART_PRINTF_S(urlStr->valuestring);
+						Setcp_u_WxRxSuccess = 0U;
+					}
+				}
+				else
+				{
+					USART_PRINTF_S("微信推送开门数据有误\n");
+					USART_PRINTF_S(urlStr->valuestring);
+					Setcp_u_WxRxSuccess = 0U;
+				}
 			}
 			else if((0 == strcmp("updatedoorcard", cJSON_GetObjectItem(pSub_ex,"m")->valuestring)) && \
 				   (0 == strcmp("doorcard", cJSON_GetObjectItem(pSub_ex,"a")->valuestring)))
@@ -506,6 +561,125 @@ void Gettcp_LngConnect_PhoneNo(char* Le_u_dt)
 		Le_u_dt[Le_u_i] = Setcp_client_u_PhoneNo[Le_u_i];
 	}
 }
+
+/*
+描述：读取微信开门信息
+解码原理：
+     * 1 将已编码字符串encode逐个分离得到bChar
+     * 2 将每个bChar参照表转换成对应的索引num
+     * 3 将除最后一个num的每个索引num去掉前2位并组合成一个位串preBits
+     * 4 位串preBits的长度模8得到值len
+     * 5 再将位串preBits与最后一个num的后8减len的差位组合成新的位串bits
+     * 6 将位串bits每次取8位得到字节数组bytes
+     * 7 将字节数组bytes转成UTF-8的字符串
+     * <p>
+     * 如 encode是MgEzaA
+     * 1 将已编码字符串encode逐个分离得到bChar是[M,g,E,z,a,A]
+     * 2 将每个bChar参照表转换成对应的索引num是[12,19,8,51,13,0]
+     * 3 将除最后一个num的每个索引num去掉前2位[001100,010011,001000,110011,001101]并组合成一个位串preBits是001100010011001000110011001101
+     * 4 位串preBits的长度30模8得到值len是6
+     * 5 再将位串preBits与最后一个num(000000)的后8-6=2位组合成新的位串bits是00110001001100100011001100110100
+     * 6 将位串bits每次取8位得到字节数组bytes[00110001,00110010,00110011,00110100]即[49,50,51,52]
+     * 7 将字节数组bytes转成UTF-8的字符串是1234
+*/	
+char Gettcp_LngConnect_WXOpenInfo(char* Le_u_dt)
+{
+	uint8_t Le_u_i;
+	uint8_t Le_u_j;
+	uint8_t Le_u_k;
+	char* position;
+	char* endposition;
+	char index;
+	char nums[strlen(Setcp_client_u_url)];
+	char bChar;
+	uint8_t bytesLen;
+	if(Setcp_u_WxRxSuccess == 1)
+	{
+		Setcp_u_WxRxSuccess = 0;
+		for (Le_u_i = 0, Le_u_j = 0; Le_u_j < 200; Le_u_i++, Le_u_j++) 
+		{
+			bChar = Setcp_client_u_url[Le_u_i];
+			for (Le_u_k = 0; Le_u_k < 64U; Le_u_k++) 
+			{
+				if (ENCODE_TABLE[Le_u_k] == bChar) 
+				{
+					nums[Le_u_j] = Le_u_k;
+					break;
+				}
+			}
+		}
+		
+		bytesLen = (strlen(Setcp_client_u_url) * 6.0) / 8;
+		char bytes[bytesLen+1];
+		for (Le_u_i = 0; Le_u_i < bytesLen; Le_u_i++) 
+		{
+			bytes[Le_u_i] = getByte(nums, Le_u_i);
+		}
+		
+		USART_PRINTF_S("转换成utf-8格式前字符数据：");
+		USART_PRINTF_S(bytes);
+		position = strchr((char*)bytes,'&');//&字段数值的位置
+		if(NULL != position)
+		{
+			index = position - (char*)bytes;//首次出现&位置下标
+			endposition = strchr((char*)(&bytes[index+1]),'&');//&字段数值的位置;
+			if(NULL != endposition)
+			{
+				for (Le_u_i = 0; Le_u_i < (endposition - position -1); Le_u_i++) 
+				{
+					Le_u_dt[Le_u_i] = bytes[index+1+ Le_u_i];
+				}
+				USART_PRINTF_S("微信开门用户信息：");
+				USART_PRINTF_S(Le_u_dt);
+				return 1;
+			}
+			else
+			{
+				return 0;
+			}
+		}
+		else
+		{
+			return 0;
+		}
+	}
+	else
+	{
+		return 0;
+	}
+}
+
+static char getByte(char* nums, uint8_t index) 
+{
+	char b = 0;
+	uint8_t i;
+	int bytesIndex = (index * 8 / 6);
+	int bitIndex = (index * 8) % 6 + 2;
+	int getBits = 0;
+	for (i = 0; i < strlen(nums); i++) 
+	{
+		if (i < bytesIndex) 
+		{
+			continue;
+		}
+		else 
+		{
+			short B = (short) (nums[bytesIndex] & 0x00ff);
+			b = (char) (B & (0xff >> bitIndex));
+			getBits = 8 - bitIndex;
+			int left = 8 - getBits;
+			b = (char) (b << left);
+			bytesIndex++;
+			short nextB = (short) (nums[bytesIndex] & 0x00ff);
+			int right = 8 - (left + 2);
+			b = (char) (b | (nextB >> right));
+			break;
+		}
+	}
+	return b;
+}
+
+
 #endif /* LWIP_TCP */
 
 /************************ (C) COPYRIGHT STMicroelectronics *****END OF FILE****/

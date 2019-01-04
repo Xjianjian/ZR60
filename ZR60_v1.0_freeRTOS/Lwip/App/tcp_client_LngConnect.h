@@ -61,6 +61,7 @@ typedef struct
 
 extern tcp_client_Struct  Setcp_Alias;
 extern u8_t  volatile Setcp_client_u_Open;//远程开锁标志
+extern u8_t  volatile Setcp_client_u_wxOpen;//微信开锁标志
 /* Includes ------------------------------------------------------------------*/
 /* Exported types ------------------------------------------------------------*/
 /* Exported constants --------------------------------------------------------*/
@@ -71,6 +72,7 @@ extern void tcp_LngConnect_MainFunction(void);
 extern uint8 Gettcp_u_LngConnect_Timeout(void);
 extern void tcp_client_LngConnect_callback(void);
 extern void Gettcp_LngConnect_PhoneNo(char* Le_u_dt);
+extern char Gettcp_LngConnect_WXOpenInfo(char* Le_u_dt);
 #endif /**/
 
 /************************ (C) COPYRIGHT STMicroelectronics *****END OF FILE****/

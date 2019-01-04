@@ -128,7 +128,7 @@ extern uint8_t volatile blenum;
 extern uint8_t volatile ble_flag;
 extern uint8_t volatile set_time_flag;
 extern char  timelist[15];
-extern char BleValue[6];
+extern char BleTempPassword[12];
 extern uint8_t Se_u_MacAddr[12U];//mac地址
 extern uint8_t volatile Se_u_BleMacFlg;//获取蓝牙mac标志
 extern uint8_t volatile Se_u_PhoneNum[12U];//手机号
