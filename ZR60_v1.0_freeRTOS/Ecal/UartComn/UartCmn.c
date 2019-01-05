@@ -716,13 +716,13 @@ void UartCmn_Rx_BleMsg(void)
 						{}
 					}
 					break;
-					case 0x0E://安卓接收手机号
+					case 0x0F://安卓接收手机号
 					{
-						if((BleTemp[18] == 0x77) && (BleTemp[19] == 0x7A))
+						if((BleTemp[19] == 0x77) && (BleTemp[20] == 0x7A))
 						{
 							for(i = 0;i < 11U;i++)
 							{
-								Se_u_PhoneNum[i] = BleTemp[20+i];
+								Se_u_PhoneNum[i] = BleTemp[21+i];
 							}
 							Se_u_PhoneNumFlg = 1;
 						}
@@ -751,13 +751,10 @@ void UartCmn_Rx_BleMsg(void)
 					break;
 					case 0x12://苹果IOS校时
 					{
-						if((BleTemp[17] == 0x11) && (BleTemp[18] == 0x09))
+						if((BleTemp[19] == 0x54) && (BleTemp[20] == 0x49))
 						{
-							if(strncmp(BleTemp+19,"TI",2) == 0 || strncmp(BleTemp+19,"LT",2) == 0)
-							{
-								strncpy(timelist,BleTemp+21,14);
-								set_time_flag = 1;
-							}
+							strncpy(timelist,BleTemp+21,14);
+							set_time_flag = 1;
 						}
 					}
 					break;
