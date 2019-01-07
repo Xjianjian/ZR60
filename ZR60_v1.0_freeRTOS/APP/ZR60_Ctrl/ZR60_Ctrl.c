@@ -265,7 +265,7 @@ void TskZR60Ctrl_MainFunction(void)
 				{
 					Se_u_VoltageDifferencCnt = 0U;
 					Voltage_value[1U] = Voltage_value[0U];
-					Se_w_DoorLockdelayT = (uint16)((3100 - Voltage_value[0U]) / 150) + 1U;
+					Se_w_DoorLockdelayT = (uint16)((3100 - Voltage_value[0U]) / 200) + 1U;
 					if(Se_w_DoorLockdelayT >= 15U)
 					{
 						Se_w_DoorLockdelayT = 15*1000;
@@ -293,7 +293,7 @@ void TskZR60Ctrl_MainFunction(void)
 		else
 		{//检查电压差变化，超过设置门限值，重新设置关门延时时间
 			Voltage_value[0U] = (uint16)((uint32)GetADFliter_ADFliterResult(0)*3300/4096);//每隔1s读取电位器的电压(电压放大1000倍)
-			if(ZR60Ctrl_w_CalPosDifference(Voltage_value[0U],Voltage_value[1U]) >= 250U)//电压变化0.25v
+			if(ZR60Ctrl_w_CalPosDifference(Voltage_value[0U],Voltage_value[1U]) >= 100U)//电压变化0.1v
 			{
 				Se_u_VoltageDifferencCnt++;
 				if(Se_u_VoltageDifferencCnt >= 3U)
