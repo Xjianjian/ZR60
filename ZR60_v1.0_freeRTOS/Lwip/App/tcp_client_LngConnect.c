@@ -290,11 +290,13 @@ static uint8 tcp_LngConnect_parseJson(char * pMsg)
 		case 0:
 		{
 			USART_PRINTF_S("\r\nErrorLogging：别名错误\r\n");
+			USART_PRINTF_S(pMsg);
 		}
 		break;
 		case (-1):
 		{
 			USART_PRINTF_S("心跳正常");
+			USART_PRINTF_S(pMsg);
 		}
 		break;
 		case 5://远程开门

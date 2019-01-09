@@ -205,7 +205,7 @@ static void AudioIO_VoicePlaying(void)
 		case AudioIO_DeInitFinish:
 		case AudioIO_DeInitFail:	
 		{
-			//AudioIO_StartPlay(wavFile[SeAudio_u_PlayFile].read_addr,wavFile[SeAudio_u_PlayFile].BytesSize);	
+			SeAudio_u_PlayFlag = 1U;	
 			AUDIO_PLAY_STOP;//关闭DMA TX传输,结束播放	
 			//跳过WAV文件头开始读取音频数据
 			SeAudio_dw_DtAddr = wavFile[SeAudio_u_PlayFile].read_addr + 80;//sizeof(rec_wav) + 20;
@@ -226,9 +226,7 @@ static void AudioIO_VoicePlaying(void)
 			}
 
 			AUDIO_DRIVERCHIP_PLAYCONFIG;
-			SeAudio_u_PlayFlag = 1U;
-			AUDIO_PLAY_START;
-					
+			AUDIO_PLAY_START;		
 			SeAudio_u_PlayPriority = SeAudio_u_PlayPriorityTemp;
 		}
 		break;
@@ -248,7 +246,7 @@ static void AudioIO_VoicePlaying(void)
 static void AudioIO_StartPlay(uint32_t Le_dw_addr,uint32_t Le_dw_size)
 {
 	AUDIO_PLAY_STOP;//关闭DMA TX传输,结束播放
-	
+	SeAudio_u_PlayFlag = 1U;
 	//跳过WAV文件头开始读取音频数据
 	SeAudio_dw_DtAddr = Le_dw_addr + 80;//sizeof(rec_wav) + 20;
 	SeAudio_dw_Size = Le_dw_size - 80;//sizeof(rec_wav) -20;
@@ -268,7 +266,7 @@ static void AudioIO_StartPlay(uint32_t Le_dw_addr,uint32_t Le_dw_size)
 	}
 
 	AUDIO_DRIVERCHIP_PLAYCONFIG;
-	SeAudio_u_PlayFlag = 1U;
+	
 	AUDIO_PLAY_START;
 }
 
