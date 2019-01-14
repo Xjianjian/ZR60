@@ -67,5 +67,6 @@ extern BnryTreeNode* BnryTree_MakeEmpty(BnryTreeNode* tree);
 extern BnryTreeNode* BnryTree_FindNode(DataType element, BnryTreeNode* tree);
 extern BnryTreeNode* BnryTree_FindMax(BnryTreeNode* tree);
 extern BnryTreeNode* BnryTree_FindMin(BnryTreeNode* tree);
+extern void BnryTree_DeleteNode(BnryTreeNode *tree,DataType dt);
 extern void BnryTree_Test(void);
 #endif
