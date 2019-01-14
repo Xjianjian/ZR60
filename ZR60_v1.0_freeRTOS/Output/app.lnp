@@ -125,6 +125,7 @@
 "..\..\output\psfltr.o"
 "..\..\output\psfltr_cfg.o"
 "..\..\output\crc32.o"
+"..\..\output\bnrytree.o"
 "..\..\output\blistmng.o"
 "..\..\output\blistmng_cfg.o"
 "..\..\output\readcard.o"

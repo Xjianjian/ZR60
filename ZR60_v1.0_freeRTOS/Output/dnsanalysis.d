@@ -127,6 +127,7 @@
 ..\..\output\dnsanalysis.o: ..\..\Ecal\./STD_ADFliter/STD_ADFliter.h
 ..\..\output\dnsanalysis.o: ..\..\Ecal\./STD_ADFliter/STD_ADFliterCfg.h
 ..\..\output\dnsanalysis.o: ..\..\Ecal\./STD_ADFliter/STD_ADFliterTypes.h
+..\..\output\dnsanalysis.o: ..\..\Ecal\BnryTree\BnryTree.h
 ..\..\output\dnsanalysis.o: ..\..\Service\./SleepMng/SleepMng.h
 ..\..\output\dnsanalysis.o: ..\..\APP\BlackListMng\BListMng.h
 ..\..\output\dnsanalysis.o: ..\..\APP\BlackListMng\BListMng_cfg.h

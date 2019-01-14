@@ -126,6 +126,7 @@
 ..\..\output\wdata.o: ..\..\Ecal\./STD_ADFliter/STD_ADFliter.h
 ..\..\output\wdata.o: ..\..\Ecal\./STD_ADFliter/STD_ADFliterCfg.h
 ..\..\output\wdata.o: ..\..\Ecal\./STD_ADFliter/STD_ADFliterTypes.h
+..\..\output\wdata.o: ..\..\Ecal\BnryTree\BnryTree.h
 ..\..\output\wdata.o: ..\..\Service\./SleepMng/SleepMng.h
 ..\..\output\wdata.o: ..\..\APP\BlackListMng\BListMng.h
 ..\..\output\wdata.o: ..\..\APP\BlackListMng\BListMng_cfg.h

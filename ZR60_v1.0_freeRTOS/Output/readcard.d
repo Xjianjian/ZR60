@@ -127,6 +127,7 @@
 ..\..\output\readcard.o: ..\..\Ecal\./STD_ADFliter/STD_ADFliter.h
 ..\..\output\readcard.o: ..\..\Ecal\./STD_ADFliter/STD_ADFliterCfg.h
 ..\..\output\readcard.o: ..\..\Ecal\./STD_ADFliter/STD_ADFliterTypes.h
+..\..\output\readcard.o: ..\..\Ecal\BnryTree\BnryTree.h
 ..\..\output\readcard.o: ..\..\Service\./SleepMng/SleepMng.h
 ..\..\output\readcard.o: ..\..\APP\BlackListMng\BListMng.h
 ..\..\output\readcard.o: ..\..\APP\BlackListMng\BListMng_cfg.h

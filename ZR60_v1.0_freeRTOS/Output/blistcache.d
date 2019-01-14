@@ -127,6 +127,7 @@
 ..\..\output\blistcache.o: ..\..\Ecal\./STD_ADFliter/STD_ADFliter.h
 ..\..\output\blistcache.o: ..\..\Ecal\./STD_ADFliter/STD_ADFliterCfg.h
 ..\..\output\blistcache.o: ..\..\Ecal\./STD_ADFliter/STD_ADFliterTypes.h
+..\..\output\blistcache.o: ..\..\Ecal\BnryTree\BnryTree.h
 ..\..\output\blistcache.o: ..\..\Service\./SleepMng/SleepMng.h
 ..\..\output\blistcache.o: ..\..\APP\BlackListMng\BListMng.h
 ..\..\output\blistcache.o: ..\..\APP\BlackListMng\BListMng_cfg.h

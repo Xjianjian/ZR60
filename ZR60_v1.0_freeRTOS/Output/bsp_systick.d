@@ -127,6 +127,7 @@
 ..\..\output\bsp_systick.o: ..\..\Ecal\./STD_ADFliter/STD_ADFliter.h
 ..\..\output\bsp_systick.o: ..\..\Ecal\./STD_ADFliter/STD_ADFliterCfg.h
 ..\..\output\bsp_systick.o: ..\..\Ecal\./STD_ADFliter/STD_ADFliterTypes.h
+..\..\output\bsp_systick.o: ..\..\Ecal\BnryTree\BnryTree.h
 ..\..\output\bsp_systick.o: ..\..\Service\./SleepMng/SleepMng.h
 ..\..\output\bsp_systick.o: ..\..\APP\BlackListMng\BListMng.h
 ..\..\output\bsp_systick.o: ..\..\APP\BlackListMng\BListMng_cfg.h

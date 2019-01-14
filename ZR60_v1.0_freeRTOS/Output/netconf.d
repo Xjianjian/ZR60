@@ -131,6 +131,7 @@
 ..\..\output\netconf.o: ..\..\Ecal\./STD_ADFliter/STD_ADFliter.h
 ..\..\output\netconf.o: ..\..\Ecal\./STD_ADFliter/STD_ADFliterCfg.h
 ..\..\output\netconf.o: ..\..\Ecal\./STD_ADFliter/STD_ADFliterTypes.h
+..\..\output\netconf.o: ..\..\Ecal\BnryTree\BnryTree.h
 ..\..\output\netconf.o: ..\..\Service\./SleepMng/SleepMng.h
 ..\..\output\netconf.o: ..\..\APP\BlackListMng\BListMng.h
 ..\..\output\netconf.o: ..\..\APP\BlackListMng\BListMng_cfg.h

@@ -138,7 +138,7 @@ static void https_Task(void * pvParameters)
 	while(1)
 	{
 		tcp_ShortConnect_MainFunction();
-		
+		BnryTree_Test();
 		//xEventGroupSetBits(xCreatedEventGroup, https_bits_Task);
 		vTaskDelay(5000 / portTICK_RATE_MS);
 	}

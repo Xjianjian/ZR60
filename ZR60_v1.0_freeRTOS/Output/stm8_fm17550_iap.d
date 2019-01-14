@@ -129,6 +129,7 @@
 ..\..\output\stm8_fm17550_iap.o: ..\..\Ecal\./STD_ADFliter/STD_ADFliterCfg.h
 ..\..\output\stm8_fm17550_iap.o: ..\..\Ecal\./STD_ADFliter/STD_ADFliterTypes.h
 ..\..\output\stm8_fm17550_iap.o: ..\..\Ecal\./crc32/crc32.h
+..\..\output\stm8_fm17550_iap.o: ..\..\Ecal\BnryTree\BnryTree.h
 ..\..\output\stm8_fm17550_iap.o: ..\..\Service\./SleepMng/SleepMng.h
 ..\..\output\stm8_fm17550_iap.o: ..\..\APP\BlackListMng\BListMng.h
 ..\..\output\stm8_fm17550_iap.o: ..\..\APP\BlackListMng\BListMng_cfg.h

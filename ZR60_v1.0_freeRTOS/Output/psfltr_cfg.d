@@ -127,6 +127,7 @@
 ..\..\output\psfltr_cfg.o: ..\..\Ecal\./STD_ADFliter/STD_ADFliter.h
 ..\..\output\psfltr_cfg.o: ..\..\Ecal\./STD_ADFliter/STD_ADFliterCfg.h
 ..\..\output\psfltr_cfg.o: ..\..\Ecal\./STD_ADFliter/STD_ADFliterTypes.h
+..\..\output\psfltr_cfg.o: ..\..\Ecal\BnryTree\BnryTree.h
 ..\..\output\psfltr_cfg.o: ..\..\Service\./SleepMng/SleepMng.h
 ..\..\output\psfltr_cfg.o: ..\..\APP\BlackListMng\BListMng.h
 ..\..\output\psfltr_cfg.o: ..\..\APP\BlackListMng\BListMng_cfg.h

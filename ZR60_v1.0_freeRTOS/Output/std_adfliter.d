@@ -127,6 +127,7 @@
 ..\..\output\std_adfliter.o: ..\..\Ecal\JsonIf\cJSON.h
 ..\..\output\std_adfliter.o: d:\Keil_v5\ARM\ARMCC\Bin\..\include\stddef.h
 ..\..\output\std_adfliter.o: ..\..\Ecal\./STD_ADFliter/STD_ADFliter.h
+..\..\output\std_adfliter.o: ..\..\Ecal\BnryTree\BnryTree.h
 ..\..\output\std_adfliter.o: ..\..\Service\./SleepMng/SleepMng.h
 ..\..\output\std_adfliter.o: ..\..\APP\BlackListMng\BListMng.h
 ..\..\output\std_adfliter.o: ..\..\APP\BlackListMng\BListMng_cfg.h

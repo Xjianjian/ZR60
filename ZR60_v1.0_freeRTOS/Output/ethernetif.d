@@ -129,6 +129,7 @@
 ..\..\output\ethernetif.o: ..\..\Ecal\./STD_ADFliter/STD_ADFliter.h
 ..\..\output\ethernetif.o: ..\..\Ecal\./STD_ADFliter/STD_ADFliterCfg.h
 ..\..\output\ethernetif.o: ..\..\Ecal\./STD_ADFliter/STD_ADFliterTypes.h
+..\..\output\ethernetif.o: ..\..\Ecal\BnryTree\BnryTree.h
 ..\..\output\ethernetif.o: ..\..\Service\./SleepMng/SleepMng.h
 ..\..\output\ethernetif.o: ..\..\APP\BlackListMng\BListMng.h
 ..\..\output\ethernetif.o: ..\..\APP\BlackListMng\BListMng_cfg.h

@@ -128,6 +128,7 @@
 ..\..\output\time_stamp.o: ..\..\Ecal\./STD_ADFliter/STD_ADFliter.h
 ..\..\output\time_stamp.o: ..\..\Ecal\./STD_ADFliter/STD_ADFliterCfg.h
 ..\..\output\time_stamp.o: ..\..\Ecal\./STD_ADFliter/STD_ADFliterTypes.h
+..\..\output\time_stamp.o: ..\..\Ecal\BnryTree\BnryTree.h
 ..\..\output\time_stamp.o: ..\..\Service\./SleepMng/SleepMng.h
 ..\..\output\time_stamp.o: ..\..\APP\BlackListMng\BListMng.h
 ..\..\output\time_stamp.o: ..\..\APP\BlackListMng\BListMng_cfg.h

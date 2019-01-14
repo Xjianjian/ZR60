@@ -127,6 +127,7 @@
 ..\..\output\zr60_ctrl.o: ..\..\Ecal\./STD_ADFliter/STD_ADFliter.h
 ..\..\output\zr60_ctrl.o: ..\..\Ecal\./STD_ADFliter/STD_ADFliterCfg.h
 ..\..\output\zr60_ctrl.o: ..\..\Ecal\./STD_ADFliter/STD_ADFliterTypes.h
+..\..\output\zr60_ctrl.o: ..\..\Ecal\BnryTree\BnryTree.h
 ..\..\output\zr60_ctrl.o: ..\..\Service\./SleepMng/SleepMng.h
 ..\..\output\zr60_ctrl.o: ..\..\APP\BlackListMng\BListMng.h
 ..\..\output\zr60_ctrl.o: ..\..\APP\BlackListMng\BListMng_cfg.h

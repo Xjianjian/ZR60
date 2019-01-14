@@ -127,6 +127,7 @@
 ..\..\output\dhcpclient.o: ..\..\Ecal\./STD_ADFliter/STD_ADFliter.h
 ..\..\output\dhcpclient.o: ..\..\Ecal\./STD_ADFliter/STD_ADFliterCfg.h
 ..\..\output\dhcpclient.o: ..\..\Ecal\./STD_ADFliter/STD_ADFliterTypes.h
+..\..\output\dhcpclient.o: ..\..\Ecal\BnryTree\BnryTree.h
 ..\..\output\dhcpclient.o: ..\..\Service\./SleepMng/SleepMng.h
 ..\..\output\dhcpclient.o: ..\..\APP\BlackListMng\BListMng.h
 ..\..\output\dhcpclient.o: ..\..\APP\BlackListMng\BListMng_cfg.h

@@ -88,6 +88,7 @@ description：include the header file
 #include "./crc32/crc32.h"
 #include "http_client_iap.h"
 #include "STM8_FM17550_iap.h"
+#include "BnryTree.h"
 
 //service
 #include "./SleepMng/SleepMng.h"

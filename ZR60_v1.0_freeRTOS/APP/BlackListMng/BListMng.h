@@ -35,11 +35,6 @@ descriptionÔºstruct definitions
 descriptionÔºtypedef definitions
 *******************************************************/
 /*****struct definitions*****/
-struct BListMng_node
-{
-    uint8   CardNum[BLISTMNG_CARD_NO_LNG];/*Âç°Âè∑*/
-    BListMng_node* pNext;
-};
 
 
 /******enum definitions******/

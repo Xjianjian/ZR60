@@ -129,6 +129,7 @@
 ..\..\output\http_client_iap.o: ..\..\Ecal\./STD_ADFliter/STD_ADFliter.h
 ..\..\output\http_client_iap.o: ..\..\Ecal\./STD_ADFliter/STD_ADFliterCfg.h
 ..\..\output\http_client_iap.o: ..\..\Ecal\./STD_ADFliter/STD_ADFliterTypes.h
+..\..\output\http_client_iap.o: ..\..\Ecal\BnryTree\BnryTree.h
 ..\..\output\http_client_iap.o: ..\..\Service\./SleepMng/SleepMng.h
 ..\..\output\http_client_iap.o: ..\..\APP\BlackListMng\BListMng.h
 ..\..\output\http_client_iap.o: ..\..\APP\BlackListMng\BListMng_cfg.h

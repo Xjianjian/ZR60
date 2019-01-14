@@ -127,6 +127,7 @@
 ..\..\output\audioio.o: ..\..\Ecal\./STD_ADFliter/STD_ADFliter.h
 ..\..\output\audioio.o: ..\..\Ecal\./STD_ADFliter/STD_ADFliterCfg.h
 ..\..\output\audioio.o: ..\..\Ecal\./STD_ADFliter/STD_ADFliterTypes.h
+..\..\output\audioio.o: ..\..\Ecal\BnryTree\BnryTree.h
 ..\..\output\audioio.o: ..\..\Service\./SleepMng/SleepMng.h
 ..\..\output\audioio.o: ..\..\APP\BlackListMng\BListMng.h
 ..\..\output\audioio.o: ..\..\APP\BlackListMng\BListMng_cfg.h

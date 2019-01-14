@@ -126,6 +126,7 @@
 ..\..\output\tcp_client_shortconnect.o: ..\..\Ecal\./STD_ADFliter/STD_ADFliterTypes.h
 ..\..\output\tcp_client_shortconnect.o: ..\..\Ecal\./PeriStFliter/PSFltr.h
 ..\..\output\tcp_client_shortconnect.o: ..\..\Ecal\./PeriStFliter/PSFltr_Cfg.h
+..\..\output\tcp_client_shortconnect.o: ..\..\Ecal\BnryTree\BnryTree.h
 ..\..\output\tcp_client_shortconnect.o: ..\..\Service\./SleepMng/SleepMng.h
 ..\..\output\tcp_client_shortconnect.o: ..\..\APP\./ZR60_Ctrl/ZR60_Ctrl.h
 ..\..\output\tcp_client_shortconnect.o: ..\..\APP\BlackListMng\BListMng.h

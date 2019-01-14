@@ -127,6 +127,7 @@
 ..\..\output\jsonif.o: ..\..\Ecal\./STD_ADFliter/STD_ADFliter.h
 ..\..\output\jsonif.o: ..\..\Ecal\./STD_ADFliter/STD_ADFliterCfg.h
 ..\..\output\jsonif.o: ..\..\Ecal\./STD_ADFliter/STD_ADFliterTypes.h
+..\..\output\jsonif.o: ..\..\Ecal\BnryTree\BnryTree.h
 ..\..\output\jsonif.o: ..\..\Service\./SleepMng/SleepMng.h
 ..\..\output\jsonif.o: ..\..\APP\BlackListMng\BListMng.h
 ..\..\output\jsonif.o: ..\..\APP\BlackListMng\BListMng_cfg.h

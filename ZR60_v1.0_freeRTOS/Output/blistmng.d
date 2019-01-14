@@ -128,6 +128,7 @@
 ..\..\output\blistmng.o: ..\..\Ecal\./STD_ADFliter/STD_ADFliter.h
 ..\..\output\blistmng.o: ..\..\Ecal\./STD_ADFliter/STD_ADFliterCfg.h
 ..\..\output\blistmng.o: ..\..\Ecal\./STD_ADFliter/STD_ADFliterTypes.h
+..\..\output\blistmng.o: ..\..\Ecal\BnryTree\BnryTree.h
 ..\..\output\blistmng.o: ..\..\Service\./SleepMng/SleepMng.h
 ..\..\output\blistmng.o: ..\..\APP\BlackListMng\BListMng.h
 ..\..\output\blistmng.o: ..\..\APP\./readcard/readcard.h

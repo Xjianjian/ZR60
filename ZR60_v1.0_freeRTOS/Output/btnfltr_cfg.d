@@ -127,6 +127,7 @@
 ..\..\output\btnfltr_cfg.o: ..\..\Ecal\./STD_ADFliter/STD_ADFliter.h
 ..\..\output\btnfltr_cfg.o: ..\..\Ecal\./STD_ADFliter/STD_ADFliterCfg.h
 ..\..\output\btnfltr_cfg.o: ..\..\Ecal\./STD_ADFliter/STD_ADFliterTypes.h
+..\..\output\btnfltr_cfg.o: ..\..\Ecal\BnryTree\BnryTree.h
 ..\..\output\btnfltr_cfg.o: ..\..\Service\./SleepMng/SleepMng.h
 ..\..\output\btnfltr_cfg.o: ..\..\APP\BlackListMng\BListMng.h
 ..\..\output\btnfltr_cfg.o: ..\..\APP\BlackListMng\BListMng_cfg.h

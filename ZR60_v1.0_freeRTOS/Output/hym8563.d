@@ -127,6 +127,7 @@
 ..\..\output\hym8563.o: ..\..\Ecal\./STD_ADFliter/STD_ADFliter.h
 ..\..\output\hym8563.o: ..\..\Ecal\./STD_ADFliter/STD_ADFliterCfg.h
 ..\..\output\hym8563.o: ..\..\Ecal\./STD_ADFliter/STD_ADFliterTypes.h
+..\..\output\hym8563.o: ..\..\Ecal\BnryTree\BnryTree.h
 ..\..\output\hym8563.o: ..\..\Service\./SleepMng/SleepMng.h
 ..\..\output\hym8563.o: ..\..\APP\BlackListMng\BListMng.h
 ..\..\output\hym8563.o: ..\..\APP\BlackListMng\BListMng_cfg.h

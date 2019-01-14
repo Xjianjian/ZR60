@@ -133,6 +133,7 @@ LR_IROM1 0x08040000 0x0005FFFF  {    ; load region size_region
     PSFltr.o (+ZI +RW)
     PSFltr_Cfg.o (+ZI +RW)
     crc32.o (+ZI +RW)
+    BnryTree.o (+ZI +RW)
     main.o (+ZI +RW)
     stm32f4xx_it.o (+ZI +RW)
     SleepMng.o (+ZI +RW)

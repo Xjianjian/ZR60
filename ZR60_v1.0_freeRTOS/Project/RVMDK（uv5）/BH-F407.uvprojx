@@ -335,7 +335,7 @@
               <MiscControls></MiscControls>
               <Define>USE_STDPERIPH_DRIVER,STM32F40_41xxx,</Define>
               <Undefine></Undefine>
-              <IncludePath>..\..\Libraries\CMSIS\Device\ST\STM32F4xx\Include;..\..\Libraries\CMSIS\Include;..\..\Libraries\STM32F4xx_StdPeriph_Driver\inc;..\..\..\ZR60_v1.0_freeRTOS;..\..\Lwip\App;..\..\Lwip\Bsp;..\..\Lwip\Bsp\LAN8742A;..\..\Lwip\lwip-1.4.1;..\..\Lwip\lwip-1.4.1\port;..\..\Lwip\lwip-1.4.1\port\arch;..\..\Lwip\lwip-1.4.1\port\Standalone;..\..\Lwip\lwip-1.4.1\src\include;..\..\Lwip\lwip-1.4.1\src\include\ipv4;..\..\Lwip\lwip-1.4.1\src\include\lwip;..\..\Lwip\lwip-1.4.1\src\include\netif;..\..\Ecal\BtnFltr;..\..\Ecal\UartComn;..\..\Ecal\MemIf;..\..\APP;..\..\APP\BlackListMng;..\..\APP\SeverNewsPush;..\..\APP\NewsPull;..\..\Ecal;..\..\Ecal\JsonIf;..\..\Ecal\Mcu_Init;..\..\Service;..\..\Complex;..\..\Complex\FATFS;..\..\FreeRTOS\Source\include;..\..\FreeRTOS\Source\portable\RVDS\ARM_CM4F;..\..\FreeRTOS;..\..\polarssl-1.0.0\include;..\..\polarssl-1.0.0</IncludePath>
+              <IncludePath>..\..\Libraries\CMSIS\Device\ST\STM32F4xx\Include;..\..\Libraries\CMSIS\Include;..\..\Libraries\STM32F4xx_StdPeriph_Driver\inc;..\..\..\ZR60_v1.0_freeRTOS;..\..\Lwip\App;..\..\Lwip\Bsp;..\..\Lwip\Bsp\LAN8742A;..\..\Lwip\lwip-1.4.1;..\..\Lwip\lwip-1.4.1\port;..\..\Lwip\lwip-1.4.1\port\arch;..\..\Lwip\lwip-1.4.1\port\Standalone;..\..\Lwip\lwip-1.4.1\src\include;..\..\Lwip\lwip-1.4.1\src\include\ipv4;..\..\Lwip\lwip-1.4.1\src\include\lwip;..\..\Lwip\lwip-1.4.1\src\include\netif;..\..\Ecal\BtnFltr;..\..\Ecal\UartComn;..\..\Ecal\MemIf;..\..\APP;..\..\APP\BlackListMng;..\..\APP\SeverNewsPush;..\..\APP\NewsPull;..\..\Ecal;..\..\Ecal\JsonIf;..\..\Ecal\Mcu_Init;..\..\Service;..\..\Complex;..\..\Complex\FATFS;..\..\FreeRTOS\Source\include;..\..\FreeRTOS\Source\portable\RVDS\ARM_CM4F;..\..\FreeRTOS;..\..\polarssl-1.0.0\include;..\..\polarssl-1.0.0;..\..\Ecal\BnryTree</IncludePath>
             </VariousControls>
           </Cads>
           <Aads>
@@ -1789,6 +1789,11 @@
               <FileName>crc32.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\..\Ecal\crc32\crc32.c</FilePath>
+            </File>
+            <File>
+              <FileName>BnryTree.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\..\Ecal\BnryTree\BnryTree.c</FilePath>
             </File>
           </Files>
         </Group>

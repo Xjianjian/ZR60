@@ -127,6 +127,7 @@
 ..\..\output\tcp_client_lngconnect.o: ..\..\Ecal\./STD_ADFliter/STD_ADFliter.h
 ..\..\output\tcp_client_lngconnect.o: ..\..\Ecal\./STD_ADFliter/STD_ADFliterCfg.h
 ..\..\output\tcp_client_lngconnect.o: ..\..\Ecal\./STD_ADFliter/STD_ADFliterTypes.h
+..\..\output\tcp_client_lngconnect.o: ..\..\Ecal\BnryTree\BnryTree.h
 ..\..\output\tcp_client_lngconnect.o: ..\..\Service\./SleepMng/SleepMng.h
 ..\..\output\tcp_client_lngconnect.o: ..\..\APP\BlackListMng\BListMng.h
 ..\..\output\tcp_client_lngconnect.o: ..\..\APP\BlackListMng\BListMng_cfg.h

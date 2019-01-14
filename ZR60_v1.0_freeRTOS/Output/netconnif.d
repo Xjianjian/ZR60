@@ -127,6 +127,7 @@
 ..\..\output\netconnif.o: ..\..\Ecal\./STD_ADFliter/STD_ADFliter.h
 ..\..\output\netconnif.o: ..\..\Ecal\./STD_ADFliter/STD_ADFliterCfg.h
 ..\..\output\netconnif.o: ..\..\Ecal\./STD_ADFliter/STD_ADFliterTypes.h
+..\..\output\netconnif.o: ..\..\Ecal\BnryTree\BnryTree.h
 ..\..\output\netconnif.o: ..\..\Service\./SleepMng/SleepMng.h
 ..\..\output\netconnif.o: ..\..\APP\BlackListMng\BListMng.h
 ..\..\output\netconnif.o: ..\..\APP\BlackListMng\BListMng_cfg.h

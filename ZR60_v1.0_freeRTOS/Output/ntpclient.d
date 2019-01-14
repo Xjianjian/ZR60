@@ -127,6 +127,7 @@
 ..\..\output\ntpclient.o: ..\..\Ecal\./STD_ADFliter/STD_ADFliter.h
 ..\..\output\ntpclient.o: ..\..\Ecal\./STD_ADFliter/STD_ADFliterCfg.h
 ..\..\output\ntpclient.o: ..\..\Ecal\./STD_ADFliter/STD_ADFliterTypes.h
+..\..\output\ntpclient.o: ..\..\Ecal\BnryTree\BnryTree.h
 ..\..\output\ntpclient.o: ..\..\Service\./SleepMng/SleepMng.h
 ..\..\output\ntpclient.o: ..\..\APP\BlackListMng\BListMng.h
 ..\..\output\ntpclient.o: ..\..\APP\BlackListMng\BListMng_cfg.h

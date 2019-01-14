@@ -127,6 +127,7 @@
 ..\..\output\mcu_init.o: ..\..\Ecal\./STD_ADFliter/STD_ADFliter.h
 ..\..\output\mcu_init.o: ..\..\Ecal\./STD_ADFliter/STD_ADFliterCfg.h
 ..\..\output\mcu_init.o: ..\..\Ecal\./STD_ADFliter/STD_ADFliterTypes.h
+..\..\output\mcu_init.o: ..\..\Ecal\BnryTree\BnryTree.h
 ..\..\output\mcu_init.o: ..\..\Service\./SleepMng/SleepMng.h
 ..\..\output\mcu_init.o: ..\..\APP\BlackListMng\BListMng.h
 ..\..\output\mcu_init.o: ..\..\APP\BlackListMng\BListMng_cfg.h
