@@ -70,13 +70,5 @@ void TskdhcpClient_MainFunction(void)
 	{//DHCP…Í«Î≥¨ ±£¨÷ÿ–¬…Í«Îip
 		DHCP_state = DHCP_START;
 	}
-#if 0
-	static uint8 dhcpState_old = 0U;
-	if(dhcpState_old != DHCP_state)
-	{
-		dhcpState_old = DHCP_state;
-		USART_PRINTF_D("DHCP◊¥Ã¨:%d\n",DHCP_state);
-	}
-#endif
 #endif	
 }

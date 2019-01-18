@@ -11,16 +11,9 @@ Data			  Vasion			author
 /*******************************************************
 description£º include the header file
 *******************************************************/
-//#include "lwip/debug.h"
-//#include "lwip/stats.h"
-//#include "lwip/tcp.h"
-//#include "memp.h"
-//#include <stdio.h>
-//#include <stdlib.h>
-//#include <string.h>
-//#include "netconf.h"
-//#include "LAN8742A.h"
 #include "Include.h"
+
+
 /*******************************************************
 description£º macro definitions
 *******************************************************/

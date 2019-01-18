@@ -61,6 +61,8 @@ description锛歩nclude the header file
 
 //App
 
+/*Lwip app文件*/
+#include "dnsAnalysis.h"
 
 /*Lwip库文件*/
 #include "memp.h"

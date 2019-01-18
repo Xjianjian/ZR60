@@ -20,10 +20,11 @@ static err_t NetConnIf_recv(void *arg, struct tcp_pcb *tpcb, struct pbuf *p, err
 static void  NetConnIf_connection_close(struct tcp_pcb *tpcb, NetConnIf_arg* arg);
 static err_t NetConnIf_poll(void *arg, struct tcp_pcb *tpcb);
 static err_t NetConnIf_connected(void *arg, struct tcp_pcb *tpcb, err_t err);
-//static uint8 tcp_LngConnect_parseJson(char * pMsg);
 static void NetConnIf_Err(void *arg,err_t err);
 static void NetConnIf_memset(char *Le_u_Dt, uint16_t Le_u_Lng);
-/* Private functions --------------------------------------------*/
+
+
+/*functions ------------------------------------------*/
 /******************************************************
 *函数名：NetConnIf_Parameter
 
@@ -63,7 +64,6 @@ void NetConnIf_Parameter(void)
 char NetConnIf_Connect(char Le_u_obj,ip_addr_t *Le_u_DestIPaddr, u16_t Le_w_port)
 {
 	char ret;
-	//struct ip_addr DestIPaddr;
 	/* create new tcp pcb */
 	NetConnIf[Le_u_obj].pcb = tcp_new();
 	if (NetConnIf[Le_u_obj].pcb != NULL)
@@ -71,7 +71,6 @@ char NetConnIf_Connect(char Le_u_obj,ip_addr_t *Le_u_DestIPaddr, u16_t Le_w_port
 		tcp_bind(NetConnIf[Le_u_obj].pcb, IP_ADDR_ANY, 0); 
 		/* connect to destination address/port */
 		NetConnIf[Le_u_obj].arg.Object = Le_u_obj;
-		//NetConnIf[Le_u_obj].arg.state = ES_NOT_CONNECTED;
 		tcp_arg(NetConnIf[Le_u_obj].pcb, &(NetConnIf[Le_u_obj].arg));
 		ret = tcp_connect(NetConnIf[Le_u_obj].pcb,Le_u_DestIPaddr,Le_w_port,NetConnIf_connected);
 		if(ERR_OK != ret)
@@ -211,10 +210,9 @@ static err_t NetConnIf_recv(void *arg, struct tcp_pcb *tpcb, struct pbuf *p, err
 
 		NETCONNIF_PRINTF_D("\r\nErrorLogging：连接对象 %d 远端关闭连接\r\n",((NetConnIf_arg*)arg)->Object);
 		ret_err = ERR_OK;
-	}  
-  /* else : a non empty frame was received from echo server but for some reason err != ERR_OK */
+	}
 	else if(err != ERR_OK)
-	{
+	{/* else : a non empty frame was received from echo server but for some reason err != ERR_OK */
 		NETCONNIF_PRINTF_D("\r\nErrorLogging：连接对象 %d 接收函数：err!=ERR_OK\r\n",((NetConnIf_arg*)arg)->Object);
 		/* Acknowledge data reception */
 		tcp_recved(tpcb, p->tot_len); 
@@ -268,7 +266,6 @@ static err_t NetConnIf_recv(void *arg, struct tcp_pcb *tpcb, struct pbuf *p, err
 static err_t NetConnIf_poll(void *arg, struct tcp_pcb *tpcb)
 {
 	err_t ret_err = ERR_OK;
-	//NETCONNIF_PRINTF_D("连接对象 %d 调用了NetConnIf_poll\r\n",((NetConnIf_arg*)arg)->Object);
 	return ret_err;
 }
 
@@ -339,7 +336,8 @@ void NetConnIf_rxConfig(char Le_u_obj,char* Le_p_rxbuf,uint16_t Le_w_lng,void* r
 */
 char NetConnIf_ConnectStatus(char Le_u_obj)
 {
-	if((NetConnIf[Le_u_obj].arg.state == NETCONN_CONNECTED) && (ESTABLISHED == NetConnIf[Le_u_obj].pcb->state))
+	if((NetConnIf[Le_u_obj].arg.state == NETCONN_CONNECTED) \
+		&& (ESTABLISHED == NetConnIf[Le_u_obj].pcb->state))
 	{
 		return 1;
 	}
