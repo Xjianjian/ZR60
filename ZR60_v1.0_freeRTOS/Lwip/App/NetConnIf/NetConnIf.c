@@ -227,11 +227,9 @@ static err_t NetConnIf_recv(void *arg, struct tcp_pcb *tpcb, struct pbuf *p, err
 		tcp_recved(tpcb, p->tot_len); 
 		if(p->len < NetConnIf[((NetConnIf_arg*)arg)->Object].rxlng)
 		{
-			//memset(NetConnIf[((NetConnIf_arg*)arg)->Object].p_rx,0,NetConnIf[((NetConnIf_arg*)arg)->Object].rxlng);//Çå0
 			memcpy(NetConnIf[((NetConnIf_arg*)arg)->Object].p_rx,p->payload,p->len);
 			NetConnIf_memset(&(NetConnIf[((NetConnIf_arg*)arg)->Object].p_rx[p->len]), \
 							 (NetConnIf[((NetConnIf_arg*)arg)->Object].rxlng - p->len));
-			//NETCONNIF_PRINTF_S(NetConnIf[((NetConnIf_arg*)arg)->Object].p_rx);
 			NetConnIf[((NetConnIf_arg*)arg)->Object].rcvCallback();
 		}
 		else

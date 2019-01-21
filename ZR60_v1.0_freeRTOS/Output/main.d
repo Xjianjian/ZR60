@@ -80,6 +80,7 @@
 ..\..\output\main.o: d:\Keil_v5\ARM\ARMCC\Bin\..\include\stddef.h
 ..\..\output\main.o: ..\..\Ecal\./crc32/crc32.h
 ..\..\output\main.o: ..\..\Service\./SleepMng/SleepMng.h
+..\..\output\main.o: ..\..\Lwip\App\dnsAnalysis.h
 ..\..\output\main.o: ..\..\Lwip\lwip-1.4.1\src\include\lwip\memp.h
 ..\..\output\main.o: ..\..\Lwip\lwip-1.4.1\src\include\lwip/memp_std.h
 ..\..\output\main.o: ..\..\Lwip\lwip-1.4.1\src\include\lwip/stats.h

@@ -81,6 +81,7 @@
 ..\..\output\dhcpclient.o: d:\Keil_v5\ARM\ARMCC\Bin\..\include\stddef.h
 ..\..\output\dhcpclient.o: ..\..\Ecal\./crc32/crc32.h
 ..\..\output\dhcpclient.o: ..\..\Service\./SleepMng/SleepMng.h
+..\..\output\dhcpclient.o: ..\..\Lwip\App\dnsAnalysis.h
 ..\..\output\dhcpclient.o: ..\..\Lwip\lwip-1.4.1\src\include\lwip\memp.h
 ..\..\output\dhcpclient.o: ..\..\Lwip\lwip-1.4.1\src\include\lwip/memp_std.h
 ..\..\output\dhcpclient.o: ..\..\Lwip\lwip-1.4.1\src\include\lwip/stats.h

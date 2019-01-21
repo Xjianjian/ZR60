@@ -81,6 +81,7 @@
 ..\..\output\netconnif.o: d:\Keil_v5\ARM\ARMCC\Bin\..\include\stddef.h
 ..\..\output\netconnif.o: ..\..\Ecal\./crc32/crc32.h
 ..\..\output\netconnif.o: ..\..\Service\./SleepMng/SleepMng.h
+..\..\output\netconnif.o: ..\..\Lwip\App\dnsAnalysis.h
 ..\..\output\netconnif.o: ..\..\Lwip\lwip-1.4.1\src\include\lwip\memp.h
 ..\..\output\netconnif.o: ..\..\Lwip\lwip-1.4.1\src\include\lwip/memp_std.h
 ..\..\output\netconnif.o: ..\..\Lwip\lwip-1.4.1\src\include\lwip/stats.h

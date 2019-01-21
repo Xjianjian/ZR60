@@ -93,6 +93,7 @@
 ..\..\output\netconf.o: d:\Keil_v5\ARM\ARMCC\Bin\..\include\stddef.h
 ..\..\output\netconf.o: ..\..\Ecal\./crc32/crc32.h
 ..\..\output\netconf.o: ..\..\Service\./SleepMng/SleepMng.h
+..\..\output\netconf.o: ..\..\Lwip\App\dnsAnalysis.h
 ..\..\output\netconf.o: ..\..\Lwip\lwip-1.4.1\src\include\lwip/stats.h
 ..\..\output\netconf.o: ..\..\Lwip\lwip-1.4.1\src\include\ipv4\lwip/igmp.h
 ..\..\output\netconf.o: ..\..\Lwip\lwip-1.4.1\src\include\lwip/dns.h
@@ -120,13 +121,3 @@
 ..\..\output\netconf.o: ..\..\polarssl-1.0.0\config.h
 ..\..\output\netconf.o: ..\..\polarssl-1.0.0\include\polarssl/havege.h
 ..\..\output\netconf.o: ..\..\polarssl-1.0.0\include\polarssl/certs.h
-..\..\output\netconf.o: ..\..\Lwip\lwip-1.4.1\src\include\lwip/tcpip.h
-..\..\output\netconf.o: ..\..\Lwip\lwip-1.4.1\src\include\lwip/api_msg.h
-..\..\output\netconf.o: ..\..\Lwip\lwip-1.4.1\src\include\lwip/sys.h
-..\..\output\netconf.o: ..\..\Lwip\lwip-1.4.1\port\arch/sys_arch.h
-..\..\output\netconf.o: ..\..\FreeRTOS\Source\include\semphr.h
-..\..\output\netconf.o: ..\..\Lwip\lwip-1.4.1\src\include\lwip/api.h
-..\..\output\netconf.o: ..\..\Lwip\lwip-1.4.1\src\include\lwip/netbuf.h
-..\..\output\netconf.o: ..\..\Lwip\lwip-1.4.1\src\include\lwip/api.h
-..\..\output\netconf.o: ..\..\Lwip\lwip-1.4.1\src\include\lwip/netifapi.h
-..\..\output\netconf.o: ..\..\Lwip\lwip-1.4.1\src\include\lwip/timers.h
