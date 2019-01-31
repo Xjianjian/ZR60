@@ -584,7 +584,13 @@ void UartCmn_Rx_BleMsg(void)
 					blenum++;
 					RcvFlag = 4U;
 				}	
-				else if(Buff == 'A')//准备接收MAC地址
+				else if(Buff == 'A')//准备接收MAC地址(hm -11)
+				{
+					BleTemp[blenum] = Buff;
+					blenum++;
+					RcvFlag = 12U;
+				}
+				else if(Buff == 'G')//准备接收MAC地址(hm -13)
 				{
 					BleTemp[blenum] = Buff;
 					blenum++;
@@ -631,18 +637,34 @@ void UartCmn_Rx_BleMsg(void)
 			{
 				switch(Buff)
 				{
-					case 'A'://蓝牙扫描：准备接收有效数据
+					case 'A'://蓝牙扫描：准备接收有效数据(hm-11)
 					{
 						BleTemp[blenum] = Buff;
 						blenum++;
 						RcvFlag = 7U;
 					}
 					break;
-					case 'C'://蓝牙扫描：准备接收开始或结束数据帧
+					case 'C'://蓝牙扫描：准备接收开始或结束数据帧(hm-11)
 					{
 						BleTemp[blenum] = Buff;
 						blenum++;
 						RcvFlag = 11U;
+					}
+					break;
+					case 'B'://蓝牙扫描：准备接收开始或结束数据帧(hm-13)
+					{
+						BleTemp[blenum] = Buff;
+						blenum++;
+						RcvFlag = 11U;
+					}
+					break;
+					case '0'://蓝牙扫描：准备接收有效数据(hm-13)
+					case '1':
+					case '2':
+					{
+						BleTemp[blenum] = Buff;
+						blenum++;
+						RcvFlag = 7U;
 					}
 					break;
 					default:
@@ -669,10 +691,11 @@ void UartCmn_Rx_BleMsg(void)
 				}
 			}
 			break;
-			case 8U://接收P1~P4,9 Byte
+			case 8U://接收P1~P4,9 Byte(hm-11);接收P2~P4, 19 Byte(hm-13);
 			{
 				BleTemp[blenum] = Buff;
 				blenum++;
+#ifdef HM_11
 				if(blenum == 17)
 				{
 					if((17+BleTemp[16]) < 120U)
@@ -685,20 +708,42 @@ void UartCmn_Rx_BleMsg(void)
 						RcvFlag = 0U;
 					}
 				}
+#else
+				if(blenum == 27)
+				{
+					if((27+BleTemp[26]) < 120U)
+					{
+						RcvFlag = 9U;
+					}
+					else
+					{//接收溢出错误
+						blenum = 0;
+						RcvFlag = 0U;
+					}
+				}		
+#endif
 			}
 			break;
 			case 9U://接收Reset DATA
 			{
 				BleTemp[blenum] = Buff;
 				blenum++;
-				if(blenum == (17+BleTemp[16]))//蓝牙扫描数据接收完成
+#ifdef HM_11
+				if(blenum == (17+BleTemp[16]))//蓝牙扫描数据接收完成(hm-11)
 				{
 					RcvFlag = 10U;
 				}
+#else
+				if(blenum == (27+BleTemp[26]))//蓝牙扫描数据接收完成(hm-13)
+				{
+					RcvFlag = 10U;
+				}				
+#endif
 			}
 			break;
-			case 10U://接收完成处理（一帧数据以'\n'结束，接收到'\n'后对一帧数据处理）
+			case 10U://接收完成处理（一帧数据以'\n'(0d 0a)结束，接收到'\n'后对一帧数据处理）
 			{
+#ifdef HM_11
 				switch(BleTemp[16])
 				{
 					case 0x1A://安卓接收临时密码
@@ -779,6 +824,88 @@ void UartCmn_Rx_BleMsg(void)
 					}
 					break;				 					
 				}
+#else
+				switch(BleTemp[26])
+				{
+					case 0x1A://安卓接收临时密码
+					{
+						if((BleTemp[29] == 0x57) && (BleTemp[30] == 0x5A))
+						{
+							for(i = 0;i < 6;i++)
+							{
+								BleTempPassword[i] = BleTemp[31+i];//门口机密码
+								BleTempPassword[i + 6] = BleTemp[47+i];//围墙机密码
+							}
+							ble_flag = 1;
+						}
+						else
+						{}
+					}
+					break;
+					case 0x0F://安卓接收手机号
+					{
+						if((BleTemp[29] == 0x77) && (BleTemp[30] == 0x7A))
+						{
+							for(i = 0;i < 11U;i++)
+							{
+								Se_u_PhoneNum[i] = BleTemp[31+i];
+							}
+							Se_u_PhoneNumFlg = 1;
+						}
+					}
+					break;
+					case 0x18://安卓校时
+					{
+						if((BleTemp[29] == 0x49) && (BleTemp[30] == 0x54))
+						{
+							strncpy(timelist,BleTemp+31,14);
+							set_time_flag = 1;
+						}
+					}						
+					case 0x08://苹果IOS接收临时密码
+					{
+						if((BleTemp[27] == 0x07) && (BleTemp[28] == 0x09))
+						{
+							for(i = 0;i < 6;i++)
+							{
+								BleTempPassword[i] = BleTemp[29+i];//门口机密码
+								BleTempPassword[i + 6] = BleTemp[29+i];//围墙机密码
+							}
+							ble_flag = 1;
+						}
+					}
+					break;
+					case 0x12://苹果IOS校时
+					{
+						if((BleTemp[29] == 0x54) && (BleTemp[30] == 0x49))
+						{
+							strncpy(timelist,BleTemp+31,14);
+							set_time_flag = 1;
+						}
+					}
+					break;
+					case 0x1E://苹果IOS接收手机号
+					{
+						if((BleTemp[36] == 0x00) && (BleTemp[37] == 0x0A))
+						{
+							if(BleTemp[40] == 0x52)
+							{//表示接收到手机号码数字1,有效的手机号
+								for(i = 0;i < 11U;i++)
+								{
+									Se_u_PhoneNum[i] = BleTemp[40+i];
+								}
+								Se_u_PhoneNumFlg = 1;
+							}
+						}
+					}
+					break;
+					default:
+					{
+						
+					}
+					break;				 					
+				}		
+#endif		
 				blenum = 0;
 				RcvFlag = 0U;
 			}
@@ -816,7 +943,13 @@ void UartCmn_Rx_BleMsg(void)
 					BleTemp[blenum] = Buff;
 					blenum++;
 					RcvFlag = 13U;
-				}	
+				}
+				else if(Buff == 'e')
+				{
+					BleTemp[blenum] = Buff;
+					blenum++;
+					RcvFlag = 13U;
+				}
 				else
 				{
 					blenum = 0U;
@@ -831,7 +964,13 @@ void UartCmn_Rx_BleMsg(void)
 					BleTemp[blenum] = Buff;
 					blenum++;
 					RcvFlag = 14U;
-				}	
+				}
+				else if(Buff == 't')
+				{
+					BleTemp[blenum] = Buff;
+					blenum++;
+					RcvFlag = 15U;
+				}
 				else
 				{
 					blenum = 0U;

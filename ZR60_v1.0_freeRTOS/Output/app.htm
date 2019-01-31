@@ -3,7 +3,7 @@
 <title>Static Call Graph - [..\..\Output\app.axf]</title></head>
 <body><HR>
 <H1>Static Call Graph for image ..\..\Output\app.axf</H1><HR>
-<BR><P>#&#060CALLGRAPH&#062# ARM Linker, 5060422: Last Updated: Mon Jan 07 17:21:24 2019
+<BR><P>#&#060CALLGRAPH&#062# ARM Linker, 5060422: Last Updated: Thu Jan 31 17:51:01 2019
 <BR><P>
 <H3>Maximum Stack Usage =       5272 bytes + Unknown(Cycles, Untraceable Function Pointers)</H3><H3>
 Call chain for Maximum Stack Depth:</H3>
@@ -2161,7 +2161,7 @@ Global Symbols
 <BR>[Called By]<UL><LI><a href="#[1d7]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;Mcu_Init
 </UL>
 
-<P><STRONG><a name="[1aa]"></a>InitZR60Ctrl_parameter</STRONG> (Thumb, 294 bytes, Stack size 24 bytes, zr60_ctrl.o(i.InitZR60Ctrl_parameter))
+<P><STRONG><a name="[1aa]"></a>InitZR60Ctrl_parameter</STRONG> (Thumb, 314 bytes, Stack size 24 bytes, zr60_ctrl.o(i.InitZR60Ctrl_parameter))
 <BR><BR>[Stack]<UL><LI>Max Depth = 152<LI>Call Chain = InitZR60Ctrl_parameter &rArr; hym8563_read_datetime &rArr; hym8563_i2c_read_regs &rArr; Inithym8563_device &rArr; I2C_Mode_Config &rArr; I2C_Init &rArr; RCC_GetClocksFreq
 </UL>
 <BR>[Calls]<UL><LI><a href="#[137]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;read_init_sminfo
@@ -3054,7 +3054,7 @@ Global Symbols
 <LI><a href="#[255]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;UartCmn_Tx_BluetoothMsg
 </UL>
 
-<P><STRONG><a name="[254]"></a>UartCmn_Rx_BleMsg</STRONG> (Thumb, 730 bytes, Stack size 24 bytes, uartcmn.o(i.UartCmn_Rx_BleMsg))
+<P><STRONG><a name="[254]"></a>UartCmn_Rx_BleMsg</STRONG> (Thumb, 742 bytes, Stack size 24 bytes, uartcmn.o(i.UartCmn_Rx_BleMsg))
 <BR><BR>[Stack]<UL><LI>Max Depth = 32<LI>Call Chain = UartCmn_Rx_BleMsg &rArr; strncpy
 </UL>
 <BR>[Calls]<UL><LI><a href="#[250]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;USART_ReceiveData
@@ -8708,7 +8708,7 @@ Local Symbols
 <LI><a href="#[31f]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;rtc_month_days
 </UL>
 
-<P><STRONG><a name="[42c]"></a>tcp_LngConnect_parseJson</STRONG> (Thumb, 608 bytes, Stack size 80 bytes, tcp_client_lngconnect.o(i.tcp_LngConnect_parseJson))
+<P><STRONG><a name="[42c]"></a>tcp_LngConnect_parseJson</STRONG> (Thumb, 616 bytes, Stack size 80 bytes, tcp_client_lngconnect.o(i.tcp_LngConnect_parseJson))
 <BR><BR>[Stack]<UL><LI>Max Depth = 528<LI>Call Chain = tcp_LngConnect_parseJson &rArr; Json_HexToJson &rArr; cJSON_PrintUnformatted &rArr; print &rArr; print_value &rArr; print_number &rArr; __0sscanf &rArr; __vfscanf_char &rArr; __vfscanf &rArr; _scanf_real
 </UL>
 <BR>[Calls]<UL><LI><a href="#[42e]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;tcp_client_BListUpdata
@@ -10288,7 +10288,7 @@ Local Symbols
 <BR>[Called By]<UL><LI><a href="#[242]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;TskZR60Ctrl_MainFunction
 </UL>
 
-<P><STRONG><a name="[202]"></a>OpenDoor_Ble_MainFunction</STRONG> (Thumb, 478 bytes, Stack size 112 bytes, zr60_ctrl.o(i.OpenDoor_Ble_MainFunction))
+<P><STRONG><a name="[202]"></a>OpenDoor_Ble_MainFunction</STRONG> (Thumb, 494 bytes, Stack size 112 bytes, zr60_ctrl.o(i.OpenDoor_Ble_MainFunction))
 <BR><BR>[Stack]<UL><LI>Max Depth = 5200<LI>Call Chain = OpenDoor_Ble_MainFunction &rArr; sm3_time_PasswordAuth &rArr; get_sm3_pass &rArr; sm3 &rArr; CF &rArr; P1
 </UL>
 <BR>[Calls]<UL><LI><a href="#[205]">&gt;&gt;</a>&nbsp;&nbsp;&nbsp;timestamp_timeCalibration

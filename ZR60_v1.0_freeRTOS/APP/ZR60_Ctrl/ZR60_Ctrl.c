@@ -112,7 +112,7 @@ description： function code
 void InitZR60Ctrl_parameter(void)
 {
 	uint8_t  Le_u_i;
-	uint64_t Le_dw_WaitTimer = 0x1FFFFF;
+	uint64_t Le_dw_WaitTimer = 0x6FFFFFF;
 	uint8_t LeZR60_u_Xor = 0;
 	
 	LeZR60_u_Xor = GetMemIf_u_CheckSum(EepromCfg_CardInfo);//读取扇区0数据校验和（存放母卡信息）
@@ -158,7 +158,13 @@ void InitZR60Ctrl_parameter(void)
 	}
 	else
 	{//读取蓝牙mac地址
-		SetUartCmn_BluetoothTxMsg("AT+ADDR?",strlen("AT+ADDR?"));//获取蓝牙模块MAC地址
+		while(--Le_dw_WaitTimer);//等待蓝牙模块稳定（hm-13双模模块上电需要1.5s稳定）
+		Le_dw_WaitTimer = 0x1FFFFF;
+#ifdef HM_11
+		SetUartCmn_BluetoothTxMsg("AT+ADDR?",strlen("AT+ADDR?"));//获取蓝牙模块MAC地址(hm-11)
+#else	
+		SetUartCmn_BluetoothTxMsg("AT+ADDE?",strlen("AT+ADDE?"));//获取蓝牙模块MAC地址(hm-13)
+#endif
 		while((Se_u_BleMacFlg != 1) && (--Le_dw_WaitTimer));//等待获取蓝牙mac地址
 
 		if(Se_u_BleMacFlg == 1)
@@ -604,6 +610,7 @@ static void  OpenDoor_Ble_MainFunction(void)
 	struct rtc_time Le_h_tm;
 	char Le_u_UnlockInfo[32U] = {0};
 	//uint64_t Time = 0U;
+	static uint16_t Ble_openDoor_cnt = 0;
 	if(SeCardSet_u_BleSt == 0U)//蓝牙模块空闲
 	{
 		SeCardSet_u_BleSt = 1U;
@@ -653,8 +660,8 @@ static void  OpenDoor_Ble_MainFunction(void)
 			}
 			else
 			{
-				USART_PRINTF_S("蓝牙 -> 开门");
-				//LED_RED;
+				Ble_openDoor_cnt++;
+				USART_PRINTF_D("蓝牙 -> 开门 %d 次\r\n",Ble_openDoor_cnt);
 				LOCK_ON;
 				SeZR60_u_DoorLockRelaySt = 1U;
 				SeZR60_u_DoorOpenLedEvent = 1U;
@@ -740,10 +747,10 @@ static void  OpenDoor_Ble_MainFunction(void)
 		b_5s_count = 0U;
 	}
 	
-	if(1U == SeCardSet_u_BleSt)//蓝牙模块非空闲时，计时4s(用于蓝牙串口通信超时处理)
+	if(1U == SeCardSet_u_BleSt)//蓝牙模块非空闲时，计时15s(用于蓝牙串口通信超时处理)
 	{
 		SeCardSet_w_BleDisCnntT++;
-		if(SeCardSet_w_BleDisCnntT >= (4000/ZR60CTRL_SCHEDULING_CYCLE))//蓝牙串口通信超时
+		if(SeCardSet_w_BleDisCnntT >= (15000/ZR60CTRL_SCHEDULING_CYCLE))//蓝牙串口通信超时
 		{
 			SeCardSet_w_BleDisCnntT = 0U;
 			SeCardSet_u_BleSt = 0U;

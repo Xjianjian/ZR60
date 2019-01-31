@@ -18,7 +18,7 @@ description： global variable definitions
 /*******************************************************
 description： static variable definitions
 *******************************************************/
-const char CeZR60Ctrl_u_SoftVersion[10U] = {'Z','R','6','0','_','v','1','.','0','\0'};//软件版本
+const char CeZR60Ctrl_u_SoftVersion[10U] = {'Z','R','6','0','_','v','1','.','2','\0'};//软件版本
 /*
 sm3密码生成使用的数据信息
 围墙机：community_id为小区id前4字节；build_num和cell_num全F
@@ -39,7 +39,7 @@ static uint8_t  SeZR60_u_DoorLockRelaySt = 0U;//门锁继电器状态状态，0--关；1--开
 static uint8_t  SeZR60_u_BleUnlockflag = 0U;//指示当前是蓝牙开门
 static uint8_t  SeZR60_u_NetUnlockflag = 0U;//指示当前是网络开门
 static uint8_t  SeZR60_u_BleLogFltrflag = 0U;//蓝牙开门日志记录过滤标志
-static uint8_t	Se_u_FireALARM = 0U;//消防警报标志
+static uint8_t	Se_u_FireALARM = 0U;//消防警报标志：默认关闭消防报警
 static uint16 	Voltage_value[2U] = {0U};//电压值
 static uint8_t 	Se_u_VoltageDifferencCnt = 0U;//压差计数器，两次电压差小于某一电压值时计数
 static uint16  	Se_w_DoorLockdelayT = 0xffffU;//延时关门设置的时间(单位：ms)
@@ -71,6 +71,8 @@ struct rtc_time Ve_h_tm;//日期
 
 static uint8_t  SeCardSet_u_MasterCtrlIap = 0U;//主控在线升级标志
 static uint8_t  SeCardSet_u_CardReaderIap = 0U;//读卡器模块在线升级标志
+
+static uint8_t  SeZR60_u_DoorOpenLedEvent = 0U;//指示灯事件：0--无；1--触发一次开锁指示灯事件
 /*******************************************************
 description： function declaration
 *******************************************************/
@@ -90,6 +92,9 @@ static void  OpenDoor_Net_MainFunction(void);
 static void  OpenDoor_Fire_MainFunction(void);
 static void  OpenDoor_Ble_MainFunction(void);
 static uint8 ZR60Ctrl_u_IsBrdcstAddr(uint8* Le_u_Addr);
+static void ZR60Ctrl_u_RecordUnlockInfo(char* Le_u_UnlockInfo,uint8 Le_u_UnlockEvent);
+static void ZR60Ctrl_u_LedDisplay(void);
+static void  OpenDoor_WX_MainFunction(void);
 /******************************************************
 description： function code
 ******************************************************/
@@ -111,8 +116,7 @@ void InitZR60Ctrl_parameter(void)
 	uint8_t LeZR60_u_Xor = 0;
 	
 	LeZR60_u_Xor = GetMemIf_u_CheckSum(EepromCfg_CardInfo);//读取扇区0数据校验和（存放母卡信息）
-	(void)MemIf_ReadEE(EepromCfg_CardInfo,sminfo.community_id,sizeof(sminfo));//读取母卡信息
-	if((LeZR60_u_Xor ==  GetZR60Ctrl_u_XOR(sminfo.community_id,sizeof(sminfo))) && \
+	if((LeZR60_u_Xor == MemIf_ReadEE(EepromCfg_CardInfo,sminfo.community_id,sizeof(sminfo))) && \
 	  (STD_ACTIVE == GetMemIf_u_DtVild(EepromCfg_CardInfo)))
 	{
 		printf("\n【3】flash存储的母卡信息数据有效 √\r\n");
@@ -134,7 +138,6 @@ void InitZR60Ctrl_parameter(void)
 	}
 	
 	LeZR60_u_Xor = GetMemIf_u_CheckSum(EepromCfg_MacInfo);//读取mac地址数据校验和
-(void)MemIf_ReadEE(EepromCfg_MacInfo,Se_u_MacAddr,sizeof(Se_u_MacAddr));//读取mac地址信息
 	if((LeZR60_u_Xor == MemIf_ReadEE(EepromCfg_MacInfo,Se_u_MacAddr,sizeof(Se_u_MacAddr))) && \
 	  (STD_ACTIVE == GetMemIf_u_DtVild(EepromCfg_MacInfo)))
 	{
@@ -227,7 +230,7 @@ void TskZR60Ctrl_MainFunction(void)
 	/*************************************************
 	*		            声波开锁
 	*************************************************/	
-	OpenDoor_Sound_MainFunction();
+	//OpenDoor_Sound_MainFunction();
 	
 	/*************************************************
 	*		           蓝牙开锁
@@ -235,23 +238,20 @@ void TskZR60Ctrl_MainFunction(void)
 	OpenDoor_Ble_MainFunction();
 	
 	/*************************************************
+	*		          微信开锁
+	*************************************************/		
+	OpenDoor_WX_MainFunction();
+	
+	/*************************************************
 	*		            门锁状态指示灯控制
 	*************************************************/	
-	if(1U == SeZR60_u_DoorLockRelaySt)
-	{//开锁状态下，点亮绿灯
-		LED_GREEN;
-	}
-	
-	if(0U == SeZR60_u_DoorLockRelaySt)
-	{//闭锁状态下，点亮蓝灯
-		LED_RED;
-	}
+	ZR60Ctrl_u_LedDisplay();
 	
 	/*************************************************
 	*		            延时关门控制
 	*************************************************/	
 	w_1sflag_DelayTime++;
-	if(w_1sflag_DelayTime >= 50U)
+	if(w_1sflag_DelayTime >= (1000/ZR60CTRL_SCHEDULING_CYCLE))
 	{
 		w_1sflag_DelayTime = 0U;
 		if(0U == Se_u_CloseDoorDelayTimeSetFlag)
@@ -265,14 +265,14 @@ void TskZR60Ctrl_MainFunction(void)
 				{
 					Se_u_VoltageDifferencCnt = 0U;
 					Voltage_value[1U] = Voltage_value[0U];
-					Se_w_DoorLockdelayT = (uint16)((3100 - Voltage_value[0U]) / 300) + 1U;
-					if(Se_w_DoorLockdelayT > 10U)
+					Se_w_DoorLockdelayT = (uint16)((3100 - Voltage_value[0U]) / 200) + 1U;
+					if(Se_w_DoorLockdelayT >= 15U)
 					{
-						Se_w_DoorLockdelayT = 10*1000;
+						Se_w_DoorLockdelayT = 15*1000;
 					}
-					else if(Se_w_DoorLockdelayT < 3U)
+					else if(Se_w_DoorLockdelayT <= 1U)
 					{
-						Se_w_DoorLockdelayT = 3*1000;
+						Se_w_DoorLockdelayT = 1*1000;
 					}
 					else
 					{
@@ -291,9 +291,9 @@ void TskZR60Ctrl_MainFunction(void)
 			USART_PRINTF_D("电压放大1000倍值：%d\n",Voltage_value[0]);
 		}
 		else
-		{//检查电源差变化，超过设置门限值，重新设置关门延时时间
+		{//检查电压差变化，超过设置门限值，重新设置关门延时时间
 			Voltage_value[0U] = (uint16)((uint32)GetADFliter_ADFliterResult(0)*3300/4096);//每隔1s读取电位器的电压(电压放大1000倍)
-			if(ZR60Ctrl_w_CalPosDifference(Voltage_value[0U],Voltage_value[1U]) >= 250U)//电压变化0.25v
+			if(ZR60Ctrl_w_CalPosDifference(Voltage_value[0U],Voltage_value[1U]) >= 100U)//电压变化0.1v
 			{
 				Se_u_VoltageDifferencCnt++;
 				if(Se_u_VoltageDifferencCnt >= 3U)
@@ -311,17 +311,38 @@ void TskZR60Ctrl_MainFunction(void)
 	}
 	
 	if(0U == GetZR60Ctrl_u_Alarm())
-	{
+	{//消防报警关闭状态下，执行正常关门
 		Se_w_LockDoorTimer++;
-		if(Se_w_LockDoorTimer >= (Se_w_DoorLockdelayT/20))
-		{
-			Se_w_LockDoorTimer = 0U;
+		if(Se_w_LockDoorTimer >= (Se_w_DoorLockdelayT/ZR60CTRL_SCHEDULING_CYCLE))
+		{		
 			LOCK_OFF;
+			Se_w_LockDoorTimer = 0U;
 			SeZR60_u_DoorLockRelaySt = 0U;
 			USART_PRINTF_S("门锁状态 -> 关闭");
 		}
 	}
+
+#ifdef UART_DEBUG	
+	/*************************************************
+	*		          打印时间  
+	*************************************************/	
+	struct rtc_time Le_h_tm;
+	w_500msflag_DelayTime++;
+	if(w_500msflag_DelayTime >= (15000/ZR60CTRL_SCHEDULING_CYCLE))
+	{
+		w_500msflag_DelayTime = 0U;
+#ifdef  HYM8563
+		(void)hym8563_read_datetime(&Le_h_tm);//读取hym8563日期时间
+#else
+		Read_RTC_TimeAndDate(&Le_h_tm);//读取日期时间
+#endif
+		USART_PRINTF_DATE("当前时间：%d.%d.%d %d:%d:%d\n",Le_h_tm.tm_year,Le_h_tm.tm_mon, \
+					  Le_h_tm.tm_mday,Le_h_tm.tm_hour,Le_h_tm.tm_min,Le_h_tm.tm_sec);
+	}
+#endif
 	
+	
+#if 0
 	/*************************************************
 	*		            lcd1062显示任务
 	*************************************************/	
@@ -350,6 +371,7 @@ void TskZR60Ctrl_MainFunction(void)
 			}
 		}
 	}
+#endif
 }
 
 /******************************************************
@@ -384,7 +406,7 @@ static void  CardSet_MainFunction(void)//母卡设置
 		case 1U://等待母卡设置状态
 		{
 			SeCardSet_dw_Timer++;
-			if(SeCardSet_dw_Timer <= (uint32_t)600U)
+			if(SeCardSet_dw_Timer <= (9000/ZR60CTRL_SCHEDULING_CYCLE))
 			{
 				if(ZR60_CTRL_SETCARD == 1)
 				{
@@ -404,10 +426,10 @@ static void  CardSet_MainFunction(void)//母卡设置
 							sminfo1.suffix = sminfo.suffix;
 							read_init_sminfo(&sminfo1,&sm);//根据ic卡小区号，楼栋号，单元号的前8位用于sm3密码验证
 							tcp_LngConnect_Parameter();
-							Settcp_client_DeviceInit();
+							//Settcp_client_DeviceInit();
 						}
 					}
-					
+					Settcp_client_DeviceInit();
 					SetAudioIO_PlayFile(AudioIO_ConfSuccess,2U);
 					memset(test_buf,0,sizeof(test_buf));//test_buf[]清0		
 					SeCardSet_u_St = 0U;
@@ -442,7 +464,7 @@ static void  CardSet_MainFunction(void)//母卡设置
 ******************************************************/
 static void  OpenDoor_IC_MainFunction(void)//开锁
 {
-	uint64_t Time;
+	//uint64_t Time;
 	char Le_u_UnlockInfo[32U] = {0x00};
 	
 	/*设置读ic卡密码*/
@@ -469,37 +491,25 @@ static void  OpenDoor_IC_MainFunction(void)//开锁
 	{
 		if(open_door == 1)//开锁
 		{	
+			USART_PRINTF_S("ic卡 -> 开门");
 			open_door = 0;
-			if(0U == SeZR60_u_DoorLockRelaySt)
-			{//门锁关闭状态
-				/*记录开锁信息*/
-#ifdef  HYM8563
-				hym8563_Currenttime(&Time);
-#else
-				RTC_Currenttime(&Time);
-#endif
-				Json_HexToStr(Le_u_UnlockInfo,SeReadcard_h_CardID.CardID,SeReadcard_h_CardID.lng);
-				WrUnlockLogCache_Queue(&Time,Le_u_UnlockInfo,UNLOCKLOGCACHE_CARD);//开锁日志记录写入缓存队列
-
-				USART_PRINTF_S("ic卡 -> 开门");
-				//LED_RED;
-				LOCK_ON;
-				SeZR60_u_DoorLockRelaySt = 1U;
-				Se_w_LockDoorTimer = 0;
-				SetAudioIO_PlayFile(AudioIO_WelBack,2U);		
-				ZR60_CTRL_AUTOSEARCHCARD = 1;//开启自动寻卡
-				w_SetAutoCard_DelayTime = 0U;
-			}
-			else
-			{
-				SetAudioIO_PlayFile(AudioIO_DoorOpen,2U);	
-			}
+			LOCK_ON;
+			SeZR60_u_DoorLockRelaySt = 1U;
+			SeZR60_u_DoorOpenLedEvent = 1U;
+			Se_w_LockDoorTimer = 0;	
+			ZR60_CTRL_AUTOSEARCHCARD = 1;//开启自动寻卡
+			w_SetAutoCard_DelayTime = 0U;
+			SetAudioIO_PlayFile(AudioIO_DoorOpen,2U);	
+			
+			/*记录开锁信息*/
+			Json_HexToStr(Le_u_UnlockInfo,SeReadcard_h_CardID.CardID,SeReadcard_h_CardID.lng);
+			ZR60Ctrl_u_RecordUnlockInfo(Le_u_UnlockInfo,UNLOCKLOGCACHE_CARD);
 		}
 	}
 	
 	if(ZR60_CTRL_AUTOSEARCHCARD == 1)//自动寻卡设置
 	{
-		if(w_SetAutoCard_DelayTime >= 125)//延时2.5s下发自动寻卡设置
+		if(w_SetAutoCard_DelayTime >= (2500/ZR60CTRL_SCHEDULING_CYCLE))//延时2.5s下发自动寻卡设置
 		{
 			if(1U == GetUartCmn_u_TxIdle())//串口tx空闲
 			{
@@ -564,6 +574,7 @@ static void  OpenDoor_Sound_MainFunction(void)
 				//LED_RED;
 				LOCK_ON;
 				SeZR60_u_DoorLockRelaySt = 1U;
+				SeZR60_u_DoorOpenLedEvent = 1U;
 				Se_w_LockDoorTimer = 0;
 				SetAudioIO_PlayFile(AudioIO_WelBack,2U);		
 			}
@@ -592,7 +603,7 @@ static void  OpenDoor_Ble_MainFunction(void)
 	uint16_t Le_w_i;
 	struct rtc_time Le_h_tm;
 	char Le_u_UnlockInfo[32U] = {0};
-	uint64_t Time = 0U;
+	//uint64_t Time = 0U;
 	if(SeCardSet_u_BleSt == 0U)//蓝牙模块空闲
 	{
 		SeCardSet_u_BleSt = 1U;
@@ -622,10 +633,42 @@ static void  OpenDoor_Ble_MainFunction(void)
 		b_5s_flag = 1U;//5s延时标志，此期间忽略接收到的开门指令
 		b_5s_count = 0U;//5s延时计时器
 		ble_flag = 0;
-		if(0U == SeZR60_u_DoorLockRelaySt)
-		{//门锁关闭状态
-			if(SeZR60_u_NetUnlockflag != 1U)//表示一段时间内无网络开门
+		if(SeZR60_u_NetUnlockflag != 1U)//表示一段时间内无网络开门
+		{
+#ifdef  HYM8563
+			(void)hym8563_read_datetime(&Le_h_tm);//读取hym8563日期时间
+#else
+			Read_RTC_TimeAndDate(&Le_h_tm);//读取日期时间
+#endif
+			USART_PRINTF_DATE("读取的时间：%d.%d.%d %d:%d:%d\n",Le_h_tm.tm_year,Le_h_tm.tm_mon, \
+							  Le_h_tm.tm_mday,Le_h_tm.tm_hour,Le_h_tm.tm_min,Le_h_tm.tm_sec);
+			SeCardSet_dw_nowtime = GetTick(&Le_h_tm);//生成时间戳
+			Se_u_PasswordCmpFlag = sm3_time_PasswordAuth(SeCardSet_dw_nowtime,&sm,TIME_STAMP_BLE,machine_type);
+			if(Se_u_PasswordCmpFlag!= 1)//表示收到密码比对没有成功
 			{
+				USART_PRINTF_S("蓝牙密码验证失败 X");
+				USART_PRINTF_D("set_time_flag:%d\n",set_time_flag);
+				USART_PRINTF_D("蓝牙时间:%s\n",timelist);
+				SetAudioIO_PlayFile(AudioIO_ErrKey,1U);
+			}
+			else
+			{
+				USART_PRINTF_S("蓝牙 -> 开门");
+				//LED_RED;
+				LOCK_ON;
+				SeZR60_u_DoorLockRelaySt = 1U;
+				SeZR60_u_DoorOpenLedEvent = 1U;
+				SeZR60_u_BleUnlockflag = 1U;
+				SeZR60_u_BleLogFltrflag = 1U;
+				Se_w_LockDoorTimer = 0;
+				//SetAudioIO_PlayFile(AudioIO_WelBack,2U);
+				SetAudioIO_PlayFile(AudioIO_DoorOpen,2U);
+			}
+		}
+		else
+		{//检测到最近一段时间内发生过网络远程开门，若检测门锁关闭，执行开门
+			if(0U == SeZR60_u_DoorLockRelaySt)
+			{//门锁关闭状态
 #ifdef  HYM8563
 				(void)hym8563_read_datetime(&Le_h_tm);//读取hym8563日期时间
 #else
@@ -639,7 +682,7 @@ static void  OpenDoor_Ble_MainFunction(void)
 				{
 					USART_PRINTF_S("蓝牙密码验证失败 X");
 					USART_PRINTF_D("set_time_flag:%d\n",set_time_flag);
-					USART_PRINTF_D("蓝牙时间:%s\n",timelist);
+					//USART_PRINTF_D("蓝牙时间:%s\n",timelist);
 					SetAudioIO_PlayFile(AudioIO_ErrKey,1U);
 				}
 				else
@@ -648,44 +691,43 @@ static void  OpenDoor_Ble_MainFunction(void)
 					//LED_RED;
 					LOCK_ON;
 					SeZR60_u_DoorLockRelaySt = 1U;
+					SeZR60_u_DoorOpenLedEvent = 1U;
 					SeZR60_u_BleUnlockflag = 1U;
 					SeZR60_u_BleLogFltrflag = 1U;
 					Se_w_LockDoorTimer = 0;
-					SetAudioIO_PlayFile(AudioIO_WelBack,2U);
+					SetAudioIO_PlayFile(AudioIO_DoorOpen,2U);
 				}
-			}
-		}
-		else
-		{
-			USART_PRINTF_S("门锁已开");
-			SetAudioIO_PlayFile(AudioIO_DoorOpen,2U);	
+			}	
 		}
 	}
 	
-	if((1U == Se_u_PhoneNumFlg) && (1U == SeZR60_u_BleLogFltrflag))//上传蓝牙开门日志
+	if(1U == SeZR60_u_BleLogFltrflag)//上传蓝牙开门日志
+	{
+		if(1U == Se_u_PhoneNumFlg)//接收到蓝牙手机号
+		{
+			Se_u_PhoneNumFlg = 0U;
+			SeZR60_u_BleLogFltrflag = 0U;
+			USART_PRINTF_D("接收的手机号：%s\n",Se_u_PhoneNum);
+			char temp = 33;
+			for(Le_w_i=0U;Le_w_i < 11U;Le_w_i++)
+			{//手机号码解码
+				Le_u_UnlockInfo[Le_w_i] = Se_u_PhoneNum[Le_w_i] - temp;
+				temp = temp - 2;
+			}
+			USART_PRINTF_D("接收的手机号解码后：%s\n",Le_u_UnlockInfo);
+			ZR60Ctrl_u_RecordUnlockInfo(Le_u_UnlockInfo,UNLOCKLOGCACHE_BLE);
+		}
+	}
+	else
 	{
 		Se_u_PhoneNumFlg = 0U;
-		SeZR60_u_BleLogFltrflag = 0U;
-		USART_PRINTF_D("接收的手机号：%s\n",Se_u_PhoneNum);
-#ifdef  HYM8563
-		hym8563_Currenttime(&Time);
-#else
-		RTC_Currenttime(&Time);
-#endif
-		char temp = 33;
-		for(Le_w_i=0U;Le_w_i < 11U;Le_w_i++)
-		{//手机号码解码
-			Le_u_UnlockInfo[Le_w_i] = Se_u_PhoneNum[Le_w_i] - temp;
-			temp = temp - 2;
-		}
-		USART_PRINTF_D("接收的手机号解码后：%s\n",Le_u_UnlockInfo);
-		WrUnlockLogCache_Queue(&Time,Le_u_UnlockInfo,UNLOCKLOGCACHE_BLE);//开锁日志记录写入缓存队列
 	}
+	
 	
 	if(1U == b_5s_flag)//蓝牙开门时，计时（用于处理（清除）5s内接收到的蓝牙开门指令）
 	{
 		b_5s_count++;
-		if(b_5s_count >= 170U)//3.25s计时
+		if(b_5s_count >= (5000/ZR60CTRL_SCHEDULING_CYCLE))//5s计时
 		{//5s计时时间到，清b_5s_flag标志以允许蓝牙开门
 			b_5s_count = 0U;
 			ble_flag = 0U;//清开门指令
@@ -701,7 +743,7 @@ static void  OpenDoor_Ble_MainFunction(void)
 	if(1U == SeCardSet_u_BleSt)//蓝牙模块非空闲时，计时4s(用于蓝牙串口通信超时处理)
 	{
 		SeCardSet_w_BleDisCnntT++;
-		if(SeCardSet_w_BleDisCnntT >= 200U)//蓝牙串口通信超时
+		if(SeCardSet_w_BleDisCnntT >= (4000/ZR60CTRL_SCHEDULING_CYCLE))//蓝牙串口通信超时
 		{
 			SeCardSet_w_BleDisCnntT = 0U;
 			SeCardSet_u_BleSt = 0U;
@@ -716,7 +758,7 @@ static void  OpenDoor_Ble_MainFunction(void)
 	
 	if((SeZR60_u_BleUnlockflag == 1U) || (SeZR60_u_NetUnlockflag == 1U))
 	{//蓝牙或网络开门
-		if(w_BleNetExcUnlockDelayTimer >= 250)//2.5s，期间忽略接收到的蓝牙或网络开门请求
+		if(w_BleNetExcUnlockDelayTimer >= (3000/ZR60CTRL_SCHEDULING_CYCLE))//3s，期间忽略接收到的蓝牙或网络开门请求
 		{
 			SeZR60_u_BleUnlockflag = 0U;
 			SeZR60_u_NetUnlockflag = 0U;
@@ -744,7 +786,7 @@ static void  OpenDoor_Ble_MainFunction(void)
 static void  OpenDoor_Password_MainFunction(void)//密码验证
 {
 	struct rtc_time tm;
-	uint64_t Time;
+	//uint64_t Time;
 	//char Le_u_UnlockInfo[32U] = {0x00};
 	uint8_t  buf[2]={0x20,0x00};
 	static uint16_t SeCardSet_w_ClrTimer = 0U;//清按键值接收buff计时器
@@ -771,7 +813,7 @@ static void  OpenDoor_Password_MainFunction(void)//密码验证
 					{
 						key_num = 0;
 						memset(test_buf,0,sizeof(test_buf));
-						sm3_flag = 1;		
+						//sm3_flag = 1;		
 					}
 					else if(u_ActualKeyValue == 'A')//按键 -> 确认
 					{ 												
@@ -779,7 +821,7 @@ static void  OpenDoor_Password_MainFunction(void)//密码验证
 						{//当前为临时密码开门
 							strncpy(key_buf,test_buf,6);
 							key_flag = 1;
-							state = 0;	
+							//state = 0;	
 						}
 						else if(key_num == 9)
 						{//当前为固件刷新
@@ -806,7 +848,7 @@ static void  OpenDoor_Password_MainFunction(void)//密码验证
 						}
 						key_num = 0;
 						memset(test_buf,0,sizeof(test_buf));
-						sm3_flag = 0;												 
+						//sm3_flag = 0;												 
 					}
 					else
 					{	
@@ -821,21 +863,21 @@ static void  OpenDoor_Password_MainFunction(void)//密码验证
 							memset(test_buf,0,sizeof(test_buf));
 							SetAudioIO_PlayFile(AudioIO_ErrKey,1U);
 						}
-						sm3_flag = 1;
+						//sm3_flag = 1;
 					}											
-					state = 1;
+					//state = 1;
 				}
 			}
 			else
 			{
-				USART_PRINTF_S("\r\n读取按键值失败");
+				USART_PRINTF_S("\r\nErrorLogging：读取按键值失败\r\n");
 			}
 		}
 		else
 		{
 			if(SeCardSet_u_PasswordKeySt == STD_ACTIVE)
 			{
-				USART_PRINTF_S("\r\n无效按键中断滤除\r\n");
+				//USART_PRINTF_S("\r\n无效按键中断滤除\r\n");
 				SeCardSet_u_BtnFltrFlg = 0U;
 				SeCardSet_u_PasswordKeySt = 0U;
 			}
@@ -846,8 +888,6 @@ static void  OpenDoor_Password_MainFunction(void)//密码验证
 		SeCardSet_u_PasswordKeySt = 0U;
 	}
 	
-	
-
 	if (key_flag == 1)//按键6位密码标志
 	{
 		key_flag = 0;
@@ -864,33 +904,20 @@ static void  OpenDoor_Password_MainFunction(void)//密码验证
 		}
 		else
 		{
-			if(0U == SeZR60_u_DoorLockRelaySt)
-			{//门锁关闭状态
-				/*记录开锁信息*/
-#ifdef  HYM8563
-				hym8563_Currenttime(&Time);
-#else
-				RTC_Currenttime(&Time);
-#endif
-				WrUnlockLogCache_Queue(&Time,"unknown",UNLOCKLOGCACHE_PASSWORD);//开锁日志记录写入缓存队列
-					
-				USART_PRINTF_S("临时密码 -> 开门");
-				//LED_RED;
-				LOCK_ON;
-				SeZR60_u_DoorLockRelaySt = 1U;
-				Se_w_LockDoorTimer = 0;
-				memset(key_buf,0,6);
-				SetAudioIO_PlayFile(AudioIO_WelBack,2U);
-			}
-			else
-			{
-				USART_PRINTF_S("门锁已开");
-				SetAudioIO_PlayFile(AudioIO_DoorOpen,2U);	
-			}
+			USART_PRINTF_S("临时密码 -> 开门");
+			LOCK_ON;
+			SeZR60_u_DoorLockRelaySt = 1U;
+			SeZR60_u_DoorOpenLedEvent = 1U;
+			Se_w_LockDoorTimer = 0;
+			memset(key_buf,0,6);
+			SetAudioIO_PlayFile(AudioIO_DoorOpen,2U);
+			
+			/*记录开锁信息*/
+			ZR60Ctrl_u_RecordUnlockInfo("unknown",UNLOCKLOGCACHE_TEMPPSWORD);
 		}
 	}
 	
-	if(SeCardSet_w_ClrTimer >=600U)//10ms调度周期，大概12s
+	if(SeCardSet_w_ClrTimer >= (12000/ZR60CTRL_SCHEDULING_CYCLE))//10ms调度周期，大概12s
 	{
 		key_num = 0;
 		key_flag = 0;
@@ -917,32 +944,19 @@ static void  OpenDoor_Password_MainFunction(void)//密码验证
 ******************************************************/
 static void  OpenDoor_Switch_MainFunction(void)
 {
-	uint64_t Time = 0U;
+	//uint64_t Time = 0U;
 	if( GetBtnFltr_u_BtnShrtSt(Key_Unlock) == STD_ACTIVE)//门内开关操作
 	{
-		ClrBtnFltr_BtnShrtValid(Key_Unlock);
-		if(0U == SeZR60_u_DoorLockRelaySt)
-		{//门锁关闭状态
-			/*记录开锁信息*/
-#ifdef  HYM8563
-			hym8563_Currenttime(&Time);
-#else
-			RTC_Currenttime(&Time);
-#endif
-			WrUnlockLogCache_Queue(&Time,"unknown",UNLOCKLOGCACHE_DOORSWITCH);//开锁日志记录写入缓存队列
-
-			USART_PRINTF_S("门内开关 -> 开门");
-			//LED_RED;
-			LOCK_ON;
-			Se_w_LockDoorTimer = 0;
-			SeZR60_u_DoorLockRelaySt = 1U;
-			SetAudioIO_PlayFile(AudioIO_BonVoyage,2U);	
-		}
-		else
-		{
-			USART_PRINTF_S("门锁已开");
-			SetAudioIO_PlayFile(AudioIO_DoorOpen,2U);
-		}
+		USART_PRINTF_S("门内开关 -> 开门");
+		ClrBtnFltr_BtnShrtValid(Key_Unlock);	
+		LOCK_ON;
+		Se_w_LockDoorTimer = 0;
+		SeZR60_u_DoorLockRelaySt = 1U;
+		SeZR60_u_DoorOpenLedEvent = 1U;
+		SetAudioIO_PlayFile(AudioIO_DoorOpen,2U);	
+		
+		/*记录开锁信息*/
+		//ZR60Ctrl_u_RecordUnlockInfo("unknown",UNLOCKLOGCACHE_DOORSWITCH);
 	}
 }
 
@@ -960,24 +974,15 @@ static void  OpenDoor_Switch_MainFunction(void)
 ******************************************************/
 static void  OpenDoor_Fire_MainFunction(void)
 {
-	uint64_t Time = 0U;
+	//uint64_t Time = 0U;
 	switch(Se_u_FireALARM)
 	{
 		case 0U:
 		{//消防报警未触发状态
 			if(GetPSFltr_u_PeriSt(Key_Alarm) == STD_ON)//消防报警
 			{
-				//ClrBtnFltr_BtnShrtValid(Key_Alarm);
-				//记录开锁信息
-#ifdef  HYM8563
-				hym8563_Currenttime(&Time);
-#else
-				RTC_Currenttime(&Time);
-#endif
-				WrUnlockLogCache_Queue(&Time,"unknown",UNLOCKLOGCACHE_FIREALARM);//开锁日志记录写入缓存队列
-				
+				//ClrBtnFltr_BtnShrtValid(Key_Alarm);	
 				USART_PRINTF_S("消防警报 -> 开门");
-				//LED_RED;
 				LOCK_ON;//开门
 				SeZR60_u_DoorLockRelaySt = 1U;
 				USART_Cmd(UART5,  DISABLE);//关闭串口5中断
@@ -985,32 +990,23 @@ static void  OpenDoor_Fire_MainFunction(void)
 				USART_Cmd(UART4,  DISABLE);//关闭串口4中断
 				u_TouchKeyScanflag = 0;//关闭按键板读取
 				Se_u_FireALARM = 1U;
-				SeCardSet_dw_ALARMDlyTime = 400U;
+				SeCardSet_dw_ALARMDlyTime = (2500/ZR60CTRL_SCHEDULING_CYCLE);
+				
+				//记录开锁信息
+				//ZR60Ctrl_u_RecordUnlockInfo("unknown",UNLOCKLOGCACHE_FIREALARM);
 			}		
 		}
 		break;
 		case 1U:
-		{//消防报警触发状态
-			if(GetPSFltr_u_PeriSt(Key_Alarm) == STD_ON)//消防报警
+		{//消防报警触发状态,掉电复位/重启后才恢复正常工作
+			if(0U == GetAudioIO_u_PlaySt())
 			{
-				if(0U == GetAudioIO_u_PlaySt())
+				SeCardSet_dw_ALARMDlyTime++;
+				if(SeCardSet_dw_ALARMDlyTime >= (2500/ZR60CTRL_SCHEDULING_CYCLE))//消防报警频率控制：2.5s/次
 				{
-					SeCardSet_dw_ALARMDlyTime++;
-					if(SeCardSet_dw_ALARMDlyTime >= 100U)//消防报警频率控制
-					{
-						SeCardSet_dw_ALARMDlyTime = 0U;
-						SetAudioIO_PlayFile(AudioIO_FireAlarm,2U);
-					}
+					SeCardSet_dw_ALARMDlyTime = 0U;
+					SetAudioIO_PlayFile(AudioIO_FireAlarm,2U);
 				}
-			}
-			else
-			{//解除消防报警
-				//恢复到报警前状态
-				USART_Cmd(UART5,  ENABLE);//关闭串口5中断
-				USART_Cmd(USART3, ENABLE);//关闭串口3中断
-				USART_Cmd(UART4,  ENABLE);//关闭串口4中断
-				u_TouchKeyScanflag = 1;//关闭按键板读取
-				Se_u_FireALARM = 0U;
 			}
 		}
 		break;
@@ -1036,35 +1032,72 @@ static void  OpenDoor_Fire_MainFunction(void)
 static void  OpenDoor_Net_MainFunction(void)
 {
 	char Le_u_UnlockInfo[32U] = {0};
-	uint64_t Time = 0U;
+	//uint64_t Time = 0U;
 	if( 1U == ZR60_CTRL_REMOTE_UNLOCK)
 	{
+		USART_PRINTF_S("远程 -> 开门");
 		ZR60_CTRL_REMOTE_UNLOCK = 0U;
-		if(0U == SeZR60_u_DoorLockRelaySt)
-		{//门锁关闭状态
-			if(SeZR60_u_BleUnlockflag != 1U)//表示一段时间内无蓝牙开门
-			{
-				/*记录开锁信息*/
-#ifdef  HYM8563
-				hym8563_Currenttime(&Time);
-#else
-				RTC_Currenttime(&Time);
-#endif
-				WrUnlockLogCache_Queue(&Time,Le_u_UnlockInfo,UNLOCKLOGCACHE_REMOTE);//开锁日志记录写入缓存队列
-				
-				USART_PRINTF_S("远程 -> 开门");
-				//LED_RED;
-				LOCK_ON;
-				SeZR60_u_DoorLockRelaySt = 1U;
-				SeZR60_u_NetUnlockflag = 1U;
-				Se_w_LockDoorTimer = 0;
-				SetAudioIO_PlayFile(AudioIO_WelBack,2U);	
-			}
+		if(SeZR60_u_BleUnlockflag != 1U)//表示一段时间内无蓝牙开门
+		{
+			LOCK_ON;
+			SeZR60_u_DoorLockRelaySt = 1U;
+			SeZR60_u_DoorOpenLedEvent = 1U;
+			SeZR60_u_NetUnlockflag = 1U;
+			Se_w_LockDoorTimer = 0;
+			SetAudioIO_PlayFile(AudioIO_DoorOpen,2U);
+
+			Gettcp_LngConnect_PhoneNo(Le_u_UnlockInfo);
+			/*记录开锁信息*/
+			ZR60Ctrl_u_RecordUnlockInfo(Le_u_UnlockInfo,UNLOCKLOGCACHE_REMOTE);
 		}
 		else
+		{//检测到最近一段时间内发生过蓝牙开门，若检测门锁关闭，执行开门
+			if(0U == SeZR60_u_DoorLockRelaySt)
+			{//门锁关闭状态
+				LOCK_ON;
+				SeZR60_u_DoorLockRelaySt = 1U;
+				SeZR60_u_DoorOpenLedEvent = 1U;
+				SeZR60_u_NetUnlockflag = 1U;
+				Se_w_LockDoorTimer = 0;
+				SetAudioIO_PlayFile(AudioIO_DoorOpen,2U);
+				Gettcp_LngConnect_PhoneNo(Le_u_UnlockInfo);		
+				/*记录开锁信息*/
+				ZR60Ctrl_u_RecordUnlockInfo(Le_u_UnlockInfo,UNLOCKLOGCACHE_REMOTE);
+			}
+		}
+	}	
+}
+
+/******************************************************
+*函数名：OpenDoor_WX_MainFunction
+
+*形  参：
+
+*返回值：
+
+*描  述：微信公众号开门
+
+*备  注：
+******************************************************/
+static void  OpenDoor_WX_MainFunction(void)
+{
+	char Le_u_UnlockInfo[32U] = {0};
+	
+	if( 1U == ZR60_CTRL_WX_UNLOCK)
+	{
+		USART_PRINTF_S("微信公众号 -> 开门");
+		ZR60_CTRL_WX_UNLOCK = 0U;
+
+		LOCK_ON;
+		Se_w_LockDoorTimer = 0;
+		SeZR60_u_DoorLockRelaySt = 1U;
+		SeZR60_u_DoorOpenLedEvent = 1U;
+		SetAudioIO_PlayFile(AudioIO_DoorOpen,2U);
+
+		if(1 == Gettcp_LngConnect_WXOpenInfo(Le_u_UnlockInfo))
 		{
-			USART_PRINTF_S("门锁已开");
-			SetAudioIO_PlayFile(AudioIO_DoorOpen,2U);
+			/*记录开锁信息*/
+			ZR60Ctrl_u_RecordUnlockInfo(Le_u_UnlockInfo,UNLOCKLOGCACHE_WECHAT);
 		}
 	}	
 }
@@ -1175,26 +1208,6 @@ static uint8_t  ZR60Ctrl_TonesPlay(uint16_t temp)
 			USART_PRINTF_S("\r\n键值 4\r\n");
 		}
 		break;
-        //case 0x0100:
-		//	USART_PRINTF_S("键值0x0100");
-		//break;
-       //case 0x0200:
-		//	USART_PRINTF_S("键值0x0200");
-		//break;
-        //case 0x0400:
-		//{
-		//	SetAudioIO_PlayFile(AudioIO_keyVoice);
-		//	ret =  '6';
-		//	USART_PRINTF_S("6");
-		//}
-		//break;
-        //case 0x0800:
-		//{
-		//	SetAudioIO_PlayFile(AudioIO_keyVoice);
-		//	ret =  '9';
-		//	USART_PRINTF_S("9");
-		//}
-		//break;
         case 0x1000:
 		{
 			SetAudioIO_PlayFile(AudioIO_keyVoice,2U);
@@ -1404,6 +1417,108 @@ static uint8 ZR60Ctrl_u_IsBrdcstAddr(uint8* Le_u_Addr)
 		}
 	}
 	return Le_u_ret;
+}
+
+/*
+	记录开锁信息
+*/
+static void ZR60Ctrl_u_RecordUnlockInfo(char* Le_u_UnlockInfo,uint8 Le_u_UnlockEvent)
+{
+	uint64_t Time = 0U;
+#ifdef  HYM8563
+	hym8563_Currenttime(&Time);
+#else
+	RTC_Currenttime(&Time);
+#endif
+	WrUnlockLogCache_Queue(&Time,Le_u_UnlockInfo,Le_u_UnlockEvent);//开锁日志记录写入缓存队列
+}
+
+
+/*
+	指示灯状态显示
+*/
+static void ZR60Ctrl_u_LedDisplay(void)
+{
+	static uint8_t Le_u_cnt = 0U;
+	static uint8_t Le_u_LedSt = 0U;//0--熄灭；1--点亮
+	static uint16_t Le_w_timer = 0U;
+	if((0 != GET_PHY_LINK_STATUS()) && (Se_u_FireALARM == 0U))//正常工作状态
+	{
+		switch(SeZR60_u_DoorOpenLedEvent)
+		{
+			case 0:
+			{
+				LED_GREEN;
+				Le_u_LedSt = 1U;
+			}
+			break;
+			case 1:
+			{
+				LED_RGBOFF;
+				Le_u_LedSt = 0U;
+				Le_u_cnt = 0;
+				Le_w_timer = 0U;
+				SeZR60_u_DoorOpenLedEvent = 2;
+			}
+			break;
+			case 2:
+			{
+				if(Le_w_timer >= (100/ZR60CTRL_SCHEDULING_CYCLE))//大概100ms
+				{
+					Le_w_timer = 0U;
+					if(1 == Le_u_LedSt)
+					{
+						LED_RGBOFF;
+						Le_u_LedSt = 0U;
+					}
+					else
+					{
+						LED_GREEN;
+						Le_u_LedSt = 1U;
+						Le_u_cnt++;
+					}
+					
+					if(Le_u_cnt >= 3)
+					{
+						Le_u_cnt = 0;
+						Le_w_timer = 0U;
+						SeZR60_u_DoorOpenLedEvent = 0;
+					}
+				}
+				else
+				{
+					Le_w_timer++;
+				}
+			}
+			break;
+			default:
+			{
+				SeZR60_u_DoorOpenLedEvent = 0;
+			}
+			break;
+		}
+	}
+	else//故障状态
+	{//绿灯持续闪烁（间隔200ms）
+		if(Le_w_timer >= (200/ZR60CTRL_SCHEDULING_CYCLE))//大概200ms
+		{
+			Le_w_timer = 0U;
+			if(1 == Le_u_LedSt)
+			{
+				LED_RGBOFF;
+				Le_u_LedSt = 0U;
+			}
+			else
+			{
+				LED_GREEN;
+				Le_u_LedSt = 1U;
+			}
+		}
+		else
+		{
+			Le_w_timer++;
+		}
+	}
 }
 
 

@@ -19,7 +19,7 @@ description锛歩nclude the header file
 //#define NET_DEBUG
 //#define TIME_DEBUG
 //#define freeRTOS_RUN_STATUS_DEBUG
-
+//#define	 HM_11    //定义时，使用hm-11蓝牙模块,未定义使用hm-13
 
 /*C标准库文件*/
 #include <string.h>
