@@ -63,6 +63,8 @@ static uint32_t SeCardSet_dw_ALARMDlyTime = 0U;//警报延时时间
 static uint8_t  SeCardSet_u_PasswordKeySt = 0U;//密码按键状态
 static uint8_t  SeCardSet_u_BtnFltrFlg = 0U;//无效按键滤除标志
 
+static uint8_t  set_time_success =0U;//蓝牙校时成功标志
+static uint32_t SeCardSet_dw_setTimeCnt = 0U;//蓝牙校时延时计时器
 static uint8_t  SeCardSet_u_BleSt = 0U;//蓝牙状态：0--空闲；1--正在扫描
 static uint16_t SeCardSet_w_BleDisCnntT = 0U;//蓝牙断开超时计时器
 static uint32_t SeCardSet_dw_nowtime = 0U;
@@ -73,6 +75,7 @@ static uint8_t  SeCardSet_u_MasterCtrlIap = 0U;//主控在线升级标志
 static uint8_t  SeCardSet_u_CardReaderIap = 0U;//读卡器模块在线升级标志
 
 static uint8_t  SeZR60_u_DoorOpenLedEvent = 0U;//指示灯事件：0--无；1--触发一次开锁指示灯事件
+
 /*******************************************************
 description： function declaration
 *******************************************************/
@@ -622,11 +625,25 @@ static void  OpenDoor_Ble_MainFunction(void)
 	/*处理蓝牙发来的时间校准标志*/
 	if(0U == Getntpclient_u_NtpCalTimeSt())
 	{//非ntp校时时，检查是否有蓝牙校时请求
-		if(set_time_flag == 1)
+		if(0 == set_time_success)
 		{
-			USART_PRINTF_D("蓝牙校时，蓝牙时间:%s\n",timelist);
-			timestamp_timeCalibration(timelist,TIME_STAMP_BJT);//校准时钟芯片时间
-			set_time_flag = 0;
+			if(set_time_flag == 1)
+			{
+				set_time_flag = 0;
+				USART_PRINTF_D("蓝牙校时，蓝牙时间:%s\n",timelist);
+				timestamp_timeCalibration(timelist,TIME_STAMP_BJT);//校准时钟芯片时间
+				set_time_success = 1;
+				SeCardSet_dw_setTimeCnt = 0;
+			}
+		}
+		else
+		{//蓝牙校时完成后，距离下次校时延迟半小时
+			SeCardSet_dw_setTimeCnt++;
+			if(SeCardSet_dw_setTimeCnt >= (1800000/ZR60CTRL_SCHEDULING_CYCLE))
+			{
+				set_time_flag = 0;
+				set_time_success = 0;
+			}
 		}
 	}
 	else
@@ -747,10 +764,10 @@ static void  OpenDoor_Ble_MainFunction(void)
 		b_5s_count = 0U;
 	}
 	
-	if(1U == SeCardSet_u_BleSt)//蓝牙模块非空闲时，计时15s(用于蓝牙串口通信超时处理)
+	if(1U == SeCardSet_u_BleSt)//蓝牙模块非空闲时，计时8s(用于蓝牙串口通信超时处理)
 	{
 		SeCardSet_w_BleDisCnntT++;
-		if(SeCardSet_w_BleDisCnntT >= (15000/ZR60CTRL_SCHEDULING_CYCLE))//蓝牙串口通信超时
+		if(SeCardSet_w_BleDisCnntT >= (8000/ZR60CTRL_SCHEDULING_CYCLE))//蓝牙串口通信超时
 		{
 			SeCardSet_w_BleDisCnntT = 0U;
 			SeCardSet_u_BleSt = 0U;

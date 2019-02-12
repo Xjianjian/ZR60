@@ -524,7 +524,7 @@ void UartCmn_Tx_BluetoothMsg(void)
 
 void UartCmn_Rx_BleMsg(void)
 {
-	uint8_t i,j;
+	uint8_t i;
 	uint8 Buff;
 	if(USART_GetFlagStatus(UART5,UARTCMN_FLAG_OE)  || USART_GetFlagStatus(UART5,UARTCMN_FLAG_FE))/* 帧错误标志位 或者 数据溢出标志位 */
 	{
@@ -711,12 +711,20 @@ void UartCmn_Rx_BleMsg(void)
 #else
 				if(blenum == 27)
 				{
-					if((27+BleTemp[26]) < 120U)
+					if(BleTemp[26] != 0)
 					{
-						RcvFlag = 9U;
+						if((27+BleTemp[26]) < 120U)
+						{
+							RcvFlag = 9U;
+						}
+						else
+						{//接收溢出错误
+							blenum = 0;
+							RcvFlag = 0U;
+						}
 					}
 					else
-					{//接收溢出错误
+					{
 						blenum = 0;
 						RcvFlag = 0U;
 					}
