@@ -87,7 +87,7 @@ char NetConnIf_Connect(char Le_u_obj,ip_addr_t *Le_u_DestIPaddr, u16_t Le_w_port
 	}
 	else
 	{
-		ret = ERR_MEM;
+		ret = (char)ERR_MEM;
 		/* deallocate the pcb */
 		NETCONNIF_PRINTF_D("\r\nErrorLogging：连接对象 %d tcp控制块分配失败\r\n",Le_u_obj);
 	}
@@ -239,7 +239,7 @@ static err_t NetConnIf_recv(void *arg, struct tcp_pcb *tpcb, struct pbuf *p, err
 		else
 		{
 			NETCONNIF_PRINTF_D("\r\nErrorLogging：连接对象 %d 接收数据长度溢出\r\n",((NetConnIf_arg*)arg)->Object);
-			NETCONNIF_PRINTF_S(p->payload);
+			NETCONNIF_PRINTF_S((char*)p->payload);
 		}
 		/* free received pbuf*/
 		pbuf_free(p);

@@ -26,15 +26,7 @@
   */
 
 /* Includes ------------------------------------------------------------------*/
-//#include "lwip/debug.h"
-//#include "lwip/stats.h"
-//#include "lwip/tcp.h"
-//#include "memp.h"
-//#include <stdio.h>
-//#include <stdlib.h>
-//#include <string.h>
-//#include "netconf.h"
-//#include "LAN8742A.h"
+
 #include "./NetConnIf/NetConnIf.h"
 #include "tcp_client_LngConnect.h"
 //#include "Include.h"

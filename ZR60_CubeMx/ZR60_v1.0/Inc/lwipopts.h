@@ -93,8 +93,6 @@
 #define MEMP_NUM_TCP_PCB_LISTEN 2
 /*----- Default Value for MEMP_NUM_TCP_SEG: 16 ---*/
 #define MEMP_NUM_TCP_SEG 40
-/*----- Default Value for MEMP_NUM_SYS_TIMEOUT: 5 ---*/
-#define MEMP_NUM_SYS_TIMEOUT 6
 /*----- Default Value for PBUF_POOL_SIZE: 16 ---*/
 #define PBUF_POOL_SIZE 11
 /*----- Default Value for PBUF_POOL_BUFSIZE: 592 ---*/
@@ -103,20 +101,12 @@
 #define LWIP_ETHERNET 1
 /*----- Value in opt.h for LWIP_DNS_SECURE: (LWIP_DNS_SECURE_RAND_XID | LWIP_DNS_SECURE_NO_MULTIPLE_OUTSTANDING | LWIP_DNS_SECURE_RAND_SRC_PORT) -*/
 #define LWIP_DNS_SECURE 7
-/*----- Default Value for TCP_WND: 2144 ---*/
-#define TCP_WND 5440
 /*----- Default Value for TCP_MSS: 536 ---*/
 #define TCP_MSS 1360
-/*----- Default Value for TCP_SND_BUF: 1072 ---*/
-#define TCP_SND_BUF 2720
 /*----- Value in opt.h for TCP_SND_QUEUELEN: (4*TCP_SND_BUF + (TCP_MSS - 1))/TCP_MSS -----*/
 #define TCP_SND_QUEUELEN 9
-/*----- Default Value for TCP_SNDLOWAT: 1071 ---*/
-#define TCP_SNDLOWAT 2719
 /*----- Value in opt.h for TCP_SNDQUEUELOWAT: LWIP_MAX(TCP_SND_QUEUELEN)/2, 5) -*/
 #define TCP_SNDQUEUELOWAT 5
-/*----- Default Value for TCP_WND_UPDATE_THRESHOLD: 536 ---*/
-#define TCP_WND_UPDATE_THRESHOLD 1360
 /*----- Default Value for LWIP_NETIF_STATUS_CALLBACK: 0 ---*/
 #define LWIP_NETIF_STATUS_CALLBACK 1
 /*----- Default Value for LWIP_NETIF_LINK_CALLBACK: 0 ---*/

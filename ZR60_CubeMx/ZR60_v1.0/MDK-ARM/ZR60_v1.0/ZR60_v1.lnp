@@ -115,6 +115,8 @@
 "zr60_v1.0\dnsanalysis.o"
 "zr60_v1.0\ntpclient.o"
 "zr60_v1.0\dhcpclient.o"
+"zr60_v1.0\netconnif.o"
+"zr60_v1.0\netconnif_cfg.o"
 --library_type=microlib --strict --scatter "ZR60_v1.0\ZR60_v1.sct"
 --diag_suppress=L6329 --summary_stderr --info summarysizes --map --xref --callgraph --symbols
 --info sizes --info totals --info unused --info veneers

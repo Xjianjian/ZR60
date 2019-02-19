@@ -105,11 +105,13 @@ extern struct netif gnetif;
 #include "lwip/ip4_addr.h"
 #include "ethernetif.h"
 #include "lwip/netif.h"
+#include "lwip/tcp.h"
 
+//lwip app
 #include "dhcpClient.h"
 #include "dnsAnalysis.h"
 #include "ntpclient.h"
-
+#include "./NetConnIf/NetConnIf.h"
 
 /*******************************************************
 description：struct definitions
