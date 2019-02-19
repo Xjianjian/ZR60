@@ -755,6 +755,7 @@ void ethernetif_update_config(struct netif *netif)
 }
 
 /* USER CODE BEGIN 8 */
+static unsigned char Se_u_LinkStatus = 0U;//链路状态：0 -- 关闭;1 -- 开启
 /**
   * @brief  This function notify user about link status changement.
   * @param  netif: the network interface
@@ -771,18 +772,28 @@ __weak void ethernetif_notify_conn_changed(struct netif *netif)
   //  netif_set_up(netif);
   //}
 	
-	if(netif_is_link_up(netif) && !netif_is_up(netif))
+	if(netif_is_link_up(netif))
 	{
 		netif_set_up(netif);
-		//extern err_t dhcp_start(struct netif *netif);
+		Se_u_LinkStatus = 1U;
 		//dhcp_start(netif);
+		printf("物理链路状态->开启");
+	}
+	else
+	{
+		netif_set_down(netif);
+		Se_u_LinkStatus = 0U;
+		printf("物理链路状态->关闭");
 	}
 }
 /* USER CODE END 8 */ 
 #endif /* LWIP_NETIF_LINK_CALLBACK */
 
 /* USER CODE BEGIN 9 */
-
+unsigned char ethernetif_u_LinkStatus(void)
+{
+	return Se_u_LinkStatus;
+}
 /* USER CODE END 9 */
 /************************ (C) COPYRIGHT STMicroelectronics *****END OF FILE****/
 

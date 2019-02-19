@@ -94,3 +94,8 @@ zr60_v1.0\main.o: ../Inc/usart.h
 zr60_v1.0\main.o: ../Inc/gpio.h
 zr60_v1.0\main.o: ../Inc/Include.h
 zr60_v1.0\main.o: d:\Keil_v5\ARM\ARMCC\Bin\..\include\string.h
+zr60_v1.0\main.o: ../Middlewares/Third_Party/LwIP/src/include/lwip/dns.h
+zr60_v1.0\main.o: ..\Middlewares\Third_Party\LwIP\App\dhcpClient.h
+zr60_v1.0\main.o: ../Inc/Include.h
+zr60_v1.0\main.o: ..\Middlewares\Third_Party\LwIP\App\dnsAnalysis.h
+zr60_v1.0\main.o: ..\Middlewares\Third_Party\LwIP\App\ntpclient.h

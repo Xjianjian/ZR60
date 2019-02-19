@@ -335,7 +335,7 @@
               <MiscControls>--C99</MiscControls>
               <Define>USE_HAL_DRIVER,STM32F407xx</Define>
               <Undefine></Undefine>
-              <IncludePath>../Inc;                                             ../Drivers/STM32F4xx_HAL_Driver/Inc;                                             ../Drivers/STM32F4xx_HAL_Driver/Inc/Legacy;                                             ../Middlewares/Third_Party/FreeRTOS/Source/portable/RVDS/ARM_CM4F;                                             ../Drivers/CMSIS/Device/ST/STM32F4xx/Include;                                             ../Middlewares/Third_Party/FreeRTOS/Source/include;                                             ../Middlewares/Third_Party/FreeRTOS/Source/CMSIS_RTOS;                                             ../Drivers/CMSIS/Include;                                          ../Middlewares/Third_Party/LwIP/src/include;                                          ../Middlewares/Third_Party/LwIP/system;                                          ../Middlewares/Third_Party/LwIP/src/include/lwip;                                          ../Middlewares/Third_Party/LwIP/src/include/lwip/apps;                                          ../Middlewares/Third_Party/LwIP/src/include/lwip/priv;                                          ../Middlewares/Third_Party/LwIP/src/include/lwip/prot;                                          ../Middlewares/Third_Party/LwIP/src/include/netif;                                          ../Middlewares/Third_Party/LwIP/src/include/netif/ppp;                                          ../Middlewares/Third_Party/LwIP/src/include/netif/ppp/polarssl;                                          ../Middlewares/Third_Party/LwIP/src/include/posix;                                          ../Middlewares/Third_Party/LwIP/src/include/posix/sys;                                          ../Middlewares/Third_Party/LwIP/system/arch</IncludePath>
+              <IncludePath>../Inc;       ../Drivers/STM32F4xx_HAL_Driver/Inc;       ../Drivers/STM32F4xx_HAL_Driver/Inc/Legacy;       ../Middlewares/Third_Party/FreeRTOS/Source/portable/RVDS/ARM_CM4F;       ../Drivers/CMSIS/Device/ST/STM32F4xx/Include;       ../Middlewares/Third_Party/FreeRTOS/Source/include;       ../Middlewares/Third_Party/FreeRTOS/Source/CMSIS_RTOS;       ../Drivers/CMSIS/Include;       ../Middlewares/Third_Party/LwIP/src/include;       ../Middlewares/Third_Party/LwIP/system;       ../Middlewares/Third_Party/LwIP/src/include/lwip;       ../Middlewares/Third_Party/LwIP/src/include/lwip/apps;       ../Middlewares/Third_Party/LwIP/src/include/lwip/priv;       ../Middlewares/Third_Party/LwIP/src/include/lwip/prot;       ../Middlewares/Third_Party/LwIP/src/include/netif;       ../Middlewares/Third_Party/LwIP/src/include/netif/ppp;       ../Middlewares/Third_Party/LwIP/src/include/netif/ppp/polarssl;       ../Middlewares/Third_Party/LwIP/src/include/posix;       ../Middlewares/Third_Party/LwIP/src/include/posix/sys;       ../Middlewares/Third_Party/LwIP/system/arch;       ..\Middlewares\Third_Party\LwIP\App</IncludePath>
             </VariousControls>
           </Cads>
           <Aads>
@@ -968,6 +968,26 @@
               <FileName>udp.c</FileName>
               <FileType>1</FileType>
               <FilePath>../Middlewares/Third_Party/LwIP/src/core/udp.c</FilePath>
+            </File>
+          </Files>
+        </Group>
+        <Group>
+          <GroupName>App/LwIP</GroupName>
+          <Files>
+            <File>
+              <FileName>dnsAnalysis.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\Middlewares\Third_Party\LwIP\App\dnsAnalysis.c</FilePath>
+            </File>
+            <File>
+              <FileName>ntpclient.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\Middlewares\Third_Party\LwIP\App\ntpclient.c</FilePath>
+            </File>
+            <File>
+              <FileName>dhcpClient.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\Middlewares\Third_Party\LwIP\App\dhcpClient.c</FilePath>
             </File>
           </Files>
         </Group>

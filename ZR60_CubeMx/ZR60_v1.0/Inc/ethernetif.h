@@ -76,7 +76,7 @@ void ethernetif_update_config(struct netif *netif);
 void ethernetif_notify_conn_changed(struct netif *netif);
 
 /* USER CODE BEGIN 1 */
-
+extern unsigned char ethernetif_u_LinkStatus(void);
 /* USER CODE END 1 */
 #endif
 

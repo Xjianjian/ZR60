@@ -91,3 +91,8 @@ zr60_v1.0\ethernetif.o: ../Middlewares/Third_Party/LwIP/src/include/lwip/ip.h
 zr60_v1.0\ethernetif.o: ../Middlewares/Third_Party/LwIP/src/include/lwip/ip6.h
 zr60_v1.0\ethernetif.o: ../Middlewares/Third_Party/LwIP/src/include/lwip/prot/ip.h
 zr60_v1.0\ethernetif.o: ../Middlewares/Third_Party/LwIP/src/include/lwip/prot/udp.h
+zr60_v1.0\ethernetif.o: ../Middlewares/Third_Party/LwIP/src/include/lwip/dns.h
+zr60_v1.0\ethernetif.o: ..\Middlewares\Third_Party\LwIP\App\dhcpClient.h
+zr60_v1.0\ethernetif.o: ../Inc/Include.h
+zr60_v1.0\ethernetif.o: ..\Middlewares\Third_Party\LwIP\App\dnsAnalysis.h
+zr60_v1.0\ethernetif.o: ..\Middlewares\Third_Party\LwIP\App\ntpclient.h

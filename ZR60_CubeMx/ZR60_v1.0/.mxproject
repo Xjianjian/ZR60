@@ -1,7 +1,7 @@
 [PreviousGenFiles]
-HeaderPath=D:/work_lj/ProjectBuilder/ZR60_backup/ZR60_CubeMx/ZR60_v1.0/Inc
+HeaderPath=D:/work_lj/ProjectBuilder/ZR60/ZR60_CubeMx/ZR60_v1.0/Inc
 HeaderFiles=FreeRTOSConfig.h;stm32f4xx_it.h;stm32f4xx_hal_conf.h;main.h;lwip.h;lwipopts.h;ethernetif.h;gpio.h;usart.h;iwdg.h;
-SourcePath=D:/work_lj/ProjectBuilder/ZR60_backup/ZR60_CubeMx/ZR60_v1.0/Src
+SourcePath=D:/work_lj/ProjectBuilder/ZR60/ZR60_CubeMx/ZR60_v1.0/Src
 SourceFiles=FreeRTOSConfig.h;stm32f4xx_it.h;stm32f4xx_hal_conf.h;main.h;freertos.c;stm32f4xx_it.c;stm32f4xx_hal_msp.c;main.c;lwip.h;lwipopts.h;ethernetif.h;lwip.c;ethernetif.c;gpio.h;usart.h;gpio.c;usart.c;iwdg.h;iwdg.c;
 
 [PreviousLibFiles]

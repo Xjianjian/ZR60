@@ -126,10 +126,17 @@ void StartDefaultTask(void const * argument)
   MX_LWIP_Init();
 
   /* USER CODE BEGIN StartDefaultTask */
+	InitdnsAnalysis_parameter();
+	InitdhcpClient_parameter();
+	Initntpclient_Pramater();
   /* Infinite loop */
   for(;;)
   {
-    osDelay(1000);
+		TskdhcpClient_MainFunction();
+		TskdnsAnalysis_MainFunction();
+		
+		Tskntpclient_MainFunction();
+    osDelay(5);
   }
   /* USER CODE END StartDefaultTask */
 }
@@ -165,7 +172,7 @@ void StartTask03(void const * argument)
   /* Infinite loop */
   for(;;)
   {
-		printf("串口打印任务运行中");
+		//printf("串口打印任务运行中");
     osDelay(1000);
   }
   /* USER CODE END StartTask03 */

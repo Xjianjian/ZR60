@@ -79,3 +79,10 @@ zr60_v1.0\freertos.o: ../Middlewares/Third_Party/LwIP/src/include/lwip/prot/ip4.
 zr60_v1.0\freertos.o: ../Middlewares/Third_Party/LwIP/src/include/lwip/ip6.h
 zr60_v1.0\freertos.o: ../Middlewares/Third_Party/LwIP/src/include/lwip/prot/ip.h
 zr60_v1.0\freertos.o: ../Middlewares/Third_Party/LwIP/src/include/lwip/prot/udp.h
+zr60_v1.0\freertos.o: ../Middlewares/Third_Party/LwIP/src/include/lwip/dns.h
+zr60_v1.0\freertos.o: ../Inc/ethernetif.h
+zr60_v1.0\freertos.o: ../Middlewares/Third_Party/FreeRTOS/Source/CMSIS_RTOS/cmsis_os.h
+zr60_v1.0\freertos.o: ..\Middlewares\Third_Party\LwIP\App\dhcpClient.h
+zr60_v1.0\freertos.o: ../Inc/Include.h
+zr60_v1.0\freertos.o: ..\Middlewares\Third_Party\LwIP\App\dnsAnalysis.h
+zr60_v1.0\freertos.o: ..\Middlewares\Third_Party\LwIP\App\ntpclient.h
