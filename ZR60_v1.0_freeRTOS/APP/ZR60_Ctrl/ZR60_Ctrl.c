@@ -18,7 +18,7 @@ description： global variable definitions
 /*******************************************************
 description： static variable definitions
 *******************************************************/
-const char CeZR60Ctrl_u_SoftVersion[10U] = {'Z','R','6','0','_','v','1','.','2','\0'};//软件版本
+const char CeZR60Ctrl_u_SoftVersion[12U] = {'Z','R','6','0','_','v','1','.','2','.','2','\0'};//软件版本
 /*
 sm3密码生成使用的数据信息
 围墙机：community_id为小区id前4字节；build_num和cell_num全F
@@ -637,9 +637,9 @@ static void  OpenDoor_Ble_MainFunction(void)
 			}
 		}
 		else
-		{//蓝牙校时完成后，距离下次校时延迟半小时
+		{//蓝牙校时完成后，距离下次校时延迟5s
 			SeCardSet_dw_setTimeCnt++;
-			if(SeCardSet_dw_setTimeCnt >= (1800000/ZR60CTRL_SCHEDULING_CYCLE))
+			if(SeCardSet_dw_setTimeCnt >= (5000/ZR60CTRL_SCHEDULING_CYCLE))
 			{
 				set_time_flag = 0;
 				set_time_success = 0;

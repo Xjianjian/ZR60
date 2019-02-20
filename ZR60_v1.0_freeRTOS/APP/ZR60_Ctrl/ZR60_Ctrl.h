@@ -55,7 +55,7 @@ description： variable External declaration
 *******************************************************/
 extern struct sm3_info sm;
 extern struct rtc_time Ve_h_tm;
-extern const char CeZR60Ctrl_u_SoftVersion[10U];//软件版本
+extern const char CeZR60Ctrl_u_SoftVersion[12U];//软件版本
 /*******************************************************
 description： function External declaration
 *******************************************************/
