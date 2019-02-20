@@ -85,9 +85,12 @@ zr60_v1.0\dhcpclient.o: ../Middlewares/Third_Party/FreeRTOS/Source/include/event
 zr60_v1.0\dhcpclient.o: ../Middlewares/Third_Party/LwIP/src/include/lwip/tcp.h
 zr60_v1.0\dhcpclient.o: ../Middlewares/Third_Party/LwIP/src/include/lwip/icmp.h
 zr60_v1.0\dhcpclient.o: ../Middlewares/Third_Party/LwIP/src/include/lwip/prot/icmp.h
+zr60_v1.0\dhcpclient.o: ..\Middlewares\Ecal/JsonIf/cJSON.h
+zr60_v1.0\dhcpclient.o: ..\Middlewares\Ecal/JsonIf/JsonIf.h
+zr60_v1.0\dhcpclient.o: ../Inc/Include.h
 zr60_v1.0\dhcpclient.o: ..\Middlewares\Third_Party\LwIP\App\dhcpClient.h
 zr60_v1.0\dhcpclient.o: ..\Middlewares\Third_Party\LwIP\App\dnsAnalysis.h
-zr60_v1.0\dhcpclient.o: ../Inc/Include.h
 zr60_v1.0\dhcpclient.o: ..\Middlewares\Third_Party\LwIP\App\ntpclient.h
 zr60_v1.0\dhcpclient.o: ..\Middlewares\Third_Party\LwIP\App\./NetConnIf/NetConnIf.h
 zr60_v1.0\dhcpclient.o: ..\Middlewares\Third_Party\LwIP\App\./NetConnIf/NetConnIf_Cfg.h
+zr60_v1.0\dhcpclient.o: ..\Middlewares\Third_Party\LwIP\App\tcp_client_LngConnect.h

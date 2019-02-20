@@ -31,6 +31,18 @@
 #include	"Include.h"
 
 
+#define TCP_CLIENT_LNGCONN_DEBUG
+#ifdef 	TCP_CLIENT_LNGCONN_DEBUG
+#define LNGCONN_PRINTF_S(x)   	 printf("%s\n",x)
+#define LNGCONN_PRINTF_D(x,d)   	 printf(x,d)
+#define LNGCONN_PRINTF_IP(x,d1,d2,d3,d4)    			printf(x,d1,d2,d3,d4)
+#else
+#define LNGCONN_PRINTF_S(x)    
+#define LNGCONN_PRINTF_D(x,d)  
+#define LNGCONN_PRINTF_IP(x,d1,d2,d3,d4)
+#endif
+
+
 #define  LNGCNNT_SCHEDULING_CYCLE		  	35U//调度周期
 #define  CLIENT_LNGCNNT_PERIOD   	      (33000U/LNGCNNT_SCHEDULING_CYCLE)
 #define  CLIENT_LNGCNNT_REPLY_TIMEOUT  	(75000U/LNGCNNT_SCHEDULING_CYCLE)
@@ -41,15 +53,18 @@
 #define  CLIENT_LNGCNNT_DISCNNT    2U
 
 
-#define CLIENT_LNGCNNT_DEVICETYPE   machine_type
+#define CLIENT_LNGCNNT_DEVICETYPE   1
 #ifdef USE_DHCP
-#define CLIENT_LNGCNNT_DHCP_STATE    DHCP_state
+#define CLIENT_LNGCNNT_DHCP_STATE    GetdhcpClient_u_DhcpSt()
 #else
 #define CLIENT_LNGCNNT_DHCP_STATE    DHCP_ADDRESS_ASSIGNED
 #endif
 
 
-#define GetLngCnnt_PerformCondition     ((Gethttp_CnntTxSt() ==  0U) && (GetStm8_fm17550_iapIdle() == 1))
+#define GetLngCnnt_PerformCondition    1 //((Gethttp_CnntTxSt() ==  0U) && (GetStm8_fm17550_iapIdle() == 1))
+
+#define LNGCONN_GET_PHY_LINK_STATUS()  netif_is_link_up(&gnetif)
+
 
 typedef struct
 {

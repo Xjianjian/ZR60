@@ -27,9 +27,9 @@
 
 /* Includes ------------------------------------------------------------------*/
 
-#include "./NetConnIf/NetConnIf.h"
+//#include "./NetConnIf/NetConnIf.h"
 #include "tcp_client_LngConnect.h"
-//#include "Include.h"
+
 
 #if LWIP_TCP
 /* Private typedef -----------------------------------------------------------*/
@@ -67,8 +67,10 @@ const char ENCODE_TABLE[64U] = {'A', 'b', 'C', 'd', 'I', 'f', 'G', 'h', 'E', 'j'
 						   '7', '0', '-', '_'};
 /* Private function prototypes -----------------------------------------------*/
 static uint8 tcp_LngConnect_parseJson(char * pMsg);
+#ifdef NET_DEBUG
 static char tcp_LngConnect_HexToChar(uint8_t temp);
 static void tcp_LngConnect_StrToHex(char* Le_in, uint8_t* Le_out);
+#endif
 static char getByte(char* nums, uint8_t index);
 /* Private functions ---------------------------------------------------------*/
 
@@ -79,27 +81,27 @@ void tcp_LngConnect_Parameter(void)
 	memset(Setcp_Alias.Alias,0,sizeof(Setcp_Alias.Alias));//清0
 	if(1U == CLIENT_LNGCNNT_DEVICETYPE)//围墙机
 	{//别名：小区id_3_下标
-		Json_HexToStr(Setcp_Alias.Alias,sminfo1.community_id,16);
+		//Json_HexToStr(Setcp_Alias.Alias,sminfo1.community_id,16);
 		Setcp_Alias.Alias[32U] =  '_';
 		Setcp_Alias.Alias[33U] =  '3';
 		Setcp_Alias.Alias[34U] =  '_';
 	}
 	else//门口机
 	{//别名：楼栋id_1_下标
-		Json_HexToStr(Setcp_Alias.Alias,sminfo1.build_id,16);
+		//Json_HexToStr(Setcp_Alias.Alias,sminfo1.build_id,16);
 		Setcp_Alias.Alias[32U] =  '_';
 		Setcp_Alias.Alias[33U] =  '1';
 		Setcp_Alias.Alias[34U] =  '_';
 	}
 	
-	if(sminfo1.suffix > 999)
+	//if(sminfo1.suffix > 999)
 	{
-		sminfo1.suffix = 999;
+		//sminfo1.suffix = 999;
 	}
-	sprintf(La_u_suffix,"%d",sminfo1.suffix);
-	USART_PRINTF_S(La_u_suffix);
+	//sprintf(La_u_suffix,"%d",sminfo1.suffix);
+	LNGCONN_PRINTF_S(La_u_suffix);
 	strcat(Setcp_Alias.Alias, La_u_suffix);
-	USART_PRINTF_S(Setcp_Alias.Alias);
+	//LNGCONN_PRINTF_S(Setcp_Alias.Alias);
 	for(Le_u_i = 0U;Le_u_i < 39U;Le_u_i++)
 	{//大写字母转小写
 		if((Setcp_Alias.Alias[Le_u_i] >= 'A') && (Setcp_Alias.Alias[Le_u_i] <= 'Z'))
@@ -130,7 +132,7 @@ void tcp_LngConnect_MainFunction(void)
 	return;
 #endif
 	//u16_t Le_w_i;	
-	if(0 == GET_PHY_LINK_STATUS())/* Get Ethernet link status*/
+	if(0 == LNGCONN_GET_PHY_LINK_STATUS())/* Get Ethernet link status*/
 	{
 		Setcp_client_w_CnntTimeout = 0U;
 		Setcp_client_u_HeartFlg = 0U;
@@ -169,7 +171,7 @@ void tcp_LngConnect_MainFunction(void)
 					//IP4_ADDR(&LngConnect_DestIPaddr, 10, 0, 0, 16);
 					if(ERR_OK == NetConnIf_Connect(TcpLngConnect,&LngConnect_DestIPaddr,9800))
 					{
-						USART_PRINTF_S("建立长连接...");
+						LNGCONN_PRINTF_S("建立长连接...");
 						Setcp_client_w_CnntTimeout = 0U;
 						Setcp_client_w_DelayTimer = 0U;
 						Setcp_client_u_cnntSt = CLIENT_LNGCNNT_CNNT;
@@ -187,7 +189,7 @@ void tcp_LngConnect_MainFunction(void)
 			Setcp_client_w_CnntTimeout++;
 			if(Setcp_client_w_CnntTimeout >= CLIENT_LNGCNNT_REPLY_TIMEOUT)
 			{//回应超时，75s
-				USART_PRINTF_S("\r\nErrorLogging：长连接回应超时\r\n");
+				LNGCONN_PRINTF_S("\r\nErrorLogging：长连接回应超时\r\n");
 				Se_u_CnntTimeoutFlg = 1U;//连接超时标志
 				SetdnsAnalysis_ipUpdate(LngConnect);//更新ip
 				Setcp_client_u_cnntSt = CLIENT_LNGCNNT_DISCNNT;
@@ -202,8 +204,8 @@ void tcp_LngConnect_MainFunction(void)
 				{//发送心跳==注册别名
 					Setcp_client_u_HeartFlg = 0U;
 					NetConnIf_sendMsg(TcpLngConnect,Setcp_client_u_TxBuf,se_w_lng);					
-					USART_PRINTF_S("心跳包");
-					USART_PRINTF_S(Setcp_client_u_TxBuf);
+					LNGCONN_PRINTF_S("心跳包");
+					LNGCONN_PRINTF_S(Setcp_client_u_TxBuf);
 				}
 			}
 			else//延时等待一段时间
@@ -217,7 +219,7 @@ void tcp_LngConnect_MainFunction(void)
 				Setcp_client_w_DelayTimer++;
 				if(Setcp_client_w_DelayTimer >= LNGCNNT_ESTABLISHED_TIMEOUT)
 				{
-					USART_PRINTF_S("\r\nErrorLogging：建立长连接超时\r\n");
+					LNGCONN_PRINTF_S("\r\nErrorLogging：建立长连接超时\r\n");
 					Se_u_CnntTimeoutCnt++;
 					if(Se_u_CnntTimeoutCnt >= 3U)
 					{
@@ -233,7 +235,7 @@ void tcp_LngConnect_MainFunction(void)
 		case CLIENT_LNGCNNT_DISCNNT:
 		{
 			NetConnIf_disconnect(TcpLngConnect);
-			USART_PRINTF_S("长连接断开...");
+			LNGCONN_PRINTF_S("长连接断开...");
 			Setcp_client_w_CnntTimeout = 0U;
 			Setcp_client_u_HeartFlg = 0U;
 			Setcp_client_w_DelayTimer = 0U;
@@ -258,8 +260,8 @@ static uint8 tcp_LngConnect_parseJson(char * pMsg)
 	if(NULL == pJson)                                                                                         
 	{
 		// parse faild, return
-		USART_PRINTF_S("\r\nErrorLogging：接收数据解析成json格式失败\r\n");
-		USART_PRINTF_S(pMsg);
+		LNGCONN_PRINTF_S("\r\nErrorLogging：接收数据解析成json格式失败\r\n");
+		LNGCONN_PRINTF_S(pMsg);
 		return 0U;
 	}
 	// get string from json
@@ -267,8 +269,8 @@ static uint8 tcp_LngConnect_parseJson(char * pMsg)
 	if(NULL == pSub_t)
 	{
 		//get object named "t" faild
-		USART_PRINTF_S("\r\nErrorLogging：获取成员 t 失败\r\n");
-		USART_PRINTF_S(pMsg);
+		LNGCONN_PRINTF_S("\r\nErrorLogging：获取成员 t 失败\r\n");
+		LNGCONN_PRINTF_S(pMsg);
 		cJSON_Delete(pJson);
 		return 0U;
 	}
@@ -281,20 +283,20 @@ static uint8 tcp_LngConnect_parseJson(char * pMsg)
 	{
 		case 0:
 		{
-			USART_PRINTF_S("\r\nErrorLogging：别名错误\r\n");
-			USART_PRINTF_S(pMsg);
+			LNGCONN_PRINTF_S("\r\nErrorLogging：别名错误\r\n");
+			LNGCONN_PRINTF_S(pMsg);
 		}
 		break;
 		case (-1):
 		{
-			USART_PRINTF_S("心跳正常");
-			USART_PRINTF_S(pMsg);
+			LNGCONN_PRINTF_S("心跳正常");
+			LNGCONN_PRINTF_S(pMsg);
 		}
 		break;
 		case 5://远程开门
 		{
-			USART_PRINTF_S("长连接接收推送数据帧：");
-			USART_PRINTF_S(pMsg);
+			LNGCONN_PRINTF_S("长连接接收推送数据帧：");
+			LNGCONN_PRINTF_S(pMsg);
 			cJSON * pSubMsg = cJSON_GetObjectItem(pJson, "msg");
 			if(NULL == pSubMsg)
 			{
@@ -338,8 +340,8 @@ static uint8 tcp_LngConnect_parseJson(char * pMsg)
 				cJSON * pSubMid = cJSON_GetObjectItem(pJson, "mid");
 				Json_HexToJson(pSubMid,&Le_u_Lng,JSON_DEVICE_ECHO_REMOTEUNLOCK,La_u_TxMsg);
 				NetConnIf_sendMsg(TcpLngConnect,La_u_TxMsg,Le_u_Lng);
-				USART_PRINTF_S("远程开门应答：");
-				USART_PRINTF_S(La_u_TxMsg);
+				LNGCONN_PRINTF_S("远程开门应答：");
+				LNGCONN_PRINTF_S(La_u_TxMsg);
 			}
 			else if((0 == strcmp("thirdopen", cJSON_GetObjectItem(pSub_ex,"m")->valuestring)) && \
 				(0 == strcmp("door", cJSON_GetObjectItem(pSub_ex,"a")->valuestring)))
@@ -348,7 +350,7 @@ static uint8 tcp_LngConnect_parseJson(char * pMsg)
 				
 				cJSON * pJsonObj = cJSON_GetObjectItem(pSub_ex, "p");
 				cJSON * urlStr = cJSON_GetObjectItem(pJsonObj,"url");
-				USART_PRINTF_S(urlStr->valuestring);
+				LNGCONN_PRINTF_S(urlStr->valuestring);
 				
 				position = strchr(urlStr->valuestring,'=');//=字符数值的起始位置
 				if(NULL != position)
@@ -361,33 +363,33 @@ static uint8 tcp_LngConnect_parseJson(char * pMsg)
 						{
 							Setcp_client_u_url[Le_w_i] = urlStr->valuestring[Le_w_i + position - urlStr->valuestring + 1];
 						}
-						USART_PRINTF_S(Setcp_client_u_url);
+						LNGCONN_PRINTF_S(Setcp_client_u_url);
 						Setcp_u_WxRxSuccess = 1U;
 						cJSON * pSubMid = cJSON_GetObjectItem(pJson, "mid");
 						Json_HexToJson(pSubMid,&Le_u_Lng,JSON_DEVICE_ECHO_REMOTEUNLOCK,La_u_TxMsg);
 						NetConnIf_sendMsg(TcpLngConnect,La_u_TxMsg,Le_u_Lng);
-						USART_PRINTF_S("微信开门应答：");
-						USART_PRINTF_S(La_u_TxMsg);
+						LNGCONN_PRINTF_S("微信开门应答：");
+						LNGCONN_PRINTF_S(La_u_TxMsg);
 					}
 					else//数据长度溢出
 					{
-						USART_PRINTF_S("微信推送数据长度溢出\n");
-						USART_PRINTF_S(urlStr->valuestring);
+						LNGCONN_PRINTF_S("微信推送数据长度溢出\n");
+						LNGCONN_PRINTF_S(urlStr->valuestring);
 						Setcp_u_WxRxSuccess = 0U;
 					}
 				}
 				else
 				{
-					USART_PRINTF_S("微信推送开门数据有误\n");
-					USART_PRINTF_S(urlStr->valuestring);
+					LNGCONN_PRINTF_S("微信推送开门数据有误\n");
+					LNGCONN_PRINTF_S(urlStr->valuestring);
 					Setcp_u_WxRxSuccess = 0U;
 				}
 			}
 			else if((0 == strcmp("updatedoorcard", cJSON_GetObjectItem(pSub_ex,"m")->valuestring)) && \
 				   (0 == strcmp("doorcard", cJSON_GetObjectItem(pSub_ex,"a")->valuestring)))
 			{
-				USART_PRINTF_S("推送更新黑明单\n");
-				tcp_client_BListUpdata();
+				LNGCONN_PRINTF_S("推送更新黑明单\n");
+				//tcp_client_BListUpdata();
 			}
 			else
 			{}
@@ -451,7 +453,7 @@ static uint8 tcp_LngConnect_parseJson(char * pMsg)
 			}
 			
 			unsigned int BList_size = cJSON_GetArraySize(pSubBList);
-			USART_PRINTF_D("：黑名单卡号数量%d\n",BList_size);
+			LNGCONN_PRINTF_D("：黑名单卡号数量%d\n",BList_size);
 			unsigned int BList_i = 0;
 			uint8_t BList_cardNum[4U];
 			cJSON *BList_item;
@@ -460,13 +462,13 @@ static uint8 tcp_LngConnect_parseJson(char * pMsg)
 				BList_item = cJSON_GetArrayItem(pSubBList, BList_i);
 				if(strlen(BList_item->valuestring) != 8U)
 				{
-					USART_PRINTF_D("卡号编号 %s长度不符\n：",BList_item->valuestring);
+					LNGCONN_PRINTF_D("卡号编号 %s长度不符\n：",BList_item->valuestring);
 					continue;
 				}
 				tcp_LngConnect_StrToHex(BList_item->valuestring,BList_cardNum);
 				WrBListCache_BListQueue(BList_cardNum);
-				USART_PRINTF_D("卡号编号 %d 转换为Hex格式卡号：",BList_i);
-				USART_PRINTF_CARD_NUM("%x%x%x%x",BList_cardNum[0U],BList_cardNum[1U],BList_cardNum[2U],BList_cardNum[3U]);
+				LNGCONN_PRINTF_D("卡号编号 %d 转换为Hex格式卡号：",BList_i);
+				LNGCONN_PRINTF_CARD_NUM("%x%x%x%x",BList_cardNum[0U],BList_cardNum[1U],BList_cardNum[2U],BList_cardNum[3U]);
 			}
 			tcp_LngConnect_sendMsg("t:-25",strlen("t:-25"));
 		}
@@ -479,6 +481,7 @@ static uint8 tcp_LngConnect_parseJson(char * pMsg)
 	return 1U;
 }
 
+#ifdef NET_DEBUG
 /*
 	十六进制0~F转为字符'0'~'F'
 */
@@ -524,6 +527,7 @@ static void tcp_LngConnect_StrToHex(char* Le_in, uint8_t* Le_out)
 		}
 	}
 }
+#endif
 
 /*
 	获取长连接超时状态
@@ -610,8 +614,8 @@ char Gettcp_LngConnect_WXOpenInfo(char* Le_u_dt)
 			bytes[Le_u_i] = getByte(nums, Le_u_i);
 		}
 		
-		USART_PRINTF_S("转换成utf-8格式前字符数据：");
-		USART_PRINTF_S(bytes);
+		LNGCONN_PRINTF_S("转换成utf-8格式前字符数据：");
+		LNGCONN_PRINTF_S(bytes);
 		position = strchr((char*)bytes,'&');//&字段数值的位置
 		if(NULL != position)
 		{
@@ -623,8 +627,8 @@ char Gettcp_LngConnect_WXOpenInfo(char* Le_u_dt)
 				{
 					Le_u_dt[Le_u_i] = bytes[index+1+ Le_u_i];
 				}
-				USART_PRINTF_S("微信开门用户信息：");
-				USART_PRINTF_S(Le_u_dt);
+				LNGCONN_PRINTF_S("微信开门用户信息：");
+				LNGCONN_PRINTF_S(Le_u_dt);
 				return 1;
 			}
 			else

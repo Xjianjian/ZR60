@@ -107,11 +107,22 @@ extern struct netif gnetif;
 #include "lwip/netif.h"
 #include "lwip/tcp.h"
 
+
+
+//ECU layer
+#include	"Ecal/JsonIf/cJSON.h"
+#include	"Ecal/JsonIf/JsonIf.h"
+
+
+
 //lwip app
 #include "dhcpClient.h"
 #include "dnsAnalysis.h"
 #include "ntpclient.h"
 #include "./NetConnIf/NetConnIf.h"
+#include "tcp_client_LngConnect.h"
+
+
 
 /*******************************************************
 description：struct definitions

@@ -1,6 +1,5 @@
 zr60_v1.0\tcp_client_lngconnect.o: ..\Middlewares\Third_Party\LwIP\App\tcp_client_LngConnect.c
-zr60_v1.0\tcp_client_lngconnect.o: ..\Middlewares\Third_Party\LwIP\App\./NetConnIf/NetConnIf.h
-zr60_v1.0\tcp_client_lngconnect.o: ..\Middlewares\Third_Party\LwIP\App\./NetConnIf/NetConnIf_Cfg.h
+zr60_v1.0\tcp_client_lngconnect.o: ..\Middlewares\Third_Party\LwIP\App\tcp_client_LngConnect.h
 zr60_v1.0\tcp_client_lngconnect.o: ../Inc/Include.h
 zr60_v1.0\tcp_client_lngconnect.o: d:\Keil_v5\ARM\ARMCC\Bin\..\include\string.h
 zr60_v1.0\tcp_client_lngconnect.o: d:\Keil_v5\ARM\ARMCC\Bin\..\include\stdlib.h
@@ -86,8 +85,12 @@ zr60_v1.0\tcp_client_lngconnect.o: ../Middlewares/Third_Party/FreeRTOS/Source/in
 zr60_v1.0\tcp_client_lngconnect.o: ../Middlewares/Third_Party/LwIP/src/include/lwip/tcp.h
 zr60_v1.0\tcp_client_lngconnect.o: ../Middlewares/Third_Party/LwIP/src/include/lwip/icmp.h
 zr60_v1.0\tcp_client_lngconnect.o: ../Middlewares/Third_Party/LwIP/src/include/lwip/prot/icmp.h
-zr60_v1.0\tcp_client_lngconnect.o: ..\Middlewares\Third_Party\LwIP\App\dhcpClient.h
+zr60_v1.0\tcp_client_lngconnect.o: ..\Middlewares\Ecal/JsonIf/cJSON.h
+zr60_v1.0\tcp_client_lngconnect.o: ..\Middlewares\Ecal/JsonIf/JsonIf.h
 zr60_v1.0\tcp_client_lngconnect.o: ../Inc/Include.h
+zr60_v1.0\tcp_client_lngconnect.o: ..\Middlewares\Third_Party\LwIP\App\dhcpClient.h
 zr60_v1.0\tcp_client_lngconnect.o: ..\Middlewares\Third_Party\LwIP\App\dnsAnalysis.h
 zr60_v1.0\tcp_client_lngconnect.o: ..\Middlewares\Third_Party\LwIP\App\ntpclient.h
+zr60_v1.0\tcp_client_lngconnect.o: ..\Middlewares\Third_Party\LwIP\App\./NetConnIf/NetConnIf.h
+zr60_v1.0\tcp_client_lngconnect.o: ..\Middlewares\Third_Party\LwIP\App\./NetConnIf/NetConnIf_Cfg.h
 zr60_v1.0\tcp_client_lngconnect.o: ..\Middlewares\Third_Party\LwIP\App\tcp_client_LngConnect.h
