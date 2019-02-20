@@ -129,6 +129,8 @@ void StartDefaultTask(void const * argument)
 	InitdnsAnalysis_parameter();
 	InitdhcpClient_parameter();
 	Initntpclient_Pramater();
+	
+	tcp_LngConnect_Parameter();
   /* Infinite loop */
   for(;;)
   {
@@ -136,6 +138,8 @@ void StartDefaultTask(void const * argument)
 		TskdnsAnalysis_MainFunction();
 		
 		Tskntpclient_MainFunction();
+		
+		tcp_LngConnect_MainFunction();
     osDelay(5);
   }
   /* USER CODE END StartDefaultTask */
