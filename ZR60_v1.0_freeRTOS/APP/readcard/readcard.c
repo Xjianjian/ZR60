@@ -371,7 +371,7 @@ static void decodeReadBlock(RebackInfo rebackInfo)
 					{//每个楼栋编号2字节，一个块可以装8个楼栋编号
 						if(0xFFFF != *((uint16*)(&rebackInfo.Dt.DtSrt.ValidDt[2*Le_u_i])))
 						{
-							if(*((uint16*)(&sminfo1.build_numTwo[0U])) == *((uint16*)(&rebackInfo.Dt.DtSrt.ValidDt[2*Le_u_i])))
+							if(*((uint16*)(&sminfo1.build_numOne[0U])) == *((uint16*)(&rebackInfo.Dt.DtSrt.ValidDt[2*Le_u_i])))
 							{
 								Le_u_matchFlg = 1U;
 								break;
