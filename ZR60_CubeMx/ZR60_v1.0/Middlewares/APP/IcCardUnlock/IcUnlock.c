@@ -27,9 +27,9 @@ static uint8_t  SeIcUnlock_SetKeyflag = 0U; //加载密码标志
 static uint8_t  SeIcUnlock_AutoSectedCardFlag = 1U;//自动寻卡设置标志：1--设置自动寻卡
 static uint8_t  open_door = 0;//开门标志：1--开门
 
-IcUnlock_CardConf Se_Cardinfo;//存储母卡信息（用于开门比对）
-IcUnlock_CardConf Se_Cardinfo_Temp;//存储母卡信息（用于读取的母卡卡片数据暂存）
-CardNumInfo Se_CardID;//当前开门使用的ic卡卡号
+static IcUnlock_CardConf Se_Cardinfo;//存储母卡信息（用于开门比对）
+static IcUnlock_CardConf Se_Cardinfo_Temp;//存储母卡信息（用于读取的母卡卡片数据暂存）
+static CardNumInfo Se_CardID;//当前开门使用的ic卡卡号
 		
 /***********请求报文帧*************/
 static uint8_t ReqPacket_ReadBlock[7U] = {0x20,0x00, 0x22, 0x01, 0x02, 0x00,0x03};
@@ -46,7 +46,6 @@ description： function declaration
 static void  SetCard_MainFunction(void);//母卡设置
 static void  OpenDoor_IC_MainFunction(void);//开锁
 static void  IcUnlock_handleMsg(IcUnlock_RxMsgStruct rebackInfo);
-static uint8 GetIcUnlock_u_XOR(uint8* Le_u_Dt,uint16 Le_w_Lng);
 static void IcUnlock_calcCommandsBBC(uint8_t *Dt,uint8_t length);
 static void IcUnlock_readBlock(uint8_t * requestPacket, uint8_t  requestBlock,uint8_t requestPacketLength);
 /******************************************************
@@ -127,22 +126,18 @@ static void  OpenDoor_IC_MainFunction(void)//开锁
 		SetIcUnlockCfg_TxMsg(CeIcUnlock_u_KeyA,12);
 	}
 	
-
-	if(1U != SeIcUnlock_u_cardSetSt)//非卡片设置状态
-	{
-		if(open_door == 1)//开锁
-		{	
-			IC_UNLOCK_PRINTF_S("ic卡 -> 开门");
-			open_door = 0;
-			SetIcUnlockCfg_openDoor();
-			SeIcUnlock_AutoSectedCardFlag = 1;//开启自动寻卡
-			w_SetAutoCard_DelayTime = 0U;
-			SetIcUnlockCfg_PlayFile(IC_UNLOCK_DOOROPEN);	
-			
-			/*记录开锁信息*/
-			Json_HexToStr(Le_u_UnlockInfo,(uint8*)Se_CardID.CardID,Se_CardID.lng);
-			IcUnlockCfg_u_RecordUnlockLog(Le_u_UnlockInfo,IC_UNLOCK_LOGCACHE_CARD);
-		}
+	if(open_door == 1)//开锁
+	{	
+		IC_UNLOCK_PRINTF_S("ic卡 -> 开门");
+		open_door = 0;
+		SetIcUnlockCfg_openDoor();
+		SeIcUnlock_AutoSectedCardFlag = 1;//开启自动寻卡
+		w_SetAutoCard_DelayTime = 0U;
+		SetIcUnlockCfg_PlayFile(IC_UNLOCK_DOOROPEN);	
+		
+		/*记录开锁信息*/
+		Json_HexToStr(Le_u_UnlockInfo,(uint8*)Se_CardID.CardID,Se_CardID.lng);
+		IcUnlockCfg_u_RecordUnlockLog(Le_u_UnlockInfo,IC_UNLOCK_LOGCACHE_CARD);
 	}
 	
 	if(SeIcUnlock_AutoSectedCardFlag == 1)//自动寻卡设置
@@ -203,7 +198,8 @@ static void  SetCard_MainFunction(void)//母卡设置
 				if(SeIcUnlock_u_cardInfoReadFlag == 1)
 				{
 					SeIcUnlock_u_cardInfoReadFlag = 0;	
-					if(0U == IcUnlock_u_ArrayCmp(Se_Cardinfo_Temp.community_id,Se_Cardinfo.community_id,sizeof(Se_Cardinfo)))//检查母卡信息有更新
+					if(0U == IcUnlock_u_ArrayCmp(Se_Cardinfo_Temp.community_id, \
+											Se_Cardinfo.community_id,sizeof(Se_Cardinfo)))//检查母卡信息有更新
 					{//母卡信息有更新则写flash,设置重新初始化设备
 						(void)IcUnlockCfg_WrEE(IC_UNLOCK_EE_CARD_INFO,&Se_Cardinfo_Temp,sizeof(Se_Cardinfo_Temp));
 						for(Le_u_i = 0U;Le_u_i < 16U;Le_u_i++)
@@ -215,7 +211,6 @@ static void  SetCard_MainFunction(void)//母卡设置
 							Se_Cardinfo.door_id[Le_u_i] = Se_Cardinfo_Temp.door_id[Le_u_i];
 						}
 						Se_Cardinfo.suffix = Se_Cardinfo_Temp.suffix;
-						//SeIcUnlock_cardRenewflag = 1U; //母卡信息更新标志
 					}
 					IcUnlockCfg_CardRenewCallback(&Se_Cardinfo);//回调接口，用于母卡重新配置后相关数据的重新设置
 					SeIcUnlock_u_cardSetSt = 0U;
@@ -265,14 +260,14 @@ static void IcUnlock_handleMsg(IcUnlock_RxMsgStruct rebackInfo)
 					{
 						*((uint32*)Se_CardID.CardID) = *((uint32*)(&(rebackInfo.Dt.DtSrt.ValidDt[4])));
 						IcUnlock_readBlock(ReqPacket_ReadBlock, (uint8_t) 0x14,sizeof(ReqPacket_ReadBlock));//读取扇区0x14：小区id
-						IC_UNLOCK_PRINTF_CARD_NUM("卡号 %x%x%x%x ",rebackInfo.Dt.DtSrt.ValidDt[4],rebackInfo.Dt.DtSrt.ValidDt[5],rebackInfo.Dt.DtSrt.ValidDt[6], \
-												  rebackInfo.Dt.DtSrt.ValidDt[7]);
+						IC_UNLOCK_PRINTF_CARD_NUM("卡号 %x%x%x%x ",rebackInfo.Dt.DtSrt.ValidDt[4],rebackInfo.Dt.DtSrt.ValidDt[5], \
+												  rebackInfo.Dt.DtSrt.ValidDt[6],rebackInfo.Dt.DtSrt.ValidDt[7]);
 						IC_UNLOCK_PRINTF_S("验证通过  √");
 					}
 					else
 					{
-						IC_UNLOCK_PRINTF_CARD_NUM("卡号 %x%x%x%x ",rebackInfo.Dt.DtSrt.ValidDt[4],rebackInfo.Dt.DtSrt.ValidDt[5],rebackInfo.Dt.DtSrt.ValidDt[6], \
-											  rebackInfo.Dt.DtSrt.ValidDt[7]);
+						IC_UNLOCK_PRINTF_CARD_NUM("卡号 %x%x%x%x ",rebackInfo.Dt.DtSrt.ValidDt[4],rebackInfo.Dt.DtSrt.ValidDt[5], \
+												  rebackInfo.Dt.DtSrt.ValidDt[6],rebackInfo.Dt.DtSrt.ValidDt[7]);
 						IC_UNLOCK_PRINTF_S("验证不通过  X");
 						SeIcUnlock_AutoSectedCardFlag = 1U;
 						SetIcUnlockCfg_PlayFile(IC_UNLOCK_CARD_INVALID);
@@ -613,29 +608,5 @@ static void IcUnlock_readBlock(uint8_t * requestPacket, uint8_t  requestBlock,ui
 	requestPacket[1] = requestBlock;    // 本次读取数据的请求头
 	IcUnlock_calcCommandsBBC(requestPacket,requestPacketLength);// 先计算正确的校验值
 	SetIcUnlockCfg_TxMsg(requestPacket,requestPacketLength);
-}
-
-
-/******************************************************
-*函数名：GetIcUnlock_u_XOR
-
-*形  参：
-
-*返回值：
-
-*描  述：异或取反校验
-
-*备  注：
-******************************************************/
-static uint8 GetIcUnlock_u_XOR(uint8* Le_u_Dt,uint16 Le_w_Lng)
-{
-	uint16 Le_w_i;
-	uint8 Le_u_Xor = 0U;
-	for(Le_w_i = 0U; Le_w_i < Le_w_Lng;Le_w_i++)
-	{
-		Le_u_Xor ^= Le_u_Dt[Le_w_i];
-	}
-	Le_u_Xor = (~Le_u_Xor);
-	return Le_u_Xor;
 }
 

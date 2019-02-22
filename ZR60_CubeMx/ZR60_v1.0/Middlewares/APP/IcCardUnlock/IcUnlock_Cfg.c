@@ -44,7 +44,7 @@ description： function declaration
 ******************************************************/
 void IcUnlockCfg_WrEE(uint8 Le_u_Obj,void* Le_u_Data,uint16 Le_w_Lng)
 {
-	//(void)MemIf_WriteEE( Le_u_Obj,Le_u_Data, Le_w_Lng);
+	(void)MemIf_WriteEE( Le_u_Obj,Le_u_Data, Le_w_Lng);
 }
 
 /******************************************************
@@ -60,7 +60,7 @@ void IcUnlockCfg_WrEE(uint8 Le_u_Obj,void* Le_u_Data,uint16 Le_w_Lng)
 ******************************************************/
 uint8 IcUnlockCfg_ReadEE(uint8 Le_u_Obj,uint8* Le_u_Data,uint16 Le_w_Lng)
 {
-	return 1;//MemIf_ReadEE( Le_u_Obj,Le_u_Data, Le_w_Lng);
+	return MemIf_ReadEE( Le_u_Obj,Le_u_Data, Le_w_Lng);
 }
 
 
@@ -77,7 +77,7 @@ uint8 IcUnlockCfg_ReadEE(uint8 Le_u_Obj,uint8* Le_u_Data,uint16 Le_w_Lng)
 ******************************************************/
 uint8 GetIcUnlockCfg_u_CheckSum(uint8 Le_u_Obj)
 {
-	return 1;//GetMemIf_u_CheckSum(Le_u_Obj);
+	return GetMemIf_u_CheckSum(Le_u_Obj);
 }
 
 /******************************************************
@@ -93,7 +93,7 @@ uint8 GetIcUnlockCfg_u_CheckSum(uint8 Le_u_Obj)
 ******************************************************/
 uint8 GetIcUnlockCfg_u_DtVild(uint8 Le_u_Obj)
 {
-	return 1;//GetMemIf_u_DtVild(Le_u_Obj);
+	return GetMemIf_u_DtVild(Le_u_Obj);
 }
 
 /******************************************************
@@ -109,7 +109,7 @@ uint8 GetIcUnlockCfg_u_DtVild(uint8 Le_u_Obj)
 ******************************************************/
 void SetIcUnlockCfg_EEVild(uint8 Le_u_Obj)
 {
-	//(void)SetMemIf_EEVild( Le_u_Obj);
+	(void)SetMemIf_EEVild( Le_u_Obj);
 }
 
 /******************************************************
@@ -142,7 +142,12 @@ void SetIcUnlockCfg_PlayFile(uint8 Le_u_PlayFile)
 ******************************************************/
 uint8 GetIcUnlockCfg_u_cardSetKeySt(void)
 {
-	return 0;//GetBtnFltr_u_BtnShrtSt(Key_card_set);
+	uint8 ret;
+	
+	ret = GetBtnFltr_u_BtnShrtSt(Key_card_set);
+	ClrBtnFltr_BtnShrtValid(Key_card_set);
+	
+	return ret;
 }
 
 /******************************************************
@@ -181,7 +186,25 @@ void IcUnlockCfg_u_RecordUnlockLog(char* Le_u_UnlockInfo,uint8 Le_u_UnlockEvent)
 ******************************************************/
 uint8 GetIcUnlockCfg_u_RxMsgRenew(uint8* Le_u_RxMsg)
 {
-	return 0;
+	uint8 ret = 0;
+	uint8 Le_u_i;
+	if(1 == uart3_dma_recv_end_flag)
+	{
+		if((uart3_dma_rx_buffer[0] == 0x20) && (uart3_dma_rx_buffer[uart3_dma_rx_len-1] == 0x03))
+		{//数据帧首尾字节正确
+			if(uart3_dma_rx_buffer[uart3_dma_rx_len -2] == \
+					xor_checkSum(&uart3_dma_rx_buffer[1],(uart3_dma_rx_len - 3)))
+			{//异或校验通过
+				for(Le_u_i = 0;Le_u_i < (uart3_dma_rx_len - 3);Le_u_i++)
+				{
+					Le_u_RxMsg[Le_u_i] = uart3_dma_rx_buffer[Le_u_i + 1];
+				}
+				ret = 1;
+			}
+		}
+	}
+	HAL_UART_Receive_DMA(&huart1,uart3_dma_rx_buffer,UART3_DMA_RX_BUFFER_SIZE);//重新打开DMA接收
+	return ret;
 }
 
 
@@ -223,6 +246,6 @@ void IcUnlockCfg_CardRenewCallback(IcUnlock_CardConf* CardConf)
 {
 	//read_init_sminfo(CardConf)//读取母卡文件的数据，并截取ic卡小区号，楼栋号，单元号的前8位用于sm3密码验证
 	tcp_LngConnect_Parameter();
-	//Settcp_client_DeviceInit();
+	//Settcp_client_DeviceInit();//设置设备重新初始化
 }
 

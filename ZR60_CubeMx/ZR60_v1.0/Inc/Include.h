@@ -96,11 +96,11 @@ extern struct netif gnetif;
 #include <stdlib.h>
 #include <stdio.h>
 
-
-#include "iwdg.h"
-
 //stm32 ¿â
+#include "iwdg.h"
 #include "usart.h"
+#include "stm32f4xx_hal_flash_ex.h"
+#include "stm32f4xx_hal_gpio.h"
 
 
 //lwip ¿â
@@ -113,11 +113,12 @@ extern struct netif gnetif;
 
 
 
-//ECU layer
+//Ecal layer
+#include	"xor/xor.h"
 #include	"JsonIf/cJSON.h"
 #include	"JsonIf/JsonIf.h"
-
-
+#include	"MemIf/MemIf.h"
+#include	"BtnFltr/BtnFltr.h"
 
 //lwip app
 #include "dhcpClient.h"

@@ -17,7 +17,22 @@ description?nclude the header file
 description?acro definitions
 *******************************************************/
 /**********宏开关定乪*******/
+#define   MEMIF_HAL     //定义时表示使用HAL库
 
+#ifdef 	  MEMIF_HAL
+#define   MEMIF_ERASE_SECTOR   FLASH_SECTOR_4
+#else
+#define   MEMIF_ERASE_SECTOR   FLASH_Sector_4
+#endif
+
+#define MEMIF_DEBUG
+#ifdef 	MEMIF_DEBUG
+#define MEMIF_PRINTF_S(x)   	 printf("%s\n",x)
+#define MEMIF_PRINTF_D(x,d)   	 printf(x,d)
+#else
+#define MEMIF_PRINTF_S(x)    
+#define MEMIF_PRINTF_D(x,d)  
+#endif
 
 /**********宏常量定乪*******/
 /********************************************************/
@@ -51,7 +66,7 @@ description?acro definitions
 #define EE_WR          		2U//写
 
 #define EE_VALID_FIELD_VALUE    0x55//数据有效时写入有效字段的值
-#define EE_CHECKSUM_OBJ_NUM    	6U//校验和对象数
+#define EE_CHECKSUM_OBJ_NUM    	3U//校验和对象数
 
 #define EE_CARD_SET_OFFSET     	4U//卡片配置信息地址相对于EE起始地址偏移量(addr[0]写数据校验和；addr[1]addr[2]数据长度信息；addr[3]有效性标志)
 #define EE_CARD_SET_ADDR       (EEPROM_SEC5_START_ADDR +EE_CARD_SET_OFFSET)//卡片配置信息数据段起始地址
@@ -106,7 +121,7 @@ typedef struct
 	uint8  Space;/*访问的存储位置：片内或片外*/
 	uint32 SecAddr;/*扇区首地址*/	
 	uint32 DtAddr;/*有效数据首地址*/	
-	void*  Data;/*数据指针*/
+	char*  Data;/*数据指针*/
 	uint8  Lng;/*有效数据长度*/
 }EepromCfg_ConfStruct;
 
@@ -114,8 +129,8 @@ typedef struct
 typedef enum 
 {
 	EepromCfg_CardInfo = 0U,/*母卡配置信息*/
-	EepromCfg_MacInfo, /*mac地址信息*/
-	EepromCfg_tokenInfo, /*初始化设备的token信息*/
+	//EepromCfg_MacInfo, /*mac地址信息*/
+	//EepromCfg_tokenInfo, /*初始化设备的token信息*/
 	//EepromCfg_Blist_one, /*已注销卡号信息:黑名单1*/
 	//EepromCfg_Blist_two, /*已注销卡号信息:黑名单2*/
 	//EepromCfg_Blist_three, /*已注销卡号信息:黑名单3*/
@@ -147,7 +162,7 @@ typedef enum
 /*******************************************************
 description?ariable External declaration
 *******************************************************/
-extern const EepromCfg_ConfStruct    CaEepromCfg_Conf[EE_OBJECT_NUM];
+extern EepromCfg_ConfStruct    CaEepromCfg_Conf[EE_OBJECT_NUM];
 extern const uint8  CaEepromCfg_CheckSumObj[EE_CHECKSUM_OBJ_NUM];/*需要周期性校验flash中的数据正确性的数据对象*/
 extern const uint8  CaEepromCfg_ObjDtLng[EE_CHECKSUM_OBJ_NUM];/*需要周期性校验flash中的数据正确性的数据对象数据长度*/
 /*******************************************************

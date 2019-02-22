@@ -10,7 +10,7 @@ Data			  Vasion			author
 /*******************************************************
 description£º include the header file
 *******************************************************/
-#include	"BtnFltr_Cfg.h"
+#include	"BtnFltr/BtnFltr_Cfg.h"
 
 /*******************************************************
 description£º function declaration
@@ -65,7 +65,7 @@ uint8 GetBtnFltrCfg_u_BtnRTSt(uint8 LeBtnFltr_u_Index)
 	{
 		case Key_card_set:
 		{
-			Ret = GPIO_ReadInputDataBit(GPIOA,GPIO_Pin_0);
+			Ret = HAL_GPIO_ReadPin(GPIOA,GPIO_PIN_0);
 		}
 		break;
 		//case Key_PasswodAuth:
@@ -75,7 +75,7 @@ uint8 GetBtnFltrCfg_u_BtnRTSt(uint8 LeBtnFltr_u_Index)
 		//break;
 		case Key_Unlock:
 		{
-			Ret = GPIO_ReadInputDataBit(GPIOG,GPIO_Pin_15);
+			Ret = HAL_GPIO_ReadPin(GPIOG,GPIO_PIN_15);
 		}
 		break;
 		//case Key_Alarm:

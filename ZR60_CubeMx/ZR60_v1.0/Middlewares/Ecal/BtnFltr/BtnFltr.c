@@ -9,7 +9,7 @@ Data			Vasion			author
 /*******************************************************
 description£º include the header file
 *******************************************************/
-#include	"BtnFltr.h"
+#include	"BtnFltr/BtnFltr.h"
 
 /*******************************************************
 description£º function declaration

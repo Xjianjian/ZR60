@@ -105,8 +105,7 @@ description£º typedef definitions
 /*******************************************************
 description£º variable External declaration
 *******************************************************/
-extern struct sm3_info sm;
-extern struct rtc_time Ve_h_tm;
+
 
 /*******************************************************
 description£º function External declaration

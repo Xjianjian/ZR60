@@ -20,9 +20,10 @@ description： global variable definitions
 /*******************************************************
 description： static variable definitions
 *******************************************************/
+#ifndef MemIf_IntEE
 static uint8  SeMemIf_u_EESt[EE_OBJECT_NUM];//非易失性存储器当前状态
 static uint8  SeMemIf_u_WrEEFlag[EE_OBJECT_NUM];//数据更新标志
-static uint8  SeMemIf_u_WrFlashFlag = 0U;//片上flash数据更新标志
+#endif
 static uint8  SeMemIf_u_WrFlashBusy = 0U;//写片上flash忙标志
 static uint16 SeMemIf_w_Lng[EE_OBJECT_NUM];//数据长度
 static uint8  SeMemIf_u_VildFlag[EE_OBJECT_NUM];//数据有效性标志
@@ -31,15 +32,16 @@ static uint8 SeMemIf_u_RdFlag = 0U;
 #endif
 
 static uint32  SeMemIf_dw_Timer = 0U;
+#ifndef MemIf_IntEE
 static uint8  SeMemIf_u_CheckSumObj = 0U;//索引
 static uint8  SeMemIf_u_DataCache[100U] = {0U};//数据缓存
+#endif
 /*******************************************************
 description： function declaration
 *******************************************************/
 /*Global function declaration*/
 
 /*Static function declaration*/
-static uint8 GetMemIf_u_XOR(uint8* Le_u_Dt,uint16 Le_w_Lng);
 static void MemIf_EraseFlash(uint32_t FLASH_Sector);
 static uint8 MemIf_u_wrFlash(void);
 
@@ -62,8 +64,10 @@ void MemIf_Init(void)
 	uint8 Le_u_i;
 	for(Le_u_i = 0U;Le_u_i < EE_OBJECT_NUM;Le_u_i++)
 	{
+#ifndef MemIf_IntEE
 		SeMemIf_u_EESt[Le_u_i] = EE_IDLE;
 		SeMemIf_u_WrEEFlag[Le_u_i] = 0U;
+#endif
 		SeMemIf_u_VildFlag[Le_u_i] = 0U;//数据无效
 #if 0
 		MemIfCfg_FLASH_SectorErase((uint32)(CaEepromCfg_Conf[Le_u_i].SecAddr));
@@ -93,20 +97,7 @@ void MemIf_Init(void)
 ******************************************************/
 void TskMemIf_MainFunction(void)
 {
-#ifdef MemIf_IntEE
-	if((1U == SeMemIf_u_WrFlashFlag) && (0U == GetAudioIO_u_PlaySt()))
-	{
-		SeMemIf_u_WrFlashBusy = 1U;
-		/* 擦除flash */
-		MemIf_EraseFlash(FLASH_Sector_4);//写之前先擦除。片上flash，用于存储母卡配置，mac地址等信息
-		USART_PRINTF_S("\r\n擦除片上flash扇区完成\r\n");
-		/* 写flash */
-		USART_PRINTF_S("\r\n写数据到片上flash扇区\r\n");
-		(void)MemIf_u_wrFlash();
-		SeMemIf_u_WrFlashFlag = 0U;
-		SeMemIf_u_WrFlashBusy = 0U;
-	}
-#else
+#ifndef MemIf_IntEE
 	uint16 Le_w_Lng;
 	uint8 Le_u_Obj;
 	//uint8 Le_u_Object;
@@ -178,7 +169,7 @@ void TskMemIf_MainFunction(void)
 								   Le_w_Lng);//读取flash数据
 				if(Le_u_Xor != GetMemIf_u_XOR(SeMemIf_u_DataCache,Le_w_Lng))
 				{//校验未通过，说明数据损坏,重新写数据到对应flash
-					USART_PRINTF_D("数据对象%d数据损坏\n",CaEepromCfg_CheckSumObj[SeMemIf_u_CheckSumObj]);
+					MEMIF_PRINTF_D("数据对象%d数据损坏\n",CaEepromCfg_CheckSumObj[SeMemIf_u_CheckSumObj]);
 					SeMemIf_u_WrEEFlag[CaEepromCfg_CheckSumObj[SeMemIf_u_CheckSumObj]] = 1U;
 					SeMemIf_w_Lng[CaEepromCfg_CheckSumObj[SeMemIf_u_CheckSumObj]] = Le_w_Lng;
 				}
@@ -191,7 +182,7 @@ void TskMemIf_MainFunction(void)
 			}
 			else
 			{
-				USART_PRINTF_S("数据长度超出定义的最大长度");
+				MEMIF_PRINTF_S("数据长度超出定义的最大长度");
 			}
 		}
 	}
@@ -222,14 +213,25 @@ uint8 MemIf_WriteEE(uint8 Le_u_Object,void* Le_u_Data,uint16 Le_w_Lng)
 	{
 		case EepromCfg_IntEE:/*写片上eeprom*/
 		{
-			SeMemIf_u_WrFlashFlag = 1U;
+			SeMemIf_u_WrFlashBusy = 1U;
+			CaEepromCfg_Conf[Le_u_Object].Data = (char*)Le_u_Data;
+			CaEepromCfg_Conf[Le_u_Object].Lng = (uint8)Le_w_Lng;
 			SeMemIf_u_VildFlag[Le_u_Object] = 1U;
+			/* 擦除flash */
+			MemIf_EraseFlash(MEMIF_ERASE_SECTOR);//写之前先擦除。片上flash，用于存储母卡配置，mac地址等信息
+			/* 写flash */
+			MEMIF_PRINTF_S("\r\n擦除片上flash扇区完成,开始写数据到片上flash扇区\r\n");
+			(void)MemIf_u_wrFlash();
+			SeMemIf_u_WrFlashBusy = 0U;
+			
 			Le_u_ok = 1U;	
 		}
 		break;
 		case EepromCfg_ExtEE:/*写片外eeprom*/
 		{
+			#ifndef MemIf_IntEE
 			SeMemIf_u_WrEEFlag[Le_u_Object] = 1U;
+			#endif
 			SeMemIf_w_Lng[Le_u_Object] = Le_w_Lng;
 			Le_u_ok = 1U;
 		}
@@ -295,44 +297,6 @@ uint8 MemIf_ReadEE(uint8 Le_u_Object,uint8* Le_u_Data,uint16 Le_w_Lng)
 	return Le_u_Xor;
 }
 
-#ifdef EE_DEBUG
-/******************************************************
-*函数名：MemIf_ReadEE
-
-*形  参：
-
-*返回值：
-
-*描  述：读eeprom
-
-*备  注：
-******************************************************/
-void MemIf_TestEE(void)
-{
-	static struct comm_info sminfo_test;
-	static uint8 VildFlag;
-	if((0U == SeMemIf_u_RdFlag)&& (0U == SeMemIf_u_WrEEFlag))
-	{
-		sminfo.community_id[0] = 0x01;
-		sminfo.community_id[15] = 0x16;
-		sminfo.build_num[0] = 0x01;
-		sminfo.build_num[15] = 0x16;
-		sminfo.cell_num[0] = 0x01;
-		sminfo.cell_num[15] = 0x16;
-		SeMemIf_u_WrEEFlag = 1U;
-	}
-	else
-	{
-		if(1U == SeMemIf_u_RdFlag)
-		{
-			MemIf_ReadEE(EepromCfg_CardInfo,sminfo_test.community_id,sizeof(sminfo_test));
-			VildFlag = MemIfCfg_FLASH_ReadByte(EEPROM_START_ADDR);	
-			SeMemIf_u_RdFlag = 2U;
-		}
-		 
-	}
-}
-#endif
 
 /******************************************************
 *函数名：GetMemIf_u_EEVild
@@ -470,36 +434,34 @@ void MemIf_Timer(void)
 }
 
 
-/******************************************************
-*函数名：GetMemIf_u_XOR
-
-*形  参：
-
-*返回值：
-
-*描  述：异或取反校验
-
-*备  注：
-******************************************************/
-static uint8 GetMemIf_u_XOR(uint8* Le_u_Dt,uint16 Le_w_Lng)
-{
-	uint16 Le_w_i;
-	uint8 Le_u_Xor = 0U;
-	for(Le_w_i = 0U; Le_w_i < Le_w_Lng;Le_w_i++)
-	{
-		Le_u_Xor ^= Le_u_Dt[Le_w_i];
-	}
-	Le_u_Xor = (~Le_u_Xor);
-	return Le_u_Xor;
-}
-
-
 
 /*
 //擦除flash扇区
 */
 static void MemIf_EraseFlash(uint32_t FLASH_Sector)
 {
+#ifdef MEMIF_HAL
+    uint32_t SectorError;
+    FLASH_EraseInitTypeDef pEraseInit;
+	__disable_irq() ; //关闭总中断
+    /* Unlock the Flash to enable the flash control register access *************/
+    HAL_FLASH_Unlock(); 
+    __HAL_FLASH_CLEAR_FLAG(FLASH_FLAG_EOP | FLASH_FLAG_OPERR | FLASH_FLAG_WRPERR | 
+						   FLASH_FLAG_PGAERR | FLASH_FLAG_PGPERR | FLASH_FLAG_PGSERR);
+	
+    pEraseInit.TypeErase = TYPEERASE_SECTORS;
+    pEraseInit.Sector = FLASH_Sector;
+    pEraseInit.NbSectors = 1 ;
+    pEraseInit.VoltageRange = VOLTAGE_RANGE_3;
+	
+    if (HAL_FLASHEx_Erase(&pEraseInit, &SectorError) != HAL_OK)
+    {
+        /* Error occurred while page erase */
+        MEMIF_PRINTF_S("\r\nError occurred while page erase\r\n");
+    }
+	HAL_FLASH_Lock();
+	__enable_irq() ; //打开总中断
+#else
 	__disable_irq() ; //关闭总中断
 	//IWDG_Feed();//喂狗
 	FLASH_Unlock();
@@ -510,55 +472,66 @@ static void MemIf_EraseFlash(uint32_t FLASH_Sector)
 	FLASH_Lock();
 	//IWDG_Feed();//喂狗
 	__enable_irq() ; //打开总中断
+#endif
 }
 
 
 /*
 //写flash
 */
-static uint8 MemIf_u_wrFlash(void)
+static uint8 MemIf_u_wrFlash()
 {
 	uint16_t Le_w_i;
 	uint8 Le_u_Obj;
-	uint8* Le_u_ptr;
+	char* Le_u_ptr;
 	uint32 FLASH_addr;
 	uint8 LeMemIfCfg_u_Xor = 0U;
+#ifdef MEMIF_HAL
+#define FLASH_UNLOCK() 	HAL_FLASH_Unlock()
+#define FLASH_LOCK() 	HAL_FLASH_Lock()
+#define FLASH_PROGRAMBYTE(addr,data) 	HAL_FLASH_Program(FLASH_TYPEPROGRAM_BYTE,addr,data)	
+#else
+#define FLASH_UNLOCK() 	HAL_FLASH_Unlock()
+#define FLASH_LOCK() 	FLASH_Lock()	
+#define FLASH_PROGRAMBYTE(addr,data) 	FLASH_ProgramByte(addr,data)	
+#endif
+
 	__disable_irq() ; //关闭总中断
-	FLASH_Unlock();
+	FLASH_UNLOCK();
 	for(Le_u_Obj = 0U;Le_u_Obj < EE_OBJECT_NUM;Le_u_Obj++)
 	{
-		//USART_PRINTF_S("\r\n");
+		//MEMIF_PRINTF_S("\r\n");
 		Le_u_ptr = CaEepromCfg_Conf[Le_u_Obj].Data;
+		if(STD_NULL_PTR == Le_u_ptr) continue;
 		for(Le_w_i =0U;Le_w_i < CaEepromCfg_Conf[Le_u_Obj].Lng;Le_w_i++)//将数据写入EEPROM中
 		{
-			FLASH_ProgramByte((CaEepromCfg_Conf[Le_u_Obj].DtAddr + Le_w_i), Le_u_ptr[Le_w_i]);	
-			//USART_PRINTF_D("%x ",Le_u_ptr[Le_w_i]);
+			FLASH_PROGRAMBYTE((CaEepromCfg_Conf[Le_u_Obj].DtAddr + Le_w_i), Le_u_ptr[Le_w_i]);	
+			//MEMIF_PRINTF_D("%x ",Le_u_ptr[Le_w_i]);
 			LeMemIfCfg_u_Xor ^= Le_u_ptr[Le_w_i];
 		}
 		LeMemIfCfg_u_Xor = (~LeMemIfCfg_u_Xor);
 		LeMemIfCfg_u_Xor = (uint8)(LeMemIfCfg_u_Xor + 0xAA);
-		//USART_PRINTF_D("%x ",LeMemIfCfg_u_Xor);
-		FLASH_ProgramByte((uint32)(CaEepromCfg_Conf[Le_u_Obj].SecAddr + 1),(uint8)(SeMemIf_w_Lng[Le_u_Obj] >> 8U));/*有效数据长度信息高Byte*/
-		FLASH_ProgramByte((uint32)(CaEepromCfg_Conf[Le_u_Obj].SecAddr + 2),(uint8)SeMemIf_w_Lng[Le_u_Obj]);/*有效数据长度信息低Byte*/
+		//MEMIF_PRINTF_D("%x ",LeMemIfCfg_u_Xor);
+		FLASH_PROGRAMBYTE((uint32)(CaEepromCfg_Conf[Le_u_Obj].SecAddr + 1),(uint8)(SeMemIf_w_Lng[Le_u_Obj] >> 8U));/*有效数据长度信息高Byte*/
+		FLASH_PROGRAMBYTE((uint32)(CaEepromCfg_Conf[Le_u_Obj].SecAddr + 2),(uint8)SeMemIf_w_Lng[Le_u_Obj]);/*有效数据长度信息低Byte*/
 		if(SeMemIf_u_VildFlag[Le_u_Obj] == 1U)
 		{
-			//USART_PRINTF_D("\r\nLe_u_Obj == %d\r\n",Le_u_Obj);
-			FLASH_ProgramByte((uint32)(CaEepromCfg_Conf[Le_u_Obj].SecAddr + 3),STD_ACTIVE);/*有效性标志Byte*/
+			//MEMIF_PRINTF_D("\r\nLe_u_Obj == %d\r\n",Le_u_Obj);
+			FLASH_PROGRAMBYTE((uint32)(CaEepromCfg_Conf[Le_u_Obj].SecAddr + 3),STD_ACTIVE);/*有效性标志Byte*/
 		}
-		//USART_PRINTF_D("\r\nLeMemIfCfg_u_Xor == %d\r\n",LeMemIfCfg_u_Xor);
-		FLASH_ProgramByte((uint32)(CaEepromCfg_Conf[Le_u_Obj].SecAddr),LeMemIfCfg_u_Xor);/*写校验和*/
+		//MEMIF_PRINTF_D("\r\nLeMemIfCfg_u_Xor == %d\r\n",LeMemIfCfg_u_Xor);
+		FLASH_PROGRAMBYTE((uint32)(CaEepromCfg_Conf[Le_u_Obj].SecAddr),LeMemIfCfg_u_Xor);/*写校验和*/
 		
 		/* 校验数据是否正确写入 */
 		FLASH_addr = CaEepromCfg_Conf[Le_u_Obj].DtAddr;
 		Le_u_ptr = CaEepromCfg_Conf[Le_u_Obj].Data;
-		//__disable_irq() ; //关闭总中断
 		for(Le_w_i=0;Le_w_i < CaEepromCfg_Conf[Le_u_Obj].Lng;Le_w_i++)
 		{
 			if(Le_u_ptr[Le_w_i] != *(__IO uint8*)FLASH_addr)//读FLASH中的数据，直接给出地址就行了。跟从内存中读数据一样
 			{
-				USART_PRINTF_S("\r\n数据写入出错\r\n");
+				MEMIF_PRINTF_S("\r\n数据写入出错\r\n");
 				__enable_irq() ; //打开总中断
-				FLASH_Lock();
+				FLASH_LOCK();
 				return 0;
 			}
 			FLASH_addr++;
@@ -566,16 +539,15 @@ static uint8 MemIf_u_wrFlash(void)
 		
 		if(LeMemIfCfg_u_Xor != *(__IO uint8*)CaEepromCfg_Conf[Le_u_Obj].SecAddr)
 		{
-			USART_PRINTF_S("\r\n校验和写入出错\r\n");
+			MEMIF_PRINTF_S("\r\n校验和写入出错\r\n");
 			__enable_irq() ; //打开总中断
-			FLASH_Lock();
+			FLASH_LOCK();
 			return 0;
 		}
 		LeMemIfCfg_u_Xor = 0u;
 	}
-	USART_PRINTF_S("\r\n写片上flash完成\r\n");
+	MEMIF_PRINTF_S("\r\n写片上flash完成\r\n");
 	__enable_irq() ; //打开总中断
-	FLASH_Lock();
+	FLASH_LOCK();
 	return 1;
-	//__enable_irq() ; //打开总中断
 }

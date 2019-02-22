@@ -87,9 +87,14 @@ zr60_v1.0\icunlock.o: ../Middlewares/Third_Party/FreeRTOS/Source/include/event_g
 zr60_v1.0\icunlock.o: ../Middlewares/Third_Party/LwIP/src/include/lwip/tcp.h
 zr60_v1.0\icunlock.o: ../Middlewares/Third_Party/LwIP/src/include/lwip/icmp.h
 zr60_v1.0\icunlock.o: ../Middlewares/Third_Party/LwIP/src/include/lwip/prot/icmp.h
+zr60_v1.0\icunlock.o: ..\Middlewares\Ecal\xor/xor.h
+zr60_v1.0\icunlock.o: ../Inc/Include.h
 zr60_v1.0\icunlock.o: ..\Middlewares\Ecal\JsonIf/cJSON.h
 zr60_v1.0\icunlock.o: ..\Middlewares\Ecal\JsonIf/JsonIf.h
-zr60_v1.0\icunlock.o: ../Inc/Include.h
+zr60_v1.0\icunlock.o: ..\Middlewares\Ecal\MemIf/MemIf.h
+zr60_v1.0\icunlock.o: ..\Middlewares\Ecal\MemIf/MemIf_cfg.h
+zr60_v1.0\icunlock.o: ..\Middlewares\Ecal\BtnFltr/BtnFltr.h
+zr60_v1.0\icunlock.o: ..\Middlewares\Ecal\BtnFltr/BtnFltr_Cfg.h
 zr60_v1.0\icunlock.o: ..\Middlewares\Third_Party\LwIP\App\dhcpClient.h
 zr60_v1.0\icunlock.o: ..\Middlewares\Third_Party\LwIP\App\dnsAnalysis.h
 zr60_v1.0\icunlock.o: ..\Middlewares\Third_Party\LwIP\App\ntpclient.h
