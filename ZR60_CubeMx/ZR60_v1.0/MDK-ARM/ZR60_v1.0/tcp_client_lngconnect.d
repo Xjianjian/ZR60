@@ -35,6 +35,7 @@ zr60_v1.0\tcp_client_lngconnect.o: ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx
 zr60_v1.0\tcp_client_lngconnect.o: ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_pwr.h
 zr60_v1.0\tcp_client_lngconnect.o: ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_pwr_ex.h
 zr60_v1.0\tcp_client_lngconnect.o: ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_uart.h
+zr60_v1.0\tcp_client_lngconnect.o: ../Inc/usart.h
 zr60_v1.0\tcp_client_lngconnect.o: ../Middlewares/Third_Party/LwIP/src/include/lwip/dhcp.h
 zr60_v1.0\tcp_client_lngconnect.o: ../Middlewares/Third_Party/LwIP/src/include/lwip/opt.h
 zr60_v1.0\tcp_client_lngconnect.o: ../Inc/lwipopts.h
@@ -85,8 +86,8 @@ zr60_v1.0\tcp_client_lngconnect.o: ../Middlewares/Third_Party/FreeRTOS/Source/in
 zr60_v1.0\tcp_client_lngconnect.o: ../Middlewares/Third_Party/LwIP/src/include/lwip/tcp.h
 zr60_v1.0\tcp_client_lngconnect.o: ../Middlewares/Third_Party/LwIP/src/include/lwip/icmp.h
 zr60_v1.0\tcp_client_lngconnect.o: ../Middlewares/Third_Party/LwIP/src/include/lwip/prot/icmp.h
-zr60_v1.0\tcp_client_lngconnect.o: ..\Middlewares\Ecal/JsonIf/cJSON.h
-zr60_v1.0\tcp_client_lngconnect.o: ..\Middlewares\Ecal/JsonIf/JsonIf.h
+zr60_v1.0\tcp_client_lngconnect.o: ..\Middlewares\Ecal\JsonIf/cJSON.h
+zr60_v1.0\tcp_client_lngconnect.o: ..\Middlewares\Ecal\JsonIf/JsonIf.h
 zr60_v1.0\tcp_client_lngconnect.o: ../Inc/Include.h
 zr60_v1.0\tcp_client_lngconnect.o: ..\Middlewares\Third_Party\LwIP\App\dhcpClient.h
 zr60_v1.0\tcp_client_lngconnect.o: ..\Middlewares\Third_Party\LwIP\App\dnsAnalysis.h
@@ -94,3 +95,5 @@ zr60_v1.0\tcp_client_lngconnect.o: ..\Middlewares\Third_Party\LwIP\App\ntpclient
 zr60_v1.0\tcp_client_lngconnect.o: ..\Middlewares\Third_Party\LwIP\App\./NetConnIf/NetConnIf.h
 zr60_v1.0\tcp_client_lngconnect.o: ..\Middlewares\Third_Party\LwIP\App\./NetConnIf/NetConnIf_Cfg.h
 zr60_v1.0\tcp_client_lngconnect.o: ..\Middlewares\Third_Party\LwIP\App\tcp_client_LngConnect.h
+zr60_v1.0\tcp_client_lngconnect.o: ..\Middlewares\APP\IcCardUnlock/IcUnlock.h
+zr60_v1.0\tcp_client_lngconnect.o: ..\Middlewares\APP\IcCardUnlock/IcUnlock_cfg.h

@@ -9,7 +9,7 @@ Data			Vasion			author
 /*******************************************************
 description： include the header file
 *******************************************************/
-#include "UartCmn.h"
+#include "UartComn/UartCmn.h"
 
 /*******************************************************
 description： function declaration
@@ -476,6 +476,8 @@ void SetUartCmn_BluetoothTxMsg(char* LeUartCmn_u_TxData,uint8 LeUartCmn_u_Lng)
 	//ENABLE_TEN; /* 允许发送 */
 	//ENABLE_TIEN;/* 使能发送寄存器空中断 */		
 }
+
+
 
 /******************************************************
 *函数名：UartCmn_Tx_BluetoothMsg

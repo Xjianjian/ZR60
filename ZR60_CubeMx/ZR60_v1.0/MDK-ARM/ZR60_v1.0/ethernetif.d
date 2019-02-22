@@ -85,6 +85,7 @@ zr60_v1.0\ethernetif.o: d:\Keil_v5\ARM\ARMCC\Bin\..\include\string.h
 zr60_v1.0\ethernetif.o: ../Middlewares/Third_Party/FreeRTOS/Source/CMSIS_RTOS/cmsis_os.h
 zr60_v1.0\ethernetif.o: ../Inc/Include.h
 zr60_v1.0\ethernetif.o: ../Inc/iwdg.h
+zr60_v1.0\ethernetif.o: ../Inc/usart.h
 zr60_v1.0\ethernetif.o: ../Middlewares/Third_Party/LwIP/src/include/lwip/dhcp.h
 zr60_v1.0\ethernetif.o: ../Middlewares/Third_Party/LwIP/src/include/lwip/udp.h
 zr60_v1.0\ethernetif.o: ../Middlewares/Third_Party/LwIP/src/include/lwip/ip.h
@@ -95,8 +96,8 @@ zr60_v1.0\ethernetif.o: ../Middlewares/Third_Party/LwIP/src/include/lwip/dns.h
 zr60_v1.0\ethernetif.o: ../Middlewares/Third_Party/LwIP/src/include/lwip/tcp.h
 zr60_v1.0\ethernetif.o: ../Middlewares/Third_Party/LwIP/src/include/lwip/icmp.h
 zr60_v1.0\ethernetif.o: ../Middlewares/Third_Party/LwIP/src/include/lwip/prot/icmp.h
-zr60_v1.0\ethernetif.o: ..\Middlewares\Ecal/JsonIf/cJSON.h
-zr60_v1.0\ethernetif.o: ..\Middlewares\Ecal/JsonIf/JsonIf.h
+zr60_v1.0\ethernetif.o: ..\Middlewares\Ecal\JsonIf/cJSON.h
+zr60_v1.0\ethernetif.o: ..\Middlewares\Ecal\JsonIf/JsonIf.h
 zr60_v1.0\ethernetif.o: ../Inc/Include.h
 zr60_v1.0\ethernetif.o: ..\Middlewares\Third_Party\LwIP\App\dhcpClient.h
 zr60_v1.0\ethernetif.o: ..\Middlewares\Third_Party\LwIP\App\dnsAnalysis.h
@@ -104,3 +105,5 @@ zr60_v1.0\ethernetif.o: ..\Middlewares\Third_Party\LwIP\App\ntpclient.h
 zr60_v1.0\ethernetif.o: ..\Middlewares\Third_Party\LwIP\App\./NetConnIf/NetConnIf.h
 zr60_v1.0\ethernetif.o: ..\Middlewares\Third_Party\LwIP\App\./NetConnIf/NetConnIf_Cfg.h
 zr60_v1.0\ethernetif.o: ..\Middlewares\Third_Party\LwIP\App\tcp_client_LngConnect.h
+zr60_v1.0\ethernetif.o: ..\Middlewares\APP\IcCardUnlock/IcUnlock.h
+zr60_v1.0\ethernetif.o: ..\Middlewares\APP\IcCardUnlock/IcUnlock_cfg.h

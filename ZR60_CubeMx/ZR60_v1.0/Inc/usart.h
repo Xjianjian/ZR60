@@ -58,10 +58,15 @@
 #include "main.h"
 
 /* USER CODE BEGIN Includes */
-
+#define UART3_DMA_RX_BUFFER_SIZE  64
+extern uint8_t uart3_dma_rx_len;             //接收一帧数据的长度
+extern uint8_t uart3_dma_recv_end_flag;    //一帧数据接收完成标志
+extern uint8_t uart3_dma_rx_buffer[UART3_DMA_RX_BUFFER_SIZE];   //接收数据缓存
 /* USER CODE END Includes */
 
+extern UART_HandleTypeDef huart5;
 extern UART_HandleTypeDef huart1;
+extern UART_HandleTypeDef huart3;
 
 /* USER CODE BEGIN Private defines */
 
@@ -69,7 +74,9 @@ extern UART_HandleTypeDef huart1;
 
 extern void _Error_Handler(char *, int);
 
+void MX_UART5_Init(void);
 void MX_USART1_UART_Init(void);
+void MX_USART3_UART_Init(void);
 
 /* USER CODE BEGIN Prototypes */
 

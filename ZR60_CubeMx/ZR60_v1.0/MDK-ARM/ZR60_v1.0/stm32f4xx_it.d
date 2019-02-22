@@ -46,3 +46,4 @@ zr60_v1.0\stm32f4xx_it.o: ../Middlewares/Third_Party/FreeRTOS/Source/include/tim
 zr60_v1.0\stm32f4xx_it.o: ../Middlewares/Third_Party/FreeRTOS/Source/include/queue.h
 zr60_v1.0\stm32f4xx_it.o: ../Middlewares/Third_Party/FreeRTOS/Source/include/semphr.h
 zr60_v1.0\stm32f4xx_it.o: ../Middlewares/Third_Party/FreeRTOS/Source/include/event_groups.h
+zr60_v1.0\stm32f4xx_it.o: ../Inc/usart.h

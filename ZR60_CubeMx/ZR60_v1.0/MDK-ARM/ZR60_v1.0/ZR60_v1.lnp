@@ -36,6 +36,7 @@
 "zr60_v1.0\gpio.o"
 "zr60_v1.0\usart.o"
 "zr60_v1.0\iwdg.o"
+"zr60_v1.0\dma.o"
 "zr60_v1.0\ipcp.o"
 "zr60_v1.0\api_msg.o"
 "zr60_v1.0\ecp.o"
@@ -120,6 +121,8 @@
 "zr60_v1.0\tcp_client_lngconnect.o"
 "zr60_v1.0\cjson.o"
 "zr60_v1.0\jsonif.o"
+"zr60_v1.0\icunlock.o"
+"zr60_v1.0\icunlock_cfg.o"
 --library_type=microlib --strict --scatter "ZR60_v1.0\ZR60_v1.sct"
 --diag_suppress=L6329 --summary_stderr --info summarysizes --map --xref --callgraph --symbols
 --info sizes --info totals --info unused --info veneers

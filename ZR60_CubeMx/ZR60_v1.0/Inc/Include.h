@@ -99,6 +99,10 @@ extern struct netif gnetif;
 
 #include "iwdg.h"
 
+//stm32 ¿â
+#include "usart.h"
+
+
 //lwip ¿â
 #include "lwip/dhcp.h"
 #include "lwip/dns.h"
@@ -110,8 +114,8 @@ extern struct netif gnetif;
 
 
 //ECU layer
-#include	"Ecal/JsonIf/cJSON.h"
-#include	"Ecal/JsonIf/JsonIf.h"
+#include	"JsonIf/cJSON.h"
+#include	"JsonIf/JsonIf.h"
 
 
 
@@ -122,7 +126,8 @@ extern struct netif gnetif;
 #include "./NetConnIf/NetConnIf.h"
 #include "tcp_client_LngConnect.h"
 
-
+//user app
+#include	"IcCardUnlock/IcUnlock.h"
 
 /*******************************************************
 descriptionï¼šstruct definitions

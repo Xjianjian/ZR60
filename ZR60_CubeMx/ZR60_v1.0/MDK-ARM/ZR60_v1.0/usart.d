@@ -32,3 +32,4 @@ zr60_v1.0\usart.o: ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_pwr.h
 zr60_v1.0\usart.o: ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_pwr_ex.h
 zr60_v1.0\usart.o: ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_uart.h
 zr60_v1.0\usart.o: ../Inc/gpio.h
+zr60_v1.0\usart.o: ../Inc/dma.h
