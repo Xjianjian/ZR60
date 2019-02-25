@@ -14,7 +14,7 @@ description锛歩nclude the header file
 //#define ZR50			//定义时，为zr50设备；未定义时，为zr60设备
 #define HYM8563		//定义时，使用外部hym8563时钟芯片
 #define NETWORK_ON     	//定义时，开启网络功能
-#define UART_DEBUG		//定义时，开启串口打印
+//#define UART_DEBUG		//定义时，开启串口打印
 //#define WM8978_DEBUG
 //#define NET_DEBUG
 //#define TIME_DEBUG

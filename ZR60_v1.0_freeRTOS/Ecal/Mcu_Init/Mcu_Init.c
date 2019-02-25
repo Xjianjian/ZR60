@@ -74,7 +74,7 @@ void Mcu_Init(void)
 	USART5_Config();//钃濈墮浣跨敤
 	Rheostat_Init();/*鍒濆鍖朅DC*/
 	Key_Config();//鎸夐敭鍙ｉ厤缃
-	printf("\n杞欢鐗堟湰锛s\n",CeZR60Ctrl_u_SoftVersion);
+	printf("\n软件版本%s\n",CeZR60Ctrl_u_SoftVersion);
 #ifndef HYM8563
 	/* RTC閰嶇疆锛氶�夋嫨鏃堕挓婧愶紝璁剧疆RTC_CLK鐨勫垎棰戠郴鏁*/
 	RTC_CLK_Config_Backup();
@@ -85,7 +85,7 @@ void Mcu_Init(void)
 	ret = wm8978_Init();//wm8978澶嶄綅
 	if(ret == 1)
 	{
-		printf("\n銆銆憌m8978鍒濆鍖栧畬鎴鈭歕\n");
+		printf("\nwm8978初始化成功\n");
 	}
 	InitAudioIO_playconfig();//闊抽鎾斁鍒濆鍖栭厤缃紙DMA鐨勫弻缂撳啿锛寃m8978宸ヤ綔鏂瑰紡锛
 	MemIf_Init();
