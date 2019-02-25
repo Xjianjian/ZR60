@@ -32,9 +32,9 @@ static IcUnlock_CardConf Se_Cardinfo_Temp;//存储母卡信息（用于读取的母卡卡片数据
 static CardNumInfo Se_CardID;//当前开门使用的ic卡卡号
 		
 /***********请求报文帧*************/
-static uint8_t ReqPacket_ReadBlock[7U] = {0x20,0x00, 0x22, 0x01, 0x02, 0x00,0x03};
-const uint8_t  CeIcUnlock_u_KeyA[12U] = {0x20 ,Load_Key, 0x20 ,0x06, 0xF5 ,0x79 ,0xED, 0xD8, 0x9F, 0x77 ,0x89, 0x03};
-const uint8_t  CeIcUnlock_DetectCardPakt[7U] = {0x20,SetDetectCard_ALL, 0x25, 0x01, 0x01, 0xD9,0x03};
+static uint8_t  ReqPacket_ReadBlock[7U] = {0x20,0x00, 0x22, 0x01, 0x02, 0x00,0x03};
+static uint8_t  SeIcUnlock_u_KeyA[12U] = {0x20 ,Load_Key, 0x20 ,0x06, 0xF5 ,0x79 ,0xED, 0xD8, 0x9F, 0x77 ,0x89, 0x03};
+static uint8_t  SeIcUnlock_DetectCardPakt[7U] = {0x20,SetDetectCard_ALL, 0x25, 0x01, 0x01, 0xD9,0x03};
 /**********************************/
 
 /*******************************************************
@@ -112,10 +112,11 @@ void TskIcUnlock_MainFunction(void)
 static void  OpenDoor_IC_MainFunction(void)//开锁
 {
 	char Le_u_UnlockInfo[32U] = {0x00};
-	
+	//IC_UNLOCK_PRINTF_S("\r\n=> OpenDoor_IC_MainFunction\r\n");
 	/*处理接收的ic卡数据*/
 	if(1 == GetIcUnlockCfg_u_RxMsgRenew(IcUnlock_RxMsg.Dt.Block))//收到读卡器发来的一帧数据
 	{
+		IC_UNLOCK_PRINTF_S("读卡器串口数据更新\r\n");
 		IcUnlock_handleMsg(IcUnlock_RxMsg); //处理读卡数据	
 	}
 		
@@ -123,7 +124,8 @@ static void  OpenDoor_IC_MainFunction(void)//开锁
 	if((1U == SeIcUnlock_SetKeyflag) && (1U == GetIcUnlock_u_TxIdle()))
 	{
 		SeIcUnlock_SetKeyflag = 0U;
-		SetIcUnlockCfg_TxMsg(CeIcUnlock_u_KeyA,12);
+		IC_UNLOCK_PRINTF_S("重新设置验证秘钥\r\n");
+		SetIcUnlockCfg_TxMsg(SeIcUnlock_u_KeyA,12);
 	}
 	
 	if(open_door == 1)//开锁
@@ -147,7 +149,7 @@ static void  OpenDoor_IC_MainFunction(void)//开锁
 			if(1U == GetIcUnlock_u_TxIdle())//串口tx空闲
 			{
 				w_SetAutoCard_DelayTime = 0U;
-				SetIcUnlockCfg_TxMsg(CeIcUnlock_DetectCardPakt,7);//下发自动寻卡指令
+				SetIcUnlockCfg_TxMsg(SeIcUnlock_DetectCardPakt,7);//下发自动寻卡指令
 				SeIcUnlock_AutoSectedCardFlag = 0;
 			}
 		}
@@ -160,6 +162,7 @@ static void  OpenDoor_IC_MainFunction(void)//开锁
 	{
 		w_SetAutoCard_DelayTime = 0U;
 	}
+	//IC_UNLOCK_PRINTF_S("\r\nOpenDoor_IC_MainFunction =>\r\n");
 }
 
 /******************************************************
@@ -177,6 +180,7 @@ static void  SetCard_MainFunction(void)//母卡设置
 {
 	uint8_t Le_u_i;
 	static uint32_t SeCardSet_dw_Timer = 0U;
+	//IC_UNLOCK_PRINTF_S("\r\n=> SetCard_MainFunction\r\n");
 	switch(SeIcUnlock_u_cardSetSt)
 	{
 		case 0U://空闲状态
@@ -230,6 +234,7 @@ static void  SetCard_MainFunction(void)//母卡设置
 		default:
 		break;
 	}
+	//IC_UNLOCK_PRINTF_S("\r\nSetCard_MainFunction =>\r\n");
 }
 
 /******************************************************

@@ -190,6 +190,7 @@ uint8 GetIcUnlockCfg_u_RxMsgRenew(uint8* Le_u_RxMsg)
 	uint8 Le_u_i;
 	if(1 == uart3_dma_recv_end_flag)
 	{
+		uart3_dma_recv_end_flag = 0;
 		if((uart3_dma_rx_buffer[0] == 0x20) && (uart3_dma_rx_buffer[uart3_dma_rx_len-1] == 0x03))
 		{//数据帧首尾字节正确
 			if(uart3_dma_rx_buffer[uart3_dma_rx_len -2] == \
@@ -199,6 +200,7 @@ uint8 GetIcUnlockCfg_u_RxMsgRenew(uint8* Le_u_RxMsg)
 				{
 					Le_u_RxMsg[Le_u_i] = uart3_dma_rx_buffer[Le_u_i + 1];
 				}
+				uart3_dma_rx_len = 0;
 				ret = 1;
 			}
 		}
@@ -216,9 +218,13 @@ uint8 GetIcUnlockCfg_u_RxMsgRenew(uint8* Le_u_RxMsg)
 *描  述：设置发送报文并启动发送
 *备  注：
 ******************************************************/
-void SetIcUnlockCfg_TxMsg(const uint8* LeUartCmn_u_TxData,uint8 LeUartCmn_u_Lng)
+void SetIcUnlockCfg_TxMsg(uint8* LeUartCmn_u_TxData,uint8 LeUartCmn_u_Lng)
 {
 	//SetUartCmn_TxMsg(LeUartCmn_u_TxData,LeUartCmn_u_Lng);
+	if(HAL_UART_Transmit_DMA(&huart3,LeUartCmn_u_TxData,LeUartCmn_u_Lng)!= HAL_OK)
+	{
+		//Error_Handler();
+	}
 }
 
 /******************************************************

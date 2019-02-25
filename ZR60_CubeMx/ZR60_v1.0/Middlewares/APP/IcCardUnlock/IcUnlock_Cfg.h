@@ -98,7 +98,7 @@ extern uint8 GetIcUnlockCfg_u_cardSetKeySt(void);
 extern void SetIcUnlockCfg_PlayFile(uint8 Le_u_PlayFile);
 extern void IcUnlockCfg_u_RecordUnlockLog(char* Le_u_UnlockInfo,uint8 Le_u_UnlockEvent);
 extern uint8 GetIcUnlockCfg_u_RxMsgRenew(uint8* Le_u_RxMsg);
-extern void SetIcUnlockCfg_TxMsg(const uint8* LeUartCmn_u_TxData,uint8 LeUartCmn_u_Lng);
+extern void SetIcUnlockCfg_TxMsg(uint8* LeUartCmn_u_TxData,uint8 LeUartCmn_u_Lng);
 extern void SetIcUnlockCfg_openDoor(void);
 extern void IcUnlockCfg_WrEE(uint8 Le_u_Obj,void* Le_u_Data,uint16 Le_w_Lng);
 extern uint8 IcUnlockCfg_ReadEE(uint8 Le_u_Obj,uint8* Le_u_Data,uint16 Le_w_Lng);

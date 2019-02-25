@@ -99,7 +99,7 @@ void MX_FREERTOS_Init(void) {
 
   /* Create the thread(s) */
   /* definition and creation of defaultTask */
-  osThreadDef(defaultTask, StartDefaultTask, osPriorityNormal, 0, 256);
+  osThreadDef(defaultTask, StartDefaultTask, osPriorityNormal, 0, 1024);
   defaultTaskHandle = osThreadCreate(osThread(defaultTask), NULL);
 
   /* definition and creation of FeedDog */
@@ -107,7 +107,7 @@ void MX_FREERTOS_Init(void) {
   FeedDogHandle = osThreadCreate(osThread(FeedDog), NULL);
 
   /* definition and creation of print_Task */
-  osThreadDef(print_Task, StartTask03, osPriorityLow, 0, 256);
+  osThreadDef(print_Task, StartTask03, osPriorityLow, 0, 1024);
   print_TaskHandle = osThreadCreate(osThread(print_Task), NULL);
 
   /* USER CODE BEGIN RTOS_THREADS */
