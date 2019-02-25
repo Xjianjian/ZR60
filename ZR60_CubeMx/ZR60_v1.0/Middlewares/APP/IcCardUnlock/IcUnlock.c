@@ -23,7 +23,6 @@ static uint8_t  SeIcUnlock_u_cardSetSt = 0U;//母卡设置状态
 //static uint8_t  SeIcUnlock_cardRenewflag = 0U; //母卡信息更新标志
 static uint8_t  SeIcUnlock_u_cardInfoReadFlag = 0U;//母卡数据读取完成标志
 static IcUnlock_RxMsgStruct  IcUnlock_RxMsg;//缓存ic读卡接收数据
-static uint8_t  SeIcUnlock_SetKeyflag = 0U; //加载密码标志
 static uint8_t  SeIcUnlock_AutoSectedCardFlag = 1U;//自动寻卡设置标志：1--设置自动寻卡
 static uint8_t  open_door = 0;//开门标志：1--开门
 
@@ -95,7 +94,7 @@ void TskIcUnlock_MainFunction(void)
 { 
 	SetCard_MainFunction();//母卡设置
 	
-	//OpenDoor_IC_MainFunction();//ic卡开锁	
+	OpenDoor_IC_MainFunction();//ic卡开锁	
 }
 
 /******************************************************
@@ -119,15 +118,7 @@ static void  OpenDoor_IC_MainFunction(void)//开锁
 		IC_UNLOCK_PRINTF_S("读卡器串口数据更新\r\n");
 		IcUnlock_handleMsg(IcUnlock_RxMsg); //处理读卡数据	
 	}
-		
-	/*设置读ic卡密码*/
-	if((1U == SeIcUnlock_SetKeyflag) && (1U == GetIcUnlock_u_TxIdle()))
-	{
-		SeIcUnlock_SetKeyflag = 0U;
-		IC_UNLOCK_PRINTF_S("重新设置验证秘钥\r\n");
-		SetIcUnlockCfg_TxMsg(SeIcUnlock_u_KeyA,12);
-	}
-	
+
 	if(open_door == 1)//开锁
 	{	
 		IC_UNLOCK_PRINTF_S("ic卡 -> 开门");
@@ -301,8 +292,9 @@ static void IcUnlock_handleMsg(IcUnlock_RxMsgStruct rebackInfo)
 			{
 				if(rebackInfo.Dt.DtSrt.St == 0x09)//读卡器密码验证失败
 				{
-					SeIcUnlock_SetKeyflag = 1U;
 					IC_UNLOCK_PRINTF_S("扇区5 key密码验证失败  X\n");
+					IC_UNLOCK_PRINTF_S("重新设置验证秘钥\r\n");
+					SetIcUnlockCfg_TxMsg(SeIcUnlock_u_KeyA,12);
 				}
 				// 如果数据块0x14读取数据失败
 				SeIcUnlock_AutoSectedCardFlag = 1;
@@ -472,8 +464,9 @@ static void IcUnlock_handleMsg(IcUnlock_RxMsgStruct rebackInfo)
 			{
 				if(rebackInfo.Dt.DtSrt.St == 0x09)//读卡器密码验证失败
 				{
-					SeIcUnlock_SetKeyflag = 1U;
 					IC_UNLOCK_PRINTF_S("扇区6 key密码验证失败  X\n");
+					IC_UNLOCK_PRINTF_S("重新设置验证秘钥\r\n");
+					SetIcUnlockCfg_TxMsg(SeIcUnlock_u_KeyA,12);
 				}
 				SeIcUnlock_AutoSectedCardFlag = 1;
 				SetIcUnlockCfg_PlayFile(IC_UNLOCK_CARD_INVALID);

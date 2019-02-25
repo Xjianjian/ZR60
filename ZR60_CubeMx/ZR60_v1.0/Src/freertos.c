@@ -73,7 +73,7 @@ extern void MX_LWIP_Init(void);
 void MX_FREERTOS_Init(void); /* (MISRA C 2004 rule 8.1) */
 
 /* USER CODE BEGIN FunctionPrototypes */
-
+static void get_resert_status(void);
 /* USER CODE END FunctionPrototypes */
 
 /* Hook prototypes */
@@ -82,7 +82,7 @@ void MX_FREERTOS_Init(void); /* (MISRA C 2004 rule 8.1) */
 
 void MX_FREERTOS_Init(void) {
   /* USER CODE BEGIN Init */
-       
+  get_resert_status();     
   /* USER CODE END Init */
 
   /* USER CODE BEGIN RTOS_MUTEX */
@@ -188,7 +188,36 @@ void StartZr60FuncTask(void const * argument)
 }
 
 /* USER CODE BEGIN Application */
-     
+static void get_resert_status(void)
+{
+	#if defined(USART_DEBUGE_PRINTF)
+    if( READ_BIT(RCC->CSR, RCC_CSR_PINRSTF) != RESET)
+    {
+        printf("复位按键复位\n");
+    }
+    if( READ_BIT(RCC->CSR, RCC_CSR_BORRSTF) != RESET)
+    {
+        printf("低于电压阈值复位\n");
+    }
+    if( READ_BIT(RCC->CSR, RCC_CSR_SFTRSTF) != RESET)
+    {
+        printf("软件复位\n");
+    }
+    if( READ_BIT(RCC->CSR, RCC_CSR_IWDGRSTF) != RESET)
+    {
+        printf("独立看门狗复位\n");
+    }
+    if( READ_BIT(RCC->CSR, RCC_CSR_WWDGRSTF) != RESET)
+    {
+        printf("窗口看门狗复位\n");
+    }
+    if( READ_BIT(RCC->CSR, RCC_CSR_LPWRRSTF) != RESET)
+    {
+        printf("低功耗非法模式复位\n");
+    }
+    __HAL_RCC_CLEAR_RESET_FLAGS();
+		#endif
+}		
 /* USER CODE END Application */
 
 /************************ (C) COPYRIGHT STMicroelectronics *****END OF FILE****/

@@ -29,7 +29,7 @@ description： macro definitions
 #endif
 
 /**********宏常量定义*********/
-#define  IC_UNLOCK_SCHEDULING_CYCLE		  20U//调度周期
+#define  IC_UNLOCK_SCHEDULING_CYCLE		  10U//调度周期
 
 
 #define IC_UNLOCK_DEVICE_TYPE  1
