@@ -56,18 +56,18 @@
 /* USER CODE END Includes */
 
 /* Variables -----------------------------------------------------------------*/
-osThreadId defaultTaskHandle;
+osThreadId lwip_taskHandle;
 osThreadId FeedDogHandle;
-osThreadId print_TaskHandle;
+osThreadId zr60_TaskHandle;
 
 /* USER CODE BEGIN Variables */
 
 /* USER CODE END Variables */
 
 /* Function prototypes -------------------------------------------------------*/
-void StartDefaultTask(void const * argument);
+void StartLwipTask(void const * argument);
 void vTaskFeedDog(void const * argument);
-void StartTask03(void const * argument);
+void StartZr60FuncTask(void const * argument);
 
 extern void MX_LWIP_Init(void);
 void MX_FREERTOS_Init(void); /* (MISRA C 2004 rule 8.1) */
@@ -98,17 +98,17 @@ void MX_FREERTOS_Init(void) {
   /* USER CODE END RTOS_TIMERS */
 
   /* Create the thread(s) */
-  /* definition and creation of defaultTask */
-  osThreadDef(defaultTask, StartDefaultTask, osPriorityNormal, 0, 1024);
-  defaultTaskHandle = osThreadCreate(osThread(defaultTask), NULL);
+  /* definition and creation of lwip_task */
+  osThreadDef(lwip_task, StartLwipTask, osPriorityNormal, 0, 1024);
+  lwip_taskHandle = osThreadCreate(osThread(lwip_task), NULL);
 
   /* definition and creation of FeedDog */
   osThreadDef(FeedDog, vTaskFeedDog, osPriorityHigh, 0, 256);
   FeedDogHandle = osThreadCreate(osThread(FeedDog), NULL);
 
-  /* definition and creation of print_Task */
-  osThreadDef(print_Task, StartTask03, osPriorityLow, 0, 1024);
-  print_TaskHandle = osThreadCreate(osThread(print_Task), NULL);
+  /* definition and creation of zr60_Task */
+  osThreadDef(zr60_Task, StartZr60FuncTask, osPriorityLow, 0, 1024);
+  zr60_TaskHandle = osThreadCreate(osThread(zr60_Task), NULL);
 
   /* USER CODE BEGIN RTOS_THREADS */
   /* add threads, ... */
@@ -119,33 +119,31 @@ void MX_FREERTOS_Init(void) {
   /* USER CODE END RTOS_QUEUES */
 }
 
-/* StartDefaultTask function */
-void StartDefaultTask(void const * argument)
+/* StartLwipTask function */
+void StartLwipTask(void const * argument)
 {
   /* init code for LWIP */
   MX_LWIP_Init();
 
-  /* USER CODE BEGIN StartDefaultTask */
+  /* USER CODE BEGIN StartLwipTask */
 	InitBtnFltr_Parameter();
-	
-	InitdnsAnalysis_parameter();
 	InitdhcpClient_parameter();
+	InitdnsAnalysis_parameter();
 	Initntpclient_Pramater();
-	
+	NetConnIf_Parameter();
 	tcp_LngConnect_Parameter();
   /* Infinite loop */
   for(;;)
   {
 		TskBtnFltr_MainFunction();
+		
 		TskdhcpClient_MainFunction();
 		TskdnsAnalysis_MainFunction();
-	
 		Tskntpclient_MainFunction();
-	
 		tcp_LngConnect_MainFunction();
     osDelay(5);
   }
-  /* USER CODE END StartDefaultTask */
+  /* USER CODE END StartLwipTask */
 }
 
 /* vTaskFeedDog function */
@@ -167,26 +165,26 @@ void vTaskFeedDog(void const * argument)
 			Error_Handler();
 		}
 		
-    osDelay(10);
+    osDelay(100);
   }
   /* USER CODE END vTaskFeedDog */
 }
 
-/* StartTask03 function */
-void StartTask03(void const * argument)
+/* StartZr60FuncTask function */
+void StartZr60FuncTask(void const * argument)
 {
-  /* USER CODE BEGIN StartTask03 */
+  /* USER CODE BEGIN StartZr60FuncTask */
 	MemIf_Init();
 	InitIcUnlock_parameter();
   /* Infinite loop */
   for(;;)
   {
-	  TskMemIf_MainFunction();
-	  TskIcUnlock_MainFunction();
-		//printf("串口打印任务运行中");
-    osDelay(20);
+		
+		TskMemIf_MainFunction();
+		TskIcUnlock_MainFunction();
+    osDelay(10);
   }
-  /* USER CODE END StartTask03 */
+  /* USER CODE END StartZr60FuncTask */
 }
 
 /* USER CODE BEGIN Application */

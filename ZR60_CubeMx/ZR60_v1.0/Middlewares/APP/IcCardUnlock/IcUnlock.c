@@ -95,7 +95,7 @@ void TskIcUnlock_MainFunction(void)
 { 
 	SetCard_MainFunction();//Ä¸¿¨ÉèÖÃ
 	
-	OpenDoor_IC_MainFunction();//ic¿¨¿ªËø	
+	//OpenDoor_IC_MainFunction();//ic¿¨¿ªËø	
 }
 
 /******************************************************

@@ -78,9 +78,11 @@ void TskdhcpClient_MainFunction(void)
 		if(!ip_displayed)
 		{
 			ip_displayed = 1;
+			#if defined(USART_DEBUGE_PRINTF)
 			printf("IP address: %s\n", ip4addr_ntoa(&Le_dhcp->offered_ip_addr));
 			printf("Subnet mask: %s\n", ip4addr_ntoa(&Le_dhcp->offered_sn_mask));
 			printf("Default gateway: %s\n", ip4addr_ntoa(&Le_dhcp->offered_gw_addr));
+			#endif
 		}
   }
 	else

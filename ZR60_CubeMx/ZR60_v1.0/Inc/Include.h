@@ -85,6 +85,9 @@ description：Often use of macro definitions
 /*******************************************************
 description锛歩nclude the header file
 *******************************************************/
+
+#define USART_DEBUGE_PRINTF   //串口调试打印输出总开关
+
 /*******之前固件库写的代码能与当前HAL库代码兼容*******/
 #define ip_addr ip4_addr
 #define IPaddress GetdhcpClient_w_SrcIPaddr()

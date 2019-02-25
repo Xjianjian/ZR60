@@ -32,7 +32,7 @@
 
 
 #define TCP_CLIENT_LNGCONN_DEBUG
-#ifdef 	TCP_CLIENT_LNGCONN_DEBUG
+#if (defined(TCP_CLIENT_LNGCONN_DEBUG) && defined(USART_DEBUGE_PRINTF))
 #define LNGCONN_PRINTF_S(x)   	 printf("%s\n",x)
 #define LNGCONN_PRINTF_D(x,d)   	 printf(x,d)
 #define LNGCONN_PRINTF_IP(x,d1,d2,d3,d4)    			printf(x,d1,d2,d3,d4)

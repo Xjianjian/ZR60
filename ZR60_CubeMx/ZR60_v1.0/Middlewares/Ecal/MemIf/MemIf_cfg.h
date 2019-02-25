@@ -26,7 +26,7 @@ description?acro definitions
 #endif
 
 #define MEMIF_DEBUG
-#ifdef 	MEMIF_DEBUG
+#if (defined(MEMIF_DEBUG) && defined(USART_DEBUGE_PRINTF))
 #define MEMIF_PRINTF_S(x)   	 printf("%s\n",x)
 #define MEMIF_PRINTF_D(x,d)   	 printf(x,d)
 #else

@@ -18,7 +18,7 @@ description： macro definitions
 *******************************************************/
 /**********宏开关定义*********/
 #define IC_UNLOCK_DEBUG
-#ifdef 	IC_UNLOCK_DEBUG
+#if (defined(IC_UNLOCK_DEBUG) && defined(USART_DEBUGE_PRINTF))
 #define IC_UNLOCK_PRINTF_S(x)   	 printf("%s\n",x)
 #define IC_UNLOCK_PRINTF_D(x,d)   	 printf(x,d)
 #define IC_UNLOCK_PRINTF_CARD_NUM(x,d1,d2,d3,d4)    	printf(x,d1,d2,d3,d4)

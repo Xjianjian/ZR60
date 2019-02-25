@@ -18,7 +18,7 @@ description： macro definitions
 *******************************************************/
 /**********宏开关定义*********/
 #define NTP_DEBUG
-#ifdef 	NTP_DEBUG
+#if (defined(NTP_DEBUG) && defined(USART_DEBUGE_PRINTF))
 #define NTP_PRINTF_S(x)   	 printf("%s\n",x)
 #define NTP_PRINTF_D(x,d)   	 printf(x,d)
 #define NTP_PRINTF_IP(x,d1,d2,d3,d4)    			printf(x,d1,d2,d3,d4)

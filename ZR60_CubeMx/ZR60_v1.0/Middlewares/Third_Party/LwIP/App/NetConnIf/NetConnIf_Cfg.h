@@ -34,7 +34,7 @@ description£º macro definitions
 typedef void (*Netconn_RcvCallback)(void);
 
 
-#ifdef NETCONNIF_DEBUG
+#if (defined(NETCONNIF_DEBUG) && defined(USART_DEBUGE_PRINTF))
 #define NETCONNIF_PRINTF_S(x)   	 printf("%s\n",x)
 #define NETCONNIF_PRINTF_D(x,d)   	 printf(x,d)
 #else
