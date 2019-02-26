@@ -77,62 +77,32 @@ static char getByte(char* nums, uint8_t index);
 void tcp_LngConnect_Parameter(void)
 {
 	uint8_t Le_u_i;
-	char La_u_suffix[4U] = {'9','9','9','\0'};
+	unsigned char La_u_ID[16U] = {0};
+	char La_u_suffix[4U] = {'\0'};
+	unsigned short Le_w_suffix;
 	memset(Setcp_Alias.Alias,0,sizeof(Setcp_Alias.Alias));//清0
 	if(1U == CLIENT_LNGCNNT_DEVICETYPE)//围墙机
 	{//别名：小区id_3_下标
-		//Json_HexToStr(Setcp_Alias.Alias,sminfo1.community_id,16);
-		Setcp_Alias.Alias[0U] =  'A';
-		Setcp_Alias.Alias[1U] =  'A';
-		Setcp_Alias.Alias[2U] =  'A';
-		Setcp_Alias.Alias[3U] =  'A';
-		Setcp_Alias.Alias[4U] =  'A';
-		Setcp_Alias.Alias[5U] =  'A';
-		Setcp_Alias.Alias[6U] =  '3';
-		Setcp_Alias.Alias[7U] =  'A';
-		Setcp_Alias.Alias[8U] =  'A';
-		Setcp_Alias.Alias[9U] =  '3';
-		Setcp_Alias.Alias[10U] =  'A';
-		Setcp_Alias.Alias[11U] =  'A';
-		Setcp_Alias.Alias[12U] =  '3';
-		Setcp_Alias.Alias[13U] =  'A';
-		Setcp_Alias.Alias[14U] =  'A';
-		Setcp_Alias.Alias[15U] =  '3';
-		Setcp_Alias.Alias[16U] = 'A';
-		Setcp_Alias.Alias[17U] = 'A';
-		Setcp_Alias.Alias[18U] =  '3';
-		Setcp_Alias.Alias[19U] =  'A';
-		Setcp_Alias.Alias[20U] =  'A';
-		Setcp_Alias.Alias[21U] =  'A';
-		Setcp_Alias.Alias[22U] =  'A';
-		Setcp_Alias.Alias[23U] =  '3';
-		Setcp_Alias.Alias[24U] = 'A';
-		Setcp_Alias.Alias[25U] =  'A';
-		Setcp_Alias.Alias[26U] =  '3';
-		Setcp_Alias.Alias[27U] = 'A';
-		Setcp_Alias.Alias[28U] =  'A';
-		Setcp_Alias.Alias[29U] =  '3';
-		Setcp_Alias.Alias[30U] = 'A';
-		Setcp_Alias.Alias[31U] = 'A';
-		
+		GetIcUnlock_communityID(La_u_ID);
+		Json_HexToStr(Setcp_Alias.Alias,La_u_ID,16);
 		Setcp_Alias.Alias[32U] =  '_';
 		Setcp_Alias.Alias[33U] =  '3';
 		Setcp_Alias.Alias[34U] =  '_';
 	}
 	else//门口机
 	{//别名：楼栋id_1_下标
-		//Json_HexToStr(Setcp_Alias.Alias,sminfo1.build_id,16);
+		GetIcUnlock_buildID(La_u_ID);
+		Json_HexToStr(Setcp_Alias.Alias,La_u_ID,16);
 		Setcp_Alias.Alias[32U] =  '_';
 		Setcp_Alias.Alias[33U] =  '1';
 		Setcp_Alias.Alias[34U] =  '_';
 	}
-	
-	//if(sminfo1.suffix > 999)
+	Le_w_suffix = GetIcUnlock_w_suffix();
+	if(Le_w_suffix > 999)
 	{
-		//sminfo1.suffix = 999;
+		Le_w_suffix = 999;
 	}
-	//sprintf(La_u_suffix,"%d",sminfo1.suffix);
-	LNGCONN_PRINTF_S(La_u_suffix);
+	sprintf(La_u_suffix,"%d",Le_w_suffix);
 	strcat(Setcp_Alias.Alias, La_u_suffix);
 	LNGCONN_PRINTF_S(Setcp_Alias.Alias);
 	for(Le_u_i = 0U;Le_u_i < 39U;Le_u_i++)

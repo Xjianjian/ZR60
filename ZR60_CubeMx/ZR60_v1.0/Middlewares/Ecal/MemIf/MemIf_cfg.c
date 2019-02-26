@@ -17,7 +17,7 @@ description： global variable definitions
 *******************************************************/
 EepromCfg_ConfStruct    CaEepromCfg_Conf[EE_OBJECT_NUM] = 
 {
-	{EepromCfg_IntEE,EEPROM_SEC5_START_ADDR,EE_CARD_SET_ADDR,STD_NULL_PTR,0},//卡片配置信息
+	{EepromCfg_IntEE,EEPROM_SEC5_START_ADDR,EE_CARD_SET_ADDR,STD_NULL_PTR,0,"the configuration information of mother card"}//卡片配置信息
 	//{EepromCfg_IntEE,EEPROM_SEC1_START_ADDR,EE_MAC_INFO_ADDR,(char*)Se_u_MacAddr,sizeof(Se_u_MacAddr)},//mac信息
 	//{EepromCfg_IntEE,EEPROM_SEC6_START_ADDR,EE_TOKEN_INFO_ADDR,(char*)Vetcp_client_u_token,sizeof(Vetcp_client_u_token)}//token信息
 };

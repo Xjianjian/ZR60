@@ -64,7 +64,8 @@ description： function code
 void InitIcUnlock_parameter(void)
 {
 	uint8_t LeZR60_u_Xor = 0;
-	
+	char Le_u_print[33] = {0};
+
 	LeZR60_u_Xor = GetIcUnlockCfg_u_CheckSum(IC_UNLOCK_EE_CARD_INFO);//读取扇区0数据校验和（存放母卡信息）
 	if((LeZR60_u_Xor == IcUnlockCfg_ReadEE(IC_UNLOCK_EE_CARD_INFO,Se_Cardinfo.community_id,sizeof(Se_Cardinfo))) && \
 	  (STD_ACTIVE == GetIcUnlockCfg_u_DtVild(IC_UNLOCK_EE_CARD_INFO)))
@@ -76,6 +77,22 @@ void InitIcUnlock_parameter(void)
 	else
 	{
 		printf("flash存储的母卡信息数据无效 X\r\n");
+		printf("母卡数据校验和 %d\n",LeZR60_u_Xor);
+		printf("母卡数据有效性标志 %d\n",GetIcUnlockCfg_u_DtVild(IC_UNLOCK_EE_CARD_INFO));
+		printf("\n读取的本地母卡配置信息：");
+		Json_HexToStr(Le_u_print,Se_Cardinfo.community_id,16);
+		printf("\n小区ID：%s",Le_u_print);
+		Json_HexToStr(Le_u_print,Se_Cardinfo.build_numOne,16);
+		printf("\n楼栋编号1：%s",Le_u_print);
+		Json_HexToStr(Le_u_print,Se_Cardinfo.build_numTwo,16);
+		printf("\n楼栋编号2：%s",Le_u_print);
+		Json_HexToStr(Le_u_print,Se_Cardinfo.build_id,16);
+		printf("\n楼栋ID：%s",Le_u_print);
+		Json_HexToStr(Le_u_print,Se_Cardinfo.door_id,16);
+		printf("\n门ID：%s",Le_u_print);	
+		memset(Le_u_print,0,sizeof(Le_u_print));//清0
+		sprintf(Le_u_print,"%d",Se_Cardinfo.suffix);
+		printf("\n下标：%s",Le_u_print);
 	}
 }
 
@@ -115,7 +132,7 @@ static void  OpenDoor_IC_MainFunction(void)//开锁
 	/*处理接收的ic卡数据*/
 	if(1 == GetIcUnlockCfg_u_RxMsgRenew(IcUnlock_RxMsg.Dt.Block))//收到读卡器发来的一帧数据
 	{
-		IC_UNLOCK_PRINTF_S("读卡器串口数据更新\r\n");
+		//IC_UNLOCK_PRINTF_S("读卡器串口数据更新\r\n");
 		IcUnlock_handleMsg(IcUnlock_RxMsg); //处理读卡数据	
 	}
 
@@ -243,6 +260,9 @@ static void IcUnlock_handleMsg(IcUnlock_RxMsgStruct rebackInfo)
 {
 	uint8 Le_u_i;
 	uint8 Le_u_matchFlg = 0U;
+#if defined(IC_UNLOCK_DEBUG)
+	char Le_u_print[33] = {0};
+#endif
 	switch (rebackInfo.Dt.DtSrt.Seqnr) 
 	{
 		case GetCard_Num : //标签位为0表示读到卡了
@@ -303,7 +323,11 @@ static void IcUnlock_handleMsg(IcUnlock_RxMsgStruct rebackInfo)
 			} 
 			else 
 			{	
-				IC_UNLOCK_PRINTF_S("读扇区5块0x14成功  √\n");
+				IC_UNLOCK_PRINTF_S("\n读扇区5块0x14（小区ID）成功,扇区数据：");
+#if defined(IC_UNLOCK_DEBUG)
+				Json_HexToStr(Le_u_print,rebackInfo.Dt.DtSrt.ValidDt,16);
+				IC_UNLOCK_PRINTF_S(Le_u_print);
+#endif
 				if(1U == SeIcUnlock_u_cardSetSt)
 				{//卡片设置模式
 					//("小区id:");
@@ -311,6 +335,7 @@ static void IcUnlock_handleMsg(IcUnlock_RxMsgStruct rebackInfo)
 					{			
 						Se_Cardinfo_Temp.community_id[Le_u_i] = rebackInfo.Dt.DtSrt.ValidDt[Le_u_i];
 					}
+
 					IcUnlock_readBlock(ReqPacket_ReadBlock, (uint8_t) 0x15,sizeof(ReqPacket_ReadBlock));
 				}
 				else
@@ -358,7 +383,11 @@ static void IcUnlock_handleMsg(IcUnlock_RxMsgStruct rebackInfo)
 			} 
 			else
 			{	
-				IC_UNLOCK_PRINTF_S("读扇区5块0x15成功   √\n");
+				IC_UNLOCK_PRINTF_S("\n读扇区5块0x15（楼栋编号）成功,读取数据：");
+#if defined(IC_UNLOCK_DEBUG)
+				Json_HexToStr(Le_u_print,rebackInfo.Dt.DtSrt.ValidDt,16);
+				IC_UNLOCK_PRINTF_S(Le_u_print);
+#endif				
 				if(1U == SeIcUnlock_u_cardSetSt)
 				{//卡片设置模式
 					//("楼栋编号1:");
@@ -415,7 +444,11 @@ static void IcUnlock_handleMsg(IcUnlock_RxMsgStruct rebackInfo)
 			} 
 			else
 			{
-				IC_UNLOCK_PRINTF_S("读扇区5块0x16成功  √\n");
+				IC_UNLOCK_PRINTF_S("\n读扇区5块0x16（楼栋编号）成功,读取数据：");
+#if defined(IC_UNLOCK_DEBUG)
+				Json_HexToStr(Le_u_print,rebackInfo.Dt.DtSrt.ValidDt,16);
+				IC_UNLOCK_PRINTF_S(Le_u_print);
+#endif					
 				if(1U == SeIcUnlock_u_cardSetSt)
 				{//卡片设置模式
 					//("楼栋编号2:");
@@ -474,6 +507,11 @@ static void IcUnlock_handleMsg(IcUnlock_RxMsgStruct rebackInfo)
 			} 
 			else
 			{
+				IC_UNLOCK_PRINTF_S("\n读扇区6块0x18（楼栋ID）成功,读取数据：");
+#if defined(IC_UNLOCK_DEBUG)
+				Json_HexToStr(Le_u_print,rebackInfo.Dt.DtSrt.ValidDt,16);
+				IC_UNLOCK_PRINTF_S(Le_u_print);
+#endif
 				//("楼栋id:");
 				for(Le_u_i = 0;Le_u_i < rebackInfo.Dt.DtSrt.DtLng;Le_u_i++)
 				{
@@ -493,6 +531,11 @@ static void IcUnlock_handleMsg(IcUnlock_RxMsgStruct rebackInfo)
 			} 
 			else
 			{
+				IC_UNLOCK_PRINTF_S("\n读扇区6块0x19（门ID）成功,读取数据：");
+#if defined(IC_UNLOCK_DEBUG)
+				Json_HexToStr(Le_u_print,rebackInfo.Dt.DtSrt.ValidDt,16);
+				IC_UNLOCK_PRINTF_S(Le_u_print);
+#endif
 				//("门id:");
 				for(Le_u_i = 0;Le_u_i < rebackInfo.Dt.DtSrt.DtLng;Le_u_i++)
 				{
@@ -512,12 +555,32 @@ static void IcUnlock_handleMsg(IcUnlock_RxMsgStruct rebackInfo)
 				IC_UNLOCK_PRINTF_S("读扇区6块0x1A失败  X\n");
 			} 
 			else
-			{
-				//("下标:");
+			{//("下标:");
 				Se_Cardinfo_Temp.suffix = 0U;
 				Se_Cardinfo_Temp.suffix = rebackInfo.Dt.DtSrt.ValidDt[0];
 				Se_Cardinfo_Temp.suffix = ((Se_Cardinfo_Temp.suffix << 8U) | rebackInfo.Dt.DtSrt.ValidDt[1]);
 				SeIcUnlock_u_cardInfoReadFlag = 1U;
+#if defined(IC_UNLOCK_DEBUG)
+				memset(Le_u_print,0,sizeof(Le_u_print));//清0
+				sprintf(Le_u_print,"%d",Se_Cardinfo_Temp.suffix);
+				IC_UNLOCK_PRINTF_D("\n读扇区6块0x1A（下标）成功,读取数据：%s",Le_u_print);
+#endif				
+#if defined(IC_UNLOCK_DEBUG)
+				IC_UNLOCK_PRINTF_S("\n母卡配置更新后信息：");
+				Json_HexToStr(Le_u_print,Se_Cardinfo_Temp.community_id,16);
+				IC_UNLOCK_PRINTF_D("\n小区ID：%s",Le_u_print);
+				Json_HexToStr(Le_u_print,Se_Cardinfo_Temp.build_numOne,16);
+				IC_UNLOCK_PRINTF_D("\n楼栋编号1：%s",Le_u_print);
+				Json_HexToStr(Le_u_print,Se_Cardinfo_Temp.build_numTwo,16);
+				IC_UNLOCK_PRINTF_D("\n楼栋编号2：%s",Le_u_print);
+				Json_HexToStr(Le_u_print,Se_Cardinfo_Temp.build_id,16);
+				IC_UNLOCK_PRINTF_D("\n楼栋ID：%s",Le_u_print);
+				Json_HexToStr(Le_u_print,Se_Cardinfo_Temp.door_id,16);
+				IC_UNLOCK_PRINTF_D("\n门ID：%s",Le_u_print);	
+				memset(Le_u_print,0,sizeof(Le_u_print));//清0
+				sprintf(Le_u_print,"%d",Se_Cardinfo_Temp.suffix);
+				IC_UNLOCK_PRINTF_D("\n下标：%s",Le_u_print);
+#endif
 			}
 		}
 		break;
@@ -608,3 +671,60 @@ static void IcUnlock_readBlock(uint8_t * requestPacket, uint8_t  requestBlock,ui
 	SetIcUnlockCfg_TxMsg(requestPacket,requestPacketLength);
 }
 
+/******************************************************
+*函数名：GetIcUnlock_communityID
+
+*形  参：
+
+*返回值：
+
+*描  述：获取小区ID
+
+*备  注：
+******************************************************/
+void GetIcUnlock_communityID(unsigned char* community_id)
+ {
+	uint8 Le_u_i;
+	for(Le_u_i = 0;Le_u_i < 16;Le_u_i++)
+	{
+		community_id[Le_u_i] = Se_Cardinfo.community_id[Le_u_i];
+	}
+}
+
+
+/******************************************************
+*函数名：GetIcUnlock_buildID
+
+*形  参：
+
+*返回值：
+
+*描  述：获取楼栋ID
+
+*备  注：
+******************************************************/
+void GetIcUnlock_buildID(unsigned char* build_id)
+ {
+	uint8 Le_u_i;
+	for(Le_u_i = 0;Le_u_i < 16;Le_u_i++)
+	{
+		build_id[Le_u_i] = Se_Cardinfo.build_id[Le_u_i];
+	}
+}
+
+
+/******************************************************
+*函数名：GetIcUnlock_w_suffix
+
+*形  参：
+
+*返回值：
+
+*描  述：获取下标
+
+*备  注：
+******************************************************/
+unsigned short GetIcUnlock_w_suffix(void)
+{
+	return Se_Cardinfo.suffix;
+}

@@ -20,9 +20,9 @@ description?acro definitions
 #define   MEMIF_HAL     //定义时表示使用HAL库
 
 #ifdef 	  MEMIF_HAL
-#define   MEMIF_ERASE_SECTOR   FLASH_SECTOR_4
+#define   MEMIF_ERASE_SECTOR   FLASH_SECTOR_11
 #else
-#define   MEMIF_ERASE_SECTOR   FLASH_Sector_4
+#define   MEMIF_ERASE_SECTOR   FLASH_Sector_11
 #endif
 
 #define MEMIF_DEBUG
@@ -37,12 +37,12 @@ description?acro definitions
 /**********宏常量定乪*******/
 /********************************************************/
 #define EEPROM_SEC0_START_ADDR       	0x000000//EEPROM的起始地址:W25Q128 sector0起始地址
-#define EEPROM_SEC1_START_ADDR       	((uint32_t)0x08010400) /* 片上flash Base @ of Sector 4, 64 Kbytes */
+#define EEPROM_SEC1_START_ADDR       	((uint32_t)0x080E0400) /* 片上flash Base @ of Sector 11, 128 Kbytes */
 #define EEPROM_SEC2_START_ADDR       	0x002000//EEPROM的起始地址:W25Q128 sector2起始地址
 #define EEPROM_SEC3_START_ADDR       	0x015000//EEPROM的起始地址:W25Q128 sector3起始地址
 #define EEPROM_SEC4_START_ADDR       	0x024000//EEPROM的起始地址:W25Q128 sector4起始地址
-#define EEPROM_SEC5_START_ADDR       	((uint32_t)0x08010000) /* 片上flash Base @ of Sector 4, 64 Kbytes */
-#define EEPROM_SEC6_START_ADDR       	((uint32_t)0x08010800) /* 片上flash Base @ of Sector 4, 64 Kbytes */
+#define EEPROM_SEC5_START_ADDR       	((uint32_t)0x080E0000) /* 片上flash Base @ of Sector 11, 128 Kbytes */
+#define EEPROM_SEC6_START_ADDR       	((uint32_t)0x080E0800) /* 片上flash Base @ of Sector 11, 128 Kbytes */
 #define EEPROM_SEC7_START_ADDR       	0x023000//EEPROM的起始地址:W25Q128 sector7起始地址
 
 #define EEPROM_SEC10_START_ADDR       	0x00A000//EEPROM的起始地址:W25Q128 sector10起始地址
@@ -123,6 +123,7 @@ typedef struct
 	uint32 DtAddr;/*有效数据首地址*/	
 	char*  Data;/*数据指针*/
 	uint8  Lng;/*有效数据长度*/
+	char*  description;/*描述信息*/
 }EepromCfg_ConfStruct;
 
 /******enum definitions******/

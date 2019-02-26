@@ -115,4 +115,8 @@ extern void  TskIcUnlock_MainFunction(void);
 extern uint8_t	GetIcUnlock_u_CardSetSt(void);
 extern char IcUnlock_u_ArrayCmp(unsigned char *a,unsigned char *b, unsigned int len);
 extern void SetIcUnlock_u_CardReadSuccess(void);
+extern void GetIcUnlock_communityID(unsigned char* community_id);
+extern void GetIcUnlock_buildID(unsigned char* build_id);
+extern unsigned short GetIcUnlock_w_suffix(void);
+
 #endif 

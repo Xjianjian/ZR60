@@ -267,6 +267,8 @@ uint8 MemIf_ReadEE(uint8 Le_u_Object,uint8* Le_u_Data,uint16 Le_w_Lng)
 
 		case EepromCfg_IntEE:/*读片上eeprom*/
 		{
+			CaEepromCfg_Conf[Le_u_Object].Data = (char*)Le_u_Data;
+			CaEepromCfg_Conf[Le_u_Object].Lng = (uint8)Le_w_Lng;
 			FLASH_addr = CaEepromCfg_Conf[Le_u_Object].DtAddr;
 			__disable_irq() ; //关闭总中断
 			for(Le_w_i=0; Le_w_i < CaEepromCfg_Conf[Le_u_Object].Lng; Le_w_i++)
@@ -483,7 +485,7 @@ static uint8 MemIf_u_wrFlash()
 {
 	uint16_t Le_w_i;
 	uint8 Le_u_Obj;
-	char* Le_u_ptr;
+	char* Le_u_ptr = STD_NULL_PTR;
 	uint32 FLASH_addr;
 	uint8 LeMemIfCfg_u_Xor = 0U;
 #ifdef MEMIF_HAL
@@ -500,36 +502,40 @@ static uint8 MemIf_u_wrFlash()
 	FLASH_UNLOCK();
 	for(Le_u_Obj = 0U;Le_u_Obj < EE_OBJECT_NUM;Le_u_Obj++)
 	{
-		//MEMIF_PRINTF_S("\r\n");
+		MEMIF_PRINTF_D("\nNow is writing %s",CaEepromCfg_Conf[Le_u_Obj].description);
 		Le_u_ptr = CaEepromCfg_Conf[Le_u_Obj].Data;
-		if(STD_NULL_PTR == Le_u_ptr) continue;
+		if(STD_NULL_PTR == Le_u_ptr) 
+		{
+			MEMIF_PRINTF_D("\n%s is NULL",CaEepromCfg_Conf[Le_u_Obj].description);
+			continue;
+		}
 		for(Le_w_i =0U;Le_w_i < CaEepromCfg_Conf[Le_u_Obj].Lng;Le_w_i++)//将数据写入EEPROM中
 		{
 			FLASH_PROGRAMBYTE((CaEepromCfg_Conf[Le_u_Obj].DtAddr + Le_w_i), Le_u_ptr[Le_w_i]);	
-			//MEMIF_PRINTF_D("%x ",Le_u_ptr[Le_w_i]);
 			LeMemIfCfg_u_Xor ^= Le_u_ptr[Le_w_i];
 		}
 		LeMemIfCfg_u_Xor = (~LeMemIfCfg_u_Xor);
 		LeMemIfCfg_u_Xor = (uint8)(LeMemIfCfg_u_Xor + 0xAA);
-		//MEMIF_PRINTF_D("%x ",LeMemIfCfg_u_Xor);
-		FLASH_PROGRAMBYTE((uint32)(CaEepromCfg_Conf[Le_u_Obj].SecAddr + 1),(uint8)(SeMemIf_w_Lng[Le_u_Obj] >> 8U));/*有效数据长度信息高Byte*/
-		FLASH_PROGRAMBYTE((uint32)(CaEepromCfg_Conf[Le_u_Obj].SecAddr + 2),(uint8)SeMemIf_w_Lng[Le_u_Obj]);/*有效数据长度信息低Byte*/
+		FLASH_PROGRAMBYTE((uint32)(CaEepromCfg_Conf[Le_u_Obj].SecAddr + 1), \
+						  (uint8)(SeMemIf_w_Lng[Le_u_Obj] >> 8U));/*有效数据长度信息高Byte*/
+		FLASH_PROGRAMBYTE((uint32)(CaEepromCfg_Conf[Le_u_Obj].SecAddr + 2), \
+						  (uint8)SeMemIf_w_Lng[Le_u_Obj]);/*有效数据长度信息低Byte*/
 		if(SeMemIf_u_VildFlag[Le_u_Obj] == 1U)
 		{
-			//MEMIF_PRINTF_D("\r\nLe_u_Obj == %d\r\n",Le_u_Obj);
 			FLASH_PROGRAMBYTE((uint32)(CaEepromCfg_Conf[Le_u_Obj].SecAddr + 3),STD_ACTIVE);/*有效性标志Byte*/
 		}
-		//MEMIF_PRINTF_D("\r\nLeMemIfCfg_u_Xor == %d\r\n",LeMemIfCfg_u_Xor);
 		FLASH_PROGRAMBYTE((uint32)(CaEepromCfg_Conf[Le_u_Obj].SecAddr),LeMemIfCfg_u_Xor);/*写校验和*/
-		
+		MEMIF_PRINTF_D("\nthe checksum of %s is ",CaEepromCfg_Conf[Le_u_Obj].description);
+		MEMIF_PRINTF_D("%d\n",LeMemIfCfg_u_Xor);
 		/* 校验数据是否正确写入 */
+		MEMIF_PRINTF_D("\ncheck %s",CaEepromCfg_Conf[Le_u_Obj].description);
 		FLASH_addr = CaEepromCfg_Conf[Le_u_Obj].DtAddr;
-		Le_u_ptr = CaEepromCfg_Conf[Le_u_Obj].Data;
+		//Le_u_ptr = CaEepromCfg_Conf[Le_u_Obj].Data;
 		for(Le_w_i=0;Le_w_i < CaEepromCfg_Conf[Le_u_Obj].Lng;Le_w_i++)
 		{
 			if(Le_u_ptr[Le_w_i] != *(__IO uint8*)FLASH_addr)//读FLASH中的数据，直接给出地址就行了。跟从内存中读数据一样
 			{
-				MEMIF_PRINTF_S("\r\n数据写入出错\r\n");
+				MEMIF_PRINTF_D("\nthe data of %s is wrong",CaEepromCfg_Conf[Le_u_Obj].description);
 				__enable_irq() ; //打开总中断
 				FLASH_LOCK();
 				return 0;
@@ -539,14 +545,14 @@ static uint8 MemIf_u_wrFlash()
 		
 		if(LeMemIfCfg_u_Xor != *(__IO uint8*)CaEepromCfg_Conf[Le_u_Obj].SecAddr)
 		{
-			MEMIF_PRINTF_S("\r\n校验和写入出错\r\n");
+			MEMIF_PRINTF_D("\nthe checksum of %s is wrong",CaEepromCfg_Conf[Le_u_Obj].description);
 			__enable_irq() ; //打开总中断
 			FLASH_LOCK();
 			return 0;
 		}
 		LeMemIfCfg_u_Xor = 0u;
+		MEMIF_PRINTF_D("\n%s was written successfully\n",CaEepromCfg_Conf[Le_u_Obj].description);
 	}
-	MEMIF_PRINTF_S("\r\n写片上flash完成\r\n");
 	__enable_irq() ; //打开总中断
 	FLASH_LOCK();
 	return 1;

@@ -27,7 +27,7 @@ description?acro definitions
 #define IC_UNLOCK_CARD_INVALID     		1//AudioIO_CardInvalid
 #define IC_UNLOCK_DOOROPEN     		1//AudioIO_DoorOpen
 
-#define IC_UNLOCK_EE_CARD_INFO     		1//EepromCfg_CardInfo
+#define IC_UNLOCK_EE_CARD_INFO     		EepromCfg_CardInfo
 
 #define IC_UNLOCK_LOGCACHE_CARD     		1//UNLOCKLOGCACHE_CARD
 /********************************************************/

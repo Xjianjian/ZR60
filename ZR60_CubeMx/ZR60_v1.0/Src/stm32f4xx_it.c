@@ -242,9 +242,8 @@ void USART3_IRQHandler(void)
 					temp = huart3.Instance->DR; //读取数据寄存器中的数据
 					temp  =  __HAL_DMA_GET_COUNTER(&hdma_usart3_rx);// 获取DMA中未传输的数据个数                     
 					uart3_dma_rx_len =  UART3_DMA_RX_BUFFER_SIZE - temp; //总计数减去未传输的数据个数，得到已经接收的数据个数
-						 
-					//HAL_UART_Receive_DMA(&huart1,uart3_dma_rx_buffer,UART3_DMA_RX_BUFFER_SIZE);//重新打开DMA接收
-					uart3_dma_recv_end_flag = 1;  // 接受完成标志位置1 
+					uart3_dma_recv_end_flag = 1;  // 接受完成标志位置1 	 
+					HAL_UART_Receive_DMA(&huart3,uart3_dma_rx_buffer,UART3_DMA_RX_BUFFER_SIZE);//重新打开DMA接收
 			}
 		}
   /* USER CODE END USART3_IRQn 1 */
