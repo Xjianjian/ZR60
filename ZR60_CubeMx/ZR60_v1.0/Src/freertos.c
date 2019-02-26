@@ -57,8 +57,8 @@
 
 /* Variables -----------------------------------------------------------------*/
 osThreadId lwip_taskHandle;
-osThreadId FeedDogHandle;
 osThreadId zr60_TaskHandle;
+osThreadId FeedDogHandle;
 
 /* USER CODE BEGIN Variables */
 
@@ -66,8 +66,8 @@ osThreadId zr60_TaskHandle;
 
 /* Function prototypes -------------------------------------------------------*/
 void StartLwipTask(void const * argument);
-void vTaskFeedDog(void const * argument);
 void StartZr60FuncTask(void const * argument);
+void vTaskFeedDog(void const * argument);
 
 void MX_FREERTOS_Init(void); /* (MISRA C 2004 rule 8.1) */
 
@@ -105,7 +105,7 @@ void MX_FREERTOS_Init(void) {
   /* definition and creation of zr60_Task */
   osThreadDef(zr60_Task, StartZr60FuncTask, osPriorityLow, 0, 1024);
   zr60_TaskHandle = osThreadCreate(osThread(zr60_Task), NULL);
-	
+
   /* definition and creation of FeedDog */
   osThreadDef(FeedDog, vTaskFeedDog, osPriorityRealtime, 0, 256);
   FeedDogHandle = osThreadCreate(osThread(FeedDog), NULL);
@@ -147,6 +147,26 @@ void StartLwipTask(void const * argument)
   /* USER CODE END StartLwipTask */
 }
 
+/* StartZr60FuncTask function */
+void StartZr60FuncTask(void const * argument)
+{
+  /* USER CODE BEGIN StartZr60FuncTask */
+	MemIf_Init();
+	InitIcUnlock_parameter();
+	InitDoorLockCtrl_parameter();
+  /* Infinite loop */
+  for(;;)
+  {
+		
+		TskMemIf_MainFunction();
+		TskIcUnlock_MainFunction();
+		
+		TskDoorLockCtrl_MainFunction();
+    osDelay(10);
+  }
+  /* USER CODE END StartZr60FuncTask */
+}
+
 /* vTaskFeedDog function */
 void vTaskFeedDog(void const * argument)
 {
@@ -169,23 +189,6 @@ void vTaskFeedDog(void const * argument)
     osDelay(100);
   }
   /* USER CODE END vTaskFeedDog */
-}
-
-/* StartZr60FuncTask function */
-void StartZr60FuncTask(void const * argument)
-{
-  /* USER CODE BEGIN StartZr60FuncTask */
-	MemIf_Init();
-	InitIcUnlock_parameter();
-  /* Infinite loop */
-  for(;;)
-  {
-		
-		TskMemIf_MainFunction();
-		TskIcUnlock_MainFunction();
-    osDelay(10);
-  }
-  /* USER CODE END StartZr60FuncTask */
 }
 
 /* USER CODE BEGIN Application */

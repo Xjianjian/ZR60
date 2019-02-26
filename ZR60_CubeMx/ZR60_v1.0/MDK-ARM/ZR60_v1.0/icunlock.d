@@ -102,3 +102,4 @@ zr60_v1.0\icunlock.o: ..\Middlewares\Third_Party\LwIP\App\./NetConnIf/NetConnIf.
 zr60_v1.0\icunlock.o: ..\Middlewares\Third_Party\LwIP\App\./NetConnIf/NetConnIf_Cfg.h
 zr60_v1.0\icunlock.o: ..\Middlewares\Third_Party\LwIP\App\tcp_client_LngConnect.h
 zr60_v1.0\icunlock.o: ..\Middlewares\APP\IcCardUnlock/IcUnlock.h
+zr60_v1.0\icunlock.o: ..\Middlewares\APP\DoorLockCtrl/DoorLockCtrl.h

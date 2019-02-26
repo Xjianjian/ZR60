@@ -115,3 +115,4 @@ zr60_v1.0\main.o: ..\Middlewares\Third_Party\LwIP\App\./NetConnIf/NetConnIf_Cfg.
 zr60_v1.0\main.o: ..\Middlewares\Third_Party\LwIP\App\tcp_client_LngConnect.h
 zr60_v1.0\main.o: ..\Middlewares\APP\IcCardUnlock/IcUnlock.h
 zr60_v1.0\main.o: ..\Middlewares\APP\IcCardUnlock/IcUnlock_cfg.h
+zr60_v1.0\main.o: ..\Middlewares\APP\DoorLockCtrl/DoorLockCtrl.h

@@ -237,7 +237,7 @@ void SetIcUnlockCfg_TxMsg(uint8* LeUartCmn_u_TxData,uint8 LeUartCmn_u_Lng)
 ******************************************************/
 void SetIcUnlockCfg_openDoor(void)
 {
-
+	DoorLockCtrl_OpenDoor();
 }
 
 /******************************************************

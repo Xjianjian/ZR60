@@ -128,6 +128,7 @@
 "zr60_v1.0\btnfltr_cfg.o"
 "zr60_v1.0\icunlock.o"
 "zr60_v1.0\icunlock_cfg.o"
+"zr60_v1.0\doorlockctrl.o"
 --library_type=microlib --strict --scatter "ZR60_v1.0\ZR60_v1.sct"
 --diag_suppress=L6329 --summary_stderr --info summarysizes --map --xref --callgraph --symbols
 --info sizes --info totals --info unused --info veneers

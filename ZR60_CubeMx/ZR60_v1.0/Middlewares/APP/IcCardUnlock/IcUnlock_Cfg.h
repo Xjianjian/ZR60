@@ -34,7 +34,7 @@ description?acro definitions
 
 
 /***********ºêº¯”­*********/
-#define IcUnlock_VrfyCardNumber(x)  (x)//BListMng_u_ContrastBList(x)
+#define IcUnlock_VrfyCardNumber(x)  0//BListMng_u_ContrastBList(x)
 
 /*******************************************************
 description?truct definitions

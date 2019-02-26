@@ -102,3 +102,4 @@ zr60_v1.0\btnfltr.o: ..\Middlewares\Third_Party\LwIP\App\./NetConnIf/NetConnIf_C
 zr60_v1.0\btnfltr.o: ..\Middlewares\Third_Party\LwIP\App\tcp_client_LngConnect.h
 zr60_v1.0\btnfltr.o: ..\Middlewares\APP\IcCardUnlock/IcUnlock.h
 zr60_v1.0\btnfltr.o: ..\Middlewares\APP\IcCardUnlock/IcUnlock_cfg.h
+zr60_v1.0\btnfltr.o: ..\Middlewares\APP\DoorLockCtrl/DoorLockCtrl.h

@@ -56,6 +56,17 @@
 
 /* Private define ------------------------------------------------------------*/
 
+#define open_green_led_Pin GPIO_PIN_7
+#define open_green_led_GPIO_Port GPIOF
+#define config_key_of_the_mother_card_Pin GPIO_PIN_0
+#define config_key_of_the_mother_card_GPIO_Port GPIOA
+#define enable_the_power_of_read_card_mode_Pin GPIO_PIN_5
+#define enable_the_power_of_read_card_mode_GPIO_Port GPIOA
+#define open_door_Pin GPIO_PIN_0
+#define open_door_GPIO_Port GPIOB
+#define key_of_open_door_Pin GPIO_PIN_15
+#define key_of_open_door_GPIO_Port GPIOG
+
 /* USER CODE BEGIN Private defines */
 
 /* USER CODE END Private defines */
