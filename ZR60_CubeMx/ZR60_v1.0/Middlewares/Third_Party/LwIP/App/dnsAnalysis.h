@@ -17,7 +17,7 @@ description： include the header file
 description： macro definitions
 *******************************************************/
 /**********宏开关定义*********/
-#define DNS_ANALY_DEBUG
+//#define DNS_ANALY_DEBUG
 #if (defined(DNS_ANALY_DEBUG) && defined(USART_DEBUGE_PRINTF))
 #define DNS_PRINTF_S(x)   	 printf("%s\n",x)
 #define DNS_PRINTF_D(x,d)   	 printf(x,d)

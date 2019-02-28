@@ -42,6 +42,8 @@
 
 /* External variables --------------------------------------------------------*/
 extern ETH_HandleTypeDef heth;
+extern DMA_HandleTypeDef hdma_uart5_rx;
+extern DMA_HandleTypeDef hdma_uart5_tx;
 extern DMA_HandleTypeDef hdma_usart3_rx;
 extern DMA_HandleTypeDef hdma_usart3_tx;
 extern UART_HandleTypeDef huart5;
@@ -178,6 +180,20 @@ void RCC_IRQHandler(void)
 }
 
 /**
+* @brief This function handles DMA1 stream0 global interrupt.
+*/
+void DMA1_Stream0_IRQHandler(void)
+{
+  /* USER CODE BEGIN DMA1_Stream0_IRQn 0 */
+
+  /* USER CODE END DMA1_Stream0_IRQn 0 */
+  HAL_DMA_IRQHandler(&hdma_uart5_rx);
+  /* USER CODE BEGIN DMA1_Stream0_IRQn 1 */
+
+  /* USER CODE END DMA1_Stream0_IRQn 1 */
+}
+
+/**
 * @brief This function handles DMA1 stream1 global interrupt.
 */
 void DMA1_Stream1_IRQHandler(void)
@@ -250,16 +266,66 @@ void USART3_IRQHandler(void)
 }
 
 /**
+* @brief This function handles DMA1 stream7 global interrupt.
+*/
+void DMA1_Stream7_IRQHandler(void)
+{
+  /* USER CODE BEGIN DMA1_Stream7_IRQn 0 */
+
+  /* USER CODE END DMA1_Stream7_IRQn 0 */
+  HAL_DMA_IRQHandler(&hdma_uart5_tx);
+  /* USER CODE BEGIN DMA1_Stream7_IRQn 1 */
+
+  /* USER CODE END DMA1_Stream7_IRQn 1 */
+}
+
+/**
 * @brief This function handles UART5 global interrupt.
 */
 void UART5_IRQHandler(void)
 {
   /* USER CODE BEGIN UART5_IRQn 0 */
-
+	uint32_t tmp_flag = 0;
+  uint32_t temp;
+	uint8_t* ptr;
   /* USER CODE END UART5_IRQn 0 */
   HAL_UART_IRQHandler(&huart5);
   /* USER CODE BEGIN UART5_IRQn 1 */
-
+	#if 1
+	if(UART5 == huart5.Instance)
+	{
+			tmp_flag =__HAL_UART_GET_FLAG(&huart5,UART_FLAG_IDLE); //获取IDLE标志位
+					
+			if((tmp_flag != RESET))//idle标志被置位
+			{ 
+					__HAL_UART_CLEAR_IDLEFLAG(&huart5);//清除标志位
+					HAL_UART_DMAStop(&huart5); //
+					                  
+					temp = huart5.Instance->SR;  //清除状态寄存器SR,读取SR寄存器可以实现清除SR寄存器的功能
+					temp = huart5.Instance->DR; //读取数据寄存器中的数据
+					temp  =  __HAL_DMA_GET_COUNTER(&hdma_uart5_rx);// 获取DMA中未传输的数据个数                     
+					uart5_dma_rx_len =  UART5_DMA_RX_BUFFER_SIZE - temp; //总计数减去未传输的数据个数，得到已经接收的数据个数
+					uart5_dma_recv_end_flag = 1;  // 接受完成标志位置1
+				
+					if(uart5_dma_buffer_flag == 0)
+					{
+						ptr = uart5_dma_rx_buffer0;
+						uart5_dma_buffer_flag = 1;
+						HAL_UART_Receive_DMA(&huart5,uart5_dma_rx_buffer1,UART5_DMA_RX_BUFFER_SIZE);//重新打开DMA接收
+					}
+					else
+					{
+						ptr = uart5_dma_rx_buffer1;
+						uart5_dma_buffer_flag = 0;
+						HAL_UART_Receive_DMA(&huart5,uart5_dma_rx_buffer0,UART5_DMA_RX_BUFFER_SIZE);//重新打开DMA接收						
+					}					
+					
+					BleUnlock_RxMsgCallback(ptr,uart5_dma_rx_len);
+					//memset(uart5_dma_rx_buffer,0,UART5_DMA_RX_BUFFER_SIZE);//清0
+					//HAL_UART_Receive_DMA(&huart5,uart5_dma_rx_buffer,UART5_DMA_RX_BUFFER_SIZE);//重新打开DMA接收
+			}
+		}
+	#endif
   /* USER CODE END UART5_IRQn 1 */
 }
 

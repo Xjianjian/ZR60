@@ -153,6 +153,7 @@ void StartZr60FuncTask(void const * argument)
   /* USER CODE BEGIN StartZr60FuncTask */
 	MemIf_Init();
 	InitIcUnlock_parameter();
+	InitBleUnlock_parameter();
 	InitDoorLockCtrl_parameter();
   /* Infinite loop */
   for(;;)
@@ -160,6 +161,7 @@ void StartZr60FuncTask(void const * argument)
 		
 		TskMemIf_MainFunction();
 		TskIcUnlock_MainFunction();
+		TskBleUnlock_MainFunction();
 		
 		TskDoorLockCtrl_MainFunction();
     osDelay(10);

@@ -103,3 +103,5 @@ zr60_v1.0\dhcpclient.o: ..\Middlewares\Third_Party\LwIP\App\tcp_client_LngConnec
 zr60_v1.0\dhcpclient.o: ..\Middlewares\APP\IcCardUnlock/IcUnlock.h
 zr60_v1.0\dhcpclient.o: ..\Middlewares\APP\IcCardUnlock/IcUnlock_cfg.h
 zr60_v1.0\dhcpclient.o: ..\Middlewares\APP\DoorLockCtrl/DoorLockCtrl.h
+zr60_v1.0\dhcpclient.o: ..\Middlewares\APP\BluetoothUnlock/BleUnlock.h
+zr60_v1.0\dhcpclient.o: ..\Middlewares\APP\BluetoothUnlock/BleUnlock_Cfg.h

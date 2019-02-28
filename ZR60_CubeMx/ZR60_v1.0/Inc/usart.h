@@ -62,6 +62,13 @@
 extern uint8_t uart3_dma_rx_len;             //接收一帧数据的长度
 extern uint8_t uart3_dma_recv_end_flag;    //一帧数据接收完成标志
 extern uint8_t uart3_dma_rx_buffer[UART3_DMA_RX_BUFFER_SIZE];   //接收数据缓存
+
+#define UART5_DMA_RX_BUFFER_SIZE  120	 
+extern uint8_t uart5_dma_rx_len;             //接收一帧数据的长度
+extern uint8_t uart5_dma_recv_end_flag;    //一帧数据接收完成标志
+extern uint8_t uart5_dma_buffer_flag;    //一帧数据接收buffer标志，0--使用uart5_dma_rx_buffer0,1--使用uart5_dma_rx_buffer1
+extern uint8_t uart5_dma_rx_buffer0[UART5_DMA_RX_BUFFER_SIZE];   //接收数据缓存
+extern uint8_t uart5_dma_rx_buffer1[UART5_DMA_RX_BUFFER_SIZE];   //接收数据缓存
 /* USER CODE END Includes */
 
 extern UART_HandleTypeDef huart5;

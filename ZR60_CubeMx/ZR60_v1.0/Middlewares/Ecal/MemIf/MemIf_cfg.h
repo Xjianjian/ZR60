@@ -130,7 +130,7 @@ typedef struct
 typedef enum 
 {
 	EepromCfg_CardInfo = 0U,/*母卡配置信息*/
-	//EepromCfg_MacInfo, /*mac地址信息*/
+	EepromCfg_MacInfo, /*mac地址信息*/
 	//EepromCfg_tokenInfo, /*初始化设备的token信息*/
 	//EepromCfg_Blist_one, /*已注销卡号信息:黑名单1*/
 	//EepromCfg_Blist_two, /*已注销卡号信息:黑名单2*/

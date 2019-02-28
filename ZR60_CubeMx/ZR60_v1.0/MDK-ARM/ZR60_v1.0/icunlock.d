@@ -103,3 +103,5 @@ zr60_v1.0\icunlock.o: ..\Middlewares\Third_Party\LwIP\App\./NetConnIf/NetConnIf_
 zr60_v1.0\icunlock.o: ..\Middlewares\Third_Party\LwIP\App\tcp_client_LngConnect.h
 zr60_v1.0\icunlock.o: ..\Middlewares\APP\IcCardUnlock/IcUnlock.h
 zr60_v1.0\icunlock.o: ..\Middlewares\APP\DoorLockCtrl/DoorLockCtrl.h
+zr60_v1.0\icunlock.o: ..\Middlewares\APP\BluetoothUnlock/BleUnlock.h
+zr60_v1.0\icunlock.o: ..\Middlewares\APP\BluetoothUnlock/BleUnlock_Cfg.h

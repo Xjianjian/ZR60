@@ -133,7 +133,7 @@ extern struct netif gnetif;
 //user app
 #include	"IcCardUnlock/IcUnlock.h"
 #include	"DoorLockCtrl/DoorLockCtrl.h"
-
+#include  "BluetoothUnlock/BleUnlock.h"
 
 /*******************************************************
 description：struct definitions

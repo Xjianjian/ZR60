@@ -10,7 +10,7 @@ License Information: liu jian, zzw, LIC=S5ILQ-NCSNR-F04N5-G5UBG-68JHB-0FFE7
 Tool Versions:
 Toolchain:       MDK-ARM Professional  Version: 5.23
 Toolchain Path:  d:\Keil_v5\ARM\ARMCC\Bin
-C Compiler:      Armcc.exe V5.06 update 4 (build 422)
+C Compiler:      Armcc.exe
 Assembler:       Armasm.exe V5.06 update 4 (build 422)
 Linker/Locator:  ArmLink.exe V5.06 update 4 (build 422)
 Library Manager: ArmAr.exe V5.06 update 4 (build 422)
@@ -27,7 +27,113 @@ Project File Date:  02/28/2019
 <h2>Output:</h2>
 *** Using Compiler 'V5.06 update 4 (build 422)', folder: 'd:\Keil_v5\ARM\ARMCC\Bin'
 Build target 'ZR60_v1.0'
-"ZR60_v1.0\ZR60_v1.0" - 0 Error(s), 0 Warning(s).
+compiling freertos.c...
+compiling stm32f4xx_it.c...
+../Src/stm32f4xx_it.c(323): warning:  #223-D: function "BleUnlock_RxMsgCallback" declared implicitly
+  					BleUnlock_RxMsgCallback(ptr,uart5_dma_rx_len);
+../Src/stm32f4xx_it.c: 1 warning, 0 errors
+compiling main.c...
+compiling usart.c...
+compiling ethernetif.c...
+compiling dnsAnalysis.c...
+compiling ntpclient.c...
+compiling dhcpClient.c...
+compiling NetConnIf.c...
+compiling NetConnIf_Cfg.c...
+compiling JsonIf.c...
+compiling tcp_client_LngConnect.c...
+compiling MemIf.c...
+compiling xor.c...
+compiling MemIf_cfg.c...
+compiling IcUnlock.c...
+compiling BtnFltr_Cfg.c...
+compiling BtnFltr.c...
+compiling IcUnlock_Cfg.c...
+compiling DoorLockCtrl.c...
+compiling BleUnlock.c...
+..\Middlewares\APP\BluetoothUnlock\BleUnlock.c(26): warning:  #550-D: variable "Se_u_password"  was set but never used
+  static char   	Se_u_password[12] = {0};//¿∂—¿—È÷§√‹¬Î
+..\Middlewares\APP\BluetoothUnlock\BleUnlock.c: 1 warning, 0 errors
+compiling BleUnlock_Cfg.c...
+..\Middlewares\APP\BluetoothUnlock\BleUnlock_Cfg.c(205): warning:  #177-D: variable "Time"  was declared but never referenced
+  	uint64_t Time = 0U;
+..\Middlewares\APP\BluetoothUnlock\BleUnlock_Cfg.c: 1 warning, 0 errors
+linking...
+ZR60_v1.0\ZR60_v1.sct(12): warning: L6314W: No section matches pattern stm32f4xx_it.o(ZI).
+ZR60_v1.0\ZR60_v1.sct(13): warning: L6314W: No section matches pattern main.o(ZI).
+ZR60_v1.0\ZR60_v1.sct(14): warning: L6314W: No section matches pattern freertos.o(ZI).
+ZR60_v1.0\ZR60_v1.sct(15): warning: L6314W: No section matches pattern stm32f4xx_hal_msp.o(ZI).
+ZR60_v1.0\ZR60_v1.sct(18): warning: L6314W: No section matches pattern gpio.o(ZI).
+ZR60_v1.0\ZR60_v1.sct(21): warning: L6314W: No section matches pattern dma.o(ZI).
+ZR60_v1.0\ZR60_v1.sct(22): warning: L6314W: No section matches pattern ipcp.o(ZI).
+ZR60_v1.0\ZR60_v1.sct(23): warning: L6314W: No section matches pattern api_msg.o(ZI).
+ZR60_v1.0\ZR60_v1.sct(24): warning: L6314W: No section matches pattern ecp.o(ZI).
+ZR60_v1.0\ZR60_v1.sct(25): warning: L6314W: No section matches pattern sha1.o(ZI).
+ZR60_v1.0\ZR60_v1.sct(26): warning: L6314W: No section matches pattern ip6_addr.o(ZI).
+ZR60_v1.0\ZR60_v1.sct(27): warning: L6314W: No section matches pattern netifapi.o(ZI).
+ZR60_v1.0\ZR60_v1.sct(28): warning: L6314W: No section matches pattern arc4.o(ZI).
+ZR60_v1.0\ZR60_v1.sct(29): warning: L6314W: No section matches pattern pppoe.o(ZI).
+ZR60_v1.0\ZR60_v1.sct(31): warning: L6314W: No section matches pattern api_lib.o(ZI).
+ZR60_v1.0\ZR60_v1.sct(34): warning: L6314W: No section matches pattern mppe.o(ZI).
+ZR60_v1.0\ZR60_v1.sct(35): warning: L6314W: No section matches pattern netbuf.o(ZI).
+ZR60_v1.0\ZR60_v1.sct(36): warning: L6314W: No section matches pattern raw.o(ZI).
+ZR60_v1.0\ZR60_v1.sct(37): warning: L6314W: No section matches pattern icmp6.o(ZI).
+ZR60_v1.0\ZR60_v1.sct(38): warning: L6314W: No section matches pattern lowpan6.o(ZI).
+ZR60_v1.0\ZR60_v1.sct(39): warning: L6314W: No section matches pattern ip6_frag.o(ZI).
+ZR60_v1.0\ZR60_v1.sct(40): warning: L6314W: No section matches pattern init.o(ZI).
+ZR60_v1.0\ZR60_v1.sct(41): warning: L6314W: No section matches pattern sys_arch.o(ZI).
+ZR60_v1.0\ZR60_v1.sct(43): warning: L6314W: No section matches pattern lcp.o(ZI).
+ZR60_v1.0\ZR60_v1.sct(44): warning: L6314W: No section matches pattern eui64.o(ZI).
+ZR60_v1.0\ZR60_v1.sct(45): warning: L6314W: No section matches pattern netif.o(ZI).
+ZR60_v1.0\ZR60_v1.sct(46): warning: L6314W: No section matches pattern des.o(ZI).
+ZR60_v1.0\ZR60_v1.sct(47): warning: L6314W: No section matches pattern mld6.o(ZI).
+ZR60_v1.0\ZR60_v1.sct(48): warning: L6314W: No section matches pattern tcp.o(ZI).
+ZR60_v1.0\ZR60_v1.sct(49): warning: L6314W: No section matches pattern pbuf.o(ZI).
+ZR60_v1.0\ZR60_v1.sct(50): warning: L6314W: No section matches pattern ccp.o(ZI).
+ZR60_v1.0\ZR60_v1.sct(51): warning: L6314W: No section matches pattern multilink.o(ZI).
+ZR60_v1.0\ZR60_v1.sct(52): warning: L6314W: No section matches pattern timeouts.o(ZI).
+ZR60_v1.0\ZR60_v1.sct(53): warning: L6314W: No section matches pattern ppp.o(ZI).
+ZR60_v1.0\ZR60_v1.sct(54): warning: L6314W: No section matches pattern ip4_frag.o(ZI).
+ZR60_v1.0\ZR60_v1.sct(55): warning: L6314W: No section matches pattern ip4.o(ZI).
+ZR60_v1.0\ZR60_v1.sct(56): warning: L6314W: No section matches pattern upap.o(ZI).
+ZR60_v1.0\ZR60_v1.sct(57): warning: L6314W: No section matches pattern tcpip.o(ZI).
+ZR60_v1.0\ZR60_v1.sct(58): warning: L6314W: No section matches pattern def.o(ZI).
+ZR60_v1.0\ZR60_v1.sct(59): warning: L6314W: No section matches pattern inet_chksum.o(ZI).
+ZR60_v1.0\ZR60_v1.sct(60): warning: L6314W: No section matches pattern chap-md5.o(ZI).
+ZR60_v1.0\ZR60_v1.sct(62): warning: L6314W: No section matches pattern auth.o(ZI).
+ZR60_v1.0\ZR60_v1.sct(63): warning: L6314W: No section matches pattern icmp.o(ZI).
+ZR60_v1.0\ZR60_v1.sct(64): warning: L6314W: No section matches pattern pppol2tp.o(ZI).
+ZR60_v1.0\ZR60_v1.sct(66): warning: L6314W: No section matches pattern fsm.o(ZI).
+ZR60_v1.0\ZR60_v1.sct(67): warning: L6314W: No section matches pattern demand.o(ZI).
+ZR60_v1.0\ZR60_v1.sct(68): warning: L6314W: No section matches pattern ip6.o(ZI).
+ZR60_v1.0\ZR60_v1.sct(69): warning: L6314W: No section matches pattern eap.o(ZI).
+ZR60_v1.0\ZR60_v1.sct(70): warning: L6314W: No section matches pattern vj.o(ZI).
+ZR60_v1.0\ZR60_v1.sct(71): warning: L6314W: No section matches pattern pppcrypt.o(ZI).
+ZR60_v1.0\ZR60_v1.sct(72): warning: L6314W: No section matches pattern nd6.o(ZI).
+ZR60_v1.0\ZR60_v1.sct(73): warning: L6314W: No section matches pattern autoip.o(ZI).
+ZR60_v1.0\ZR60_v1.sct(74): warning: L6314W: No section matches pattern err.o(ZI).
+ZR60_v1.0\ZR60_v1.sct(76): warning: L6314W: No section matches pattern chap_ms.o(ZI).
+ZR60_v1.0\ZR60_v1.sct(77): warning: L6314W: No section matches pattern tcp_out.o(ZI).
+ZR60_v1.0\ZR60_v1.sct(78): warning: L6314W: No section matches pattern ethernet.o(ZI).
+ZR60_v1.0\ZR60_v1.sct(79): warning: L6314W: No section matches pattern slipif.o(ZI).
+ZR60_v1.0\ZR60_v1.sct(80): warning: L6314W: No section matches pattern magic.o(ZI).
+ZR60_v1.0\ZR60_v1.sct(81): warning: L6314W: No section matches pattern pppos.o(ZI).
+ZR60_v1.0\ZR60_v1.sct(82): warning: L6314W: No section matches pattern igmp.o(ZI).
+ZR60_v1.0\ZR60_v1.sct(83): warning: L6314W: No section matches pattern ethip6.o(ZI).
+ZR60_v1.0\ZR60_v1.sct(84): warning: L6314W: No section matches pattern inet6.o(ZI).
+ZR60_v1.0\ZR60_v1.sct(86): warning: L6314W: No section matches pattern chap-new.o(ZI).
+ZR60_v1.0\ZR60_v1.sct(87): warning: L6314W: No section matches pattern pppapi.o(ZI).
+ZR60_v1.0\ZR60_v1.sct(88): warning: L6314W: No section matches pattern md4.o(ZI).
+ZR60_v1.0\ZR60_v1.sct(89): warning: L6314W: No section matches pattern utils.o(ZI).
+ZR60_v1.0\ZR60_v1.sct(92): warning: L6314W: No section matches pattern sys.o(ZI).
+ZR60_v1.0\ZR60_v1.sct(93): warning: L6314W: No section matches pattern ipv6cp.o(ZI).
+ZR60_v1.0\ZR60_v1.sct(94): warning: L6314W: No section matches pattern dhcp6.o(ZI).
+ZR60_v1.0\ZR60_v1.sct(95): warning: L6314W: No section matches pattern md5.o(ZI).
+ZR60_v1.0\ZR60_v1.sct(96): warning: L6314W: No section matches pattern stats.o(ZI).
+ZR60_v1.0\ZR60_v1.sct(97): warning: L6314W: No section matches pattern udp.o(ZI).
+Program Size: Code=65776 RO-data=1424 RW-data=812 ZI-data=98476  
+Finished: 0 information, 72 warning and 0 error messages.
+"ZR60_v1.0\ZR60_v1.0" - 0 Error(s), 75 Warning(s).
 
 <h2>Software Packages used:</h2>
 
@@ -45,7 +151,7 @@ Package Vendor: ARM
 <h2>Collection of Component Files used:</h2>
 
    * Component: ARM::CMSIS:CORE:5.1.1
-Build Time Elapsed:  00:00:01
+Build Time Elapsed:  00:01:14
 </pre>
 </body>
 </html>
