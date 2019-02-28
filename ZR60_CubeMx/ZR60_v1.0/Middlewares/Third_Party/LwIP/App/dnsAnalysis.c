@@ -21,7 +21,9 @@ description： static variable definitions
 static struct ip_addr SednsAnalysis_dw_DestIPaddr[domainNum];//目的ip
 static uint8  SednsAnalysis_u_Validity[domainNum];//ip有效性
 static uint8  SednsAnalysis_u_UpdateHost[domainNum];//待更新ip的主机
-static uint16 SednsAnalysis_w_Timer;//计时器
+//static uint8  SednsAnalysis_u_FailCnt[domainNum];//连续出现解析失败次数
+static uint16 SednsAnalysis_w_Timer;//上电延时计时器
+static uint8 SednsAnalysis_u_TaktTimer = 0;
 static char Se_u_arg[domainNum];
 static char short_hostname[]="api.zzwtec.com";//短连接主机域名
 static char lng_hostname[]="push2.zzwtec.com";//长连接主机域名
@@ -96,8 +98,7 @@ void InitdnsAnalysis_parameter(void)
 void TskdnsAnalysis_MainFunction(void)
 {
 	struct ip_addr IPaddr[domainNum];
-	static char Le_u_i = 0;
-	static uint8 SednsAnalysis_u_TaktTimer = 0;
+	static char Se_u_obj = 0;
 
 	if((0 == DNS_GET_PHY_LINK_STATUS()) && (DHCP_ADDRESS_ASSIGNED != DNS_DHCP_STATE))/* Get Ethernet link status*/
 	{
@@ -107,21 +108,22 @@ void TskdnsAnalysis_MainFunction(void)
 	
 	if(SednsAnalysis_w_Timer >= DNS_ANALYSIS_TASK_PERIOD)
 	{
-		if(SednsAnalysis_u_TaktTimer >= (20/DNS_ANALYSIS_SCHEDULING_CYCLE))
+		if(SednsAnalysis_u_TaktTimer >= (50/DNS_ANALYSIS_SCHEDULING_CYCLE))
 		{
 			SednsAnalysis_u_TaktTimer = 0;
-			if(SednsAnalysis_u_UpdateHost[Le_u_i] == 1U)
+			if(SednsAnalysis_u_UpdateHost[Se_u_obj] == 1U)
 			{
-				DNS_PRINTF_D("DNS域名 %s 开始解析\n",domain[Le_u_i].name);
-				(void)dns_gethostbyname(domain[Le_u_i].name,&IPaddr[Le_u_i], \
-																(dns_found_callback)(&dnsAnalysis_DNSfound),&Se_u_arg[Le_u_i]);//域名解析
+				SednsAnalysis_u_UpdateHost[Se_u_obj] = 0U;
+				DNS_PRINTF_D("DNS域名 %s 开始解析\n",domain[Se_u_obj].name);
+				(void)dns_gethostbyname(domain[Se_u_obj].name,&IPaddr[Se_u_obj], \
+							(dns_found_callback)(&dnsAnalysis_DNSfound),&Se_u_arg[Se_u_obj]);//域名解析
 			}
 			
-			Le_u_i += 1;
+			Se_u_obj += 1;
 			
-			if(domainNum == Le_u_i)
+			if(domainNum == Se_u_obj)
 			{
-				Le_u_i = 0;
+				Se_u_obj = 0;
 			}
 		}
 		else
