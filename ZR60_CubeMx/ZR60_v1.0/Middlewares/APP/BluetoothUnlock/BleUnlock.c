@@ -64,9 +64,11 @@ void InitBleUnlock_parameter(void)
 	uint8 LeBleUnlock_u_Xor = 0;
 	BleUnlock_rtcTime	rtcTime;
 	uint32 timestamp;
-	
+	uint8 LeBleUnlock_u_cnt = 30;
+	while(--Le_dw_WaitTimer);//等待蓝牙模块稳定（hm-13双模模块上电需要1.5s稳定）
 	LeBleUnlock_u_Xor = GetBleUnlockCfg_u_CheckSum(BLEUNLOCK_MAC_INFO);//读取mac地址数据校验和
-	if((LeBleUnlock_u_Xor == BleUnlockCfg_RdEE(BLEUNLOCK_MAC_INFO,Se_u_MacAddr,sizeof(Se_u_MacAddr))) && (STD_ACTIVE == GetBleUnlockCfg_u_DtVild(BLEUNLOCK_MAC_INFO)))
+	if((LeBleUnlock_u_Xor == BleUnlockCfg_RdEE(BLEUNLOCK_MAC_INFO,Se_u_MacAddr,sizeof(Se_u_MacAddr))) \
+											&& (STD_ACTIVE == GetBleUnlockCfg_u_DtVild(BLEUNLOCK_MAC_INFO)))
 	{
 		printf("\nflash存储的mac地址有效  √\n");
 		SetMemIf_EEVild(BLEUNLOCK_MAC_INFO);//数据有效
@@ -74,11 +76,15 @@ void InitBleUnlock_parameter(void)
 	}
 	else
 	{//读取蓝牙mac地址
-		while(--Le_dw_WaitTimer);//等待蓝牙模块稳定（hm-13双模模块上电需要1.5s稳定）
-		Le_dw_WaitTimer = 0x1FFFFF;
-		BleUnlockCfg_BleTxMsg(BleUnlock_MAC_ADDR);//获取蓝牙模块MAC地址
-		while((Se_u_BleMacFlg != 1) && (--Le_dw_WaitTimer));//等待获取蓝牙mac地址
-
+		while(LeBleUnlock_u_cnt)
+		{
+			Le_dw_WaitTimer = 0x1FFFFF;
+			BleUnlockCfg_BleTxMsg(BleUnlock_MAC_ADDR);//获取蓝牙模块MAC地址
+			while((Se_u_BleMacFlg != 1) && (--Le_dw_WaitTimer));//等待获取蓝牙mac地址
+			LeBleUnlock_u_cnt--;
+			if(Se_u_BleMacFlg == 1) break;
+		}
+		
 		if(Se_u_BleMacFlg == 1)
 		{
 			printf("\n获取蓝牙mac地址成功\n");
@@ -103,9 +109,9 @@ void InitBleUnlock_parameter(void)
 			Se_u_MacAddr[9] = rtcTime.tm_min%10;
 			Se_u_MacAddr[10] = rtcTime.tm_sec/10;
 			Se_u_MacAddr[11] = rtcTime.tm_sec%10;
-			Se_u_BleMacFlg = 1;
 		}
 	}
+	SetEthernetif_macAddr(Se_u_MacAddr);
 }
 
 /******************************************************
@@ -128,7 +134,7 @@ void TskBleUnlock_MainFunction(void)
 	uint8  machine_type;
 	uint32 password;
 	static uint32 Ble_openDoor_cnt = 0;
-	
+
 	if(SeCardSet_u_BleSt == 0U)//蓝牙模块空闲
 	{
 		SeCardSet_u_BleSt = 1U;
@@ -139,7 +145,7 @@ void TskBleUnlock_MainFunction(void)
 	if(1U == SeCardSet_u_BleSt)//蓝牙模块非空闲时，计时8s(用于蓝牙串口通信超时处理)
 	{
 		SeCardSet_w_BleDisCnntT++;
-		if(SeCardSet_w_BleDisCnntT >= (5000/BLEUNLOCK_SCHEDULING_CYCLE))
+		if(SeCardSet_w_BleDisCnntT >= (8000/BLEUNLOCK_SCHEDULING_CYCLE))
 		{//扫描指令发出后，8s超时时间内都未收到扫描结束指令，蓝牙串口通信超时
 			SeCardSet_w_BleDisCnntT = 0U;
 			SeCardSet_u_BleSt = 0U;
@@ -300,9 +306,9 @@ void TskBleUnlock_MainFunction(void)
 void BleUnlock_RxMsgCallback(char* Le_u_rxMsg,uint8 Le_u_lng)
 {
 	uint8 Le_u_i;
-	if(Le_u_rxMsg[0] != 0x4F) return;//检查帧头
 	//printf(Le_u_rxMsg);
-	if((Le_u_lng != 19U) && (Le_u_lng != 8U) && ((Le_u_rxMsg[Le_u_lng -2] != 0x0D) || \
+	if(Le_u_rxMsg[0] != 0x4F) return;//检查帧头
+	if((Le_u_lng != 6U) && (Le_u_lng != 19U) && (Le_u_lng != 8U) && ((Le_u_rxMsg[Le_u_lng -2] != 0x0D) || \
 				(Le_u_rxMsg[Le_u_lng -1] != 0x0A)))//检查帧尾,数据帧长度为8字节,可能接收到扫描开始或者扫描结束帧
 	{
 		return;
@@ -398,7 +404,6 @@ void BleUnlock_RxMsgCallback(char* Le_u_rxMsg,uint8 Le_u_lng)
 		break;
 		case 19://MAC地址数据帧长度
 		{
-			printf(Le_u_rxMsg);
 			if((Le_u_rxMsg[3] == 'G') && (Le_u_rxMsg[4] == 'e') && \
 				(Le_u_rxMsg[5] == 't') && (Le_u_rxMsg[6] == ':'))
 			{//接收到MAC地址
@@ -406,19 +411,21 @@ void BleUnlock_RxMsgCallback(char* Le_u_rxMsg,uint8 Le_u_lng)
 				{
 					Se_u_MacAddr[Le_u_i] = Le_u_rxMsg[7+Le_u_i];
 				}
+				BLEUNLOCK_PRINTF_D("\n接收MAC地址数据帧：%s",Se_u_MacAddr);
 				Se_u_BleMacFlg = 1;
 			}
 		}
 		break;
+		case 6://接收到扫描结束帧
 		case 8://接收到扫描开始或者是扫描结束帧
 		{
-			printf("接收到开始或结束帧，长度%d",Le_u_lng);
-			printf(Le_u_rxMsg);
 			if((Le_u_rxMsg[3] == 'D') && (Le_u_rxMsg[4] == 'I') && \
-					(Le_u_rxMsg[5] == 'S') && (Le_u_rxMsg[6] == 'B'))
+					(Le_u_rxMsg[5] == 'S'))
 			{
-				if(Le_u_rxMsg[7] == 'E')//收到扫描结束帧
+				if((Le_u_lng == 6U) || ((Le_u_rxMsg[6] == 'B') && \
+											(Le_u_rxMsg[7] == 'E')))//收到扫描结束帧
 				{
+					//BLEUNLOCK_PRINTF_S("\n接收到扫描结束帧");
 					SeCardSet_u_BleSt = 0U;//设置蓝牙模块空闲
 				}
 				else
@@ -428,7 +435,8 @@ void BleUnlock_RxMsgCallback(char* Le_u_rxMsg,uint8 Le_u_lng)
 		break;
 		default:
 		break;
-	}	
+	}
+	memset(Le_u_rxMsg,0,UART5_DMA_RX_BUFFER_SIZE);//清0
 }
 
 

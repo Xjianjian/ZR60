@@ -42,7 +42,7 @@ description£º function declaration
 ******************************************************/
 uint8 GetBleUnlockCfg_u_CheckSum(uint8 Le_u_Obj)
 {
-	return 0;//GetMemIf_u_CheckSum( Le_u_Obj);
+	return GetMemIf_u_CheckSum( Le_u_Obj);
 }
 
 /******************************************************
@@ -58,7 +58,7 @@ uint8 GetBleUnlockCfg_u_CheckSum(uint8 Le_u_Obj)
 ******************************************************/
 void BleUnlockCfg_WrEE(uint8 Le_u_Obj,uint8* Le_u_Data,uint16 Le_w_Lng)
 {
-	//(void)MemIf_WriteEE( Le_u_Obj,Le_u_Data, Le_w_Lng);
+	(void)MemIf_WriteEE( Le_u_Obj,Le_u_Data, Le_w_Lng);
 }
 
 /******************************************************
@@ -113,7 +113,7 @@ uint8 GetBListMngCfg_EEIdle(void)
 uint8 GetBleUnlockCfg_u_DtVild(uint8 Obj)
 {
 
-	return 0;//GetMemIf_u_DtVild(Obj);
+	return GetMemIf_u_DtVild(Obj);
 }
 
 /******************************************************
@@ -167,7 +167,7 @@ void BleUnlockCfg_BleTxMsg(uint8 ReqType)
 	{
 		case BleUnlock_MAC_ADDR:
 		{
-			if(HAL_UART_Transmit_DMA(&huart5,"AT+ADDE?",strlen("AT+ADDE?")) != HAL_OK)
+			if(HAL_UART_Transmit_DMA(&huart5,"AT+ADDB?",strlen("AT+ADDB?")) != HAL_OK)
 			{
 				//Error_Handler();
 			}
@@ -319,7 +319,7 @@ uint8 BleUnlockCfg_PasswordAuth(uint32 timestamp,uint8 machine_type,uint32 Passw
 ******************************************************/
 void BleUnlockCfg_OpenDoor(void)
 {
-
+	DoorLockCtrl_OpenDoor();
 }
 
 /******************************************************

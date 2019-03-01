@@ -60,9 +60,11 @@
 #include "cmsis_os.h"
 /* Within 'USER CODE' section, code will be kept by default at each generation */
 /* USER CODE BEGIN 0 */
+/*C标准库文件*/
+#include <string.h>
+#include <stdlib.h>
+#include <stdio.h>
 #include "lwip/netif.h"
-
-#include "Include.h"
 /* USER CODE END 0 */
 
 /* Private define ------------------------------------------------------------*/
@@ -109,7 +111,33 @@ osSemaphoreId s_xSemaphore = NULL;
 ETH_HandleTypeDef heth;
 
 /* USER CODE BEGIN 3 */
+uint8_t Mac_Addr[6];
+uint8_t Mac_Addr_flag = 0;
+static uint8_t Ethernetif_capital2char(char Le_u_Dt)
+{
+	uint8_t ret;
+	if((Le_u_Dt >= 'A') && (Le_u_Dt <= 'F'))
+	{
+		ret = Le_u_Dt -0x37;
+	}
+	else
+	{
+		ret = Le_u_Dt -0x30;
+	}
+	return ret;
+}
 
+void SetEthernetif_macAddr(uint8_t* macAddr)
+{
+	uint8_t Le_u_i;
+	for(Le_u_i = 0;Le_u_i< 6U;Le_u_i++)
+	{
+		macAddr[2*Le_u_i] = Ethernetif_capital2char(macAddr[2*Le_u_i]);
+		macAddr[2*Le_u_i + 1] = Ethernetif_capital2char(macAddr[2*Le_u_i + 1]);
+		Mac_Addr[Le_u_i] = (macAddr[2*Le_u_i] << 4U) + macAddr[2*Le_u_i + 1];	
+	}
+	Mac_Addr_flag = 1U;
+}
 /* USER CODE END 3 */
 
 /* Private functions ---------------------------------------------------------*/
@@ -250,7 +278,17 @@ static void low_level_init(struct netif *netif)
   heth.Init.MediaInterface = ETH_MEDIA_INTERFACE_RMII;
 
   /* USER CODE BEGIN MACADDRESS */
-    
+  if(1U == Mac_Addr_flag)
+  {
+	  MACAddr[0] = 	Mac_Addr[0];
+	  MACAddr[1] =  Mac_Addr[1];
+	  MACAddr[2] =  Mac_Addr[2];
+	  MACAddr[3] =  Mac_Addr[3];
+	  MACAddr[4] =  Mac_Addr[4];
+	  MACAddr[5] =  Mac_Addr[5]; 
+	  heth.Init.MACAddr = &MACAddr[0];
+  }
+  printf("mac地址：%x:%x:%x:%x:%x:%x",MACAddr[0],MACAddr[1],MACAddr[2],MACAddr[3],MACAddr[4],MACAddr[5]);
   /* USER CODE END MACADDRESS */
 
   hal_eth_init_status = HAL_ETH_Init(&heth);

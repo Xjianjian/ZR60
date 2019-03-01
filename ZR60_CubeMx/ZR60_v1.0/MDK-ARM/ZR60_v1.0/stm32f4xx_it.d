@@ -47,3 +47,5 @@ zr60_v1.0\stm32f4xx_it.o: ../Middlewares/Third_Party/FreeRTOS/Source/include/que
 zr60_v1.0\stm32f4xx_it.o: ../Middlewares/Third_Party/FreeRTOS/Source/include/semphr.h
 zr60_v1.0\stm32f4xx_it.o: ../Middlewares/Third_Party/FreeRTOS/Source/include/event_groups.h
 zr60_v1.0\stm32f4xx_it.o: ../Inc/usart.h
+zr60_v1.0\stm32f4xx_it.o: d:\Keil_v5\ARM\ARMCC\Bin\..\include\string.h
+zr60_v1.0\stm32f4xx_it.o: d:\Keil_v5\ARM\ARMCC\Bin\..\include\stdlib.h

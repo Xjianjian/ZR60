@@ -38,6 +38,9 @@
 
 /* USER CODE BEGIN 0 */
 #include "usart.h"
+#include <string.h>
+#include <stdlib.h>
+#include <stdio.h>
 /* USER CODE END 0 */
 
 /* External variables --------------------------------------------------------*/
@@ -243,9 +246,7 @@ void USART3_IRQHandler(void)
   /* USER CODE BEGIN USART3_IRQn 0 */
 	uint32_t tmp_flag = 0;
   uint32_t temp;
-  /* USER CODE END USART3_IRQn 0 */
-  HAL_UART_IRQHandler(&huart3);
-  /* USER CODE BEGIN USART3_IRQn 1 */
+	
 	if(USART3 == huart3.Instance)
 	{
 			tmp_flag =__HAL_UART_GET_FLAG(&huart3,UART_FLAG_IDLE); //获取IDLE标志位
@@ -258,10 +259,14 @@ void USART3_IRQHandler(void)
 					temp = huart3.Instance->DR; //读取数据寄存器中的数据
 					temp  =  __HAL_DMA_GET_COUNTER(&hdma_usart3_rx);// 获取DMA中未传输的数据个数                     
 					uart3_dma_rx_len =  UART3_DMA_RX_BUFFER_SIZE - temp; //总计数减去未传输的数据个数，得到已经接收的数据个数
-					uart3_dma_recv_end_flag = 1;  // 接受完成标志位置1 	 
-					HAL_UART_Receive_DMA(&huart3,uart3_dma_rx_buffer,UART3_DMA_RX_BUFFER_SIZE);//重新打开DMA接收
+					uart3_dma_recv_end_flag = 1;  // 接受完成标志位置1
+					//HAL_UART_Receive_DMA(&huart3,uart3_dma_rx_buffer,UART3_DMA_RX_BUFFER_SIZE);//重新打开DMA接收
 			}
 		}
+  /* USER CODE END USART3_IRQn 0 */
+  HAL_UART_IRQHandler(&huart3);
+  /* USER CODE BEGIN USART3_IRQn 1 */
+
   /* USER CODE END USART3_IRQn 1 */
 }
 
@@ -288,10 +293,7 @@ void UART5_IRQHandler(void)
 	uint32_t tmp_flag = 0;
   uint32_t temp;
 	uint8_t* ptr;
-  /* USER CODE END UART5_IRQn 0 */
-  HAL_UART_IRQHandler(&huart5);
-  /* USER CODE BEGIN UART5_IRQn 1 */
-	#if 1
+	
 	if(UART5 == huart5.Instance)
 	{
 			tmp_flag =__HAL_UART_GET_FLAG(&huart5,UART_FLAG_IDLE); //获取IDLE标志位
@@ -324,8 +326,12 @@ void UART5_IRQHandler(void)
 					//memset(uart5_dma_rx_buffer,0,UART5_DMA_RX_BUFFER_SIZE);//清0
 					//HAL_UART_Receive_DMA(&huart5,uart5_dma_rx_buffer,UART5_DMA_RX_BUFFER_SIZE);//重新打开DMA接收
 			}
-		}
-	#endif
+	}
+  /* USER CODE END UART5_IRQn 0 */
+  HAL_UART_IRQHandler(&huart5);
+  /* USER CODE BEGIN UART5_IRQn 1 */
+	
+
   /* USER CODE END UART5_IRQn 1 */
 }
 

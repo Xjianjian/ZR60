@@ -18,8 +18,7 @@ description?acro definitions
 *******************************************************/
 /**********∫Íø™πÿ∂®Åe*******/
 #define BLEUNLOCK_DEBUG
-
-#ifdef 	BLEUNLOCK_DEBUG
+#if (defined(BLEUNLOCK_DEBUG) && defined(USART_DEBUGE_PRINTF))
 #define	BLEUNLOCK_PRINTF_S(x)   	 printf("%s\n",x)
 #define BLEUNLOCK_PRINTF_D(x,d)   	 printf(x,d)
 #define BLEUNLOCK_PRINTF_MAC(x,d1,d2,d3,d4,d5,d6)    	printf(x,d1,d2,d3,d4,d5,d6)

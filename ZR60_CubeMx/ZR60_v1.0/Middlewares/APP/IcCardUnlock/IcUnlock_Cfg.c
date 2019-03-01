@@ -204,8 +204,10 @@ uint8 GetIcUnlockCfg_u_RxMsgRenew(uint8* Le_u_RxMsg)
 				ret = 1;
 			}
 		}
+		memset(uart3_dma_rx_buffer,0,UART3_DMA_RX_BUFFER_SIZE);//清0
+		HAL_UART_Receive_DMA(&huart3,uart3_dma_rx_buffer,UART3_DMA_RX_BUFFER_SIZE);//重新打开DMA接收		
 	}
-	//HAL_UART_Receive_DMA(&huart3,uart3_dma_rx_buffer,UART3_DMA_RX_BUFFER_SIZE);//重新打开DMA接收
+
 	return ret;
 }
 

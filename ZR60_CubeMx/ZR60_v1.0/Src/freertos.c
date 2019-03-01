@@ -124,10 +124,14 @@ void StartLwipTask(void const * argument)
 {
 
   /* USER CODE BEGIN StartLwipTask */
+	InitBtnFltr_Parameter();
+	MemIf_Init();
+	InitIcUnlock_parameter();
+	InitBleUnlock_parameter();
+	InitDoorLockCtrl_parameter();
 	/* init code for LWIP */
 	MX_LWIP_Init();
 	
-	InitBtnFltr_Parameter();
 	InitdhcpClient_parameter();
 	InitdnsAnalysis_parameter();
 	Initntpclient_Pramater();
@@ -151,10 +155,12 @@ void StartLwipTask(void const * argument)
 void StartZr60FuncTask(void const * argument)
 {
   /* USER CODE BEGIN StartZr60FuncTask */
+#if 0
 	MemIf_Init();
 	InitIcUnlock_parameter();
 	InitBleUnlock_parameter();
 	InitDoorLockCtrl_parameter();
+#endif
   /* Infinite loop */
   for(;;)
   {
