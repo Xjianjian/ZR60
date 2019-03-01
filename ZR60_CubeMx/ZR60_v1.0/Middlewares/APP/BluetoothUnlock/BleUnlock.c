@@ -171,7 +171,7 @@ void TskBleUnlock_MainFunction(void)
 			if(BleUnlockCfg_PasswordAuth(timestamp,machine_type,password) == 1)
 			{//表示收到密码比对成功
 				Ble_openDoor_cnt++;
-				BLEUNLOCK_PRINTF_D("蓝牙 -> 开门 %d 次\r\n",Ble_openDoor_cnt);
+				BLEUNLOCK_PRINTF_D("蓝牙 -> 开门 %ld 次\r\n",Ble_openDoor_cnt);
 				BleUnlockCfg_OpenDoor();
 
 				SeZR60_u_BleUnlockflag = 1U;
@@ -195,7 +195,7 @@ void TskBleUnlock_MainFunction(void)
 				if(BleUnlockCfg_PasswordAuth(timestamp,machine_type,password) == 1)
 				{//表示收到密码比对成功		
 					Ble_openDoor_cnt++;
-					BLEUNLOCK_PRINTF_D("蓝牙 -> 开门 %d 次\r\n",Ble_openDoor_cnt);
+					BLEUNLOCK_PRINTF_D("蓝牙 -> 开门 %ld 次\r\n",Ble_openDoor_cnt);
 					BleUnlockCfg_OpenDoor();
 					SeZR60_u_BleUnlockflag = 1U;
 					SeZR60_u_BleLogFltrflag = 1U;
