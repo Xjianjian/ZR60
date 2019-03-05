@@ -29,7 +29,7 @@ static uint8_t  open_door = 0;//开门标志：1--开门
 static IcUnlock_CardConf Se_Cardinfo;//存储母卡信息（用于开门比对）
 static IcUnlock_CardConf Se_Cardinfo_Temp;//存储母卡信息（用于读取的母卡卡片数据暂存）
 static CardNumInfo Se_CardID;//当前开门使用的ic卡卡号
-		
+static uint8_t  Se_u_machineType = 0;//	设备类型：0--未知；1--围墙机；2--门口机	
 /***********请求报文帧*************/
 static uint8_t  ReqPacket_ReadBlock[7U] = {0x20,0x00, 0x22, 0x01, 0x02, 0x00,0x03};
 static uint8_t  SeIcUnlock_u_KeyA[12U] = {0x20 ,Load_Key, 0x20 ,0x06, 0xF5 ,0x79 ,0xED, 0xD8, 0x9F, 0x77 ,0x89, 0x03};
@@ -72,7 +72,17 @@ void InitIcUnlock_parameter(void)
 	{
 		printf("\nflash存储的母卡信息数据有效 √\r\n");
 		SetIcUnlockCfg_EEVild(IC_UNLOCK_EE_CARD_INFO);//置位数据有效标志
-		IcUnlockCfg_CardRenewCallback(&Se_Cardinfo);
+		if((Se_Cardinfo.build_numOne[0] == 0xAA) && (Se_Cardinfo.build_numOne[12] == 0xAA))
+		{//围墙机0x15为全A
+			Se_u_machineType = 1;
+			IC_UNLOCK_PRINTF_S("当前设备=>围墙机\n");
+		}
+		else
+		{
+			Se_u_machineType = 2;
+			IC_UNLOCK_PRINTF_S("当前设备=>门口机\n");
+		}
+		IcUnlockCfg_CardRenewCallback(&Se_Cardinfo,Se_u_machineType);
 	}
 	else
 	{
@@ -224,7 +234,17 @@ static void  SetCard_MainFunction(void)//母卡设置
 						}
 						Se_Cardinfo.suffix = Se_Cardinfo_Temp.suffix;
 					}
-					IcUnlockCfg_CardRenewCallback(&Se_Cardinfo);//回调接口，用于母卡重新配置后相关数据的重新设置
+					if((Se_Cardinfo.build_numOne[0] == 0xAA) && (Se_Cardinfo.build_numOne[12] == 0xAA))
+					{//围墙机0x15为全A
+						Se_u_machineType = 1;
+						IC_UNLOCK_PRINTF_S("当前设备=>围墙机\n");
+					}
+					else
+					{
+						Se_u_machineType = 2;
+						IC_UNLOCK_PRINTF_S("当前设备=>门口机\n");
+					}
+					IcUnlockCfg_CardRenewCallback(&Se_Cardinfo,Se_u_machineType);//回调接口，用于母卡重新配置后相关数据的重新设置
 					SeIcUnlock_u_cardSetSt = 0U;
 					SeIcUnlock_AutoSectedCardFlag = 1;//开启自动寻卡
 					SetIcUnlockCfg_PlayFile(IC_UNLOCK_SETCARDSUCCESS);	
@@ -642,6 +662,21 @@ char IcUnlock_u_ArrayCmp(unsigned char *a,unsigned char *b, unsigned int len)
 	return 1;//完全相等，返回1。
 }
 
+/******************************************************
+*函数名：GetIcUnlock_u_MachineType
+
+*形  参：
+
+*返回值：
+
+*描  述：
+
+*备  注：
+******************************************************/
+char GetIcUnlock_u_MachineType(void)
+{
+	return Se_u_machineType;
+}
 
 
 /*

@@ -250,9 +250,9 @@ void SetIcUnlockCfg_openDoor(void)
 *描  述：母卡信息更新回调函数
 *备  注：
 ******************************************************/
-void IcUnlockCfg_CardRenewCallback(IcUnlock_CardConf* CardConf)
+void IcUnlockCfg_CardRenewCallback(IcUnlock_CardConf* CardConf,uint8 machineType)
 {
-	//read_init_sminfo(CardConf)//读取母卡文件的数据，并截取ic卡小区号，楼栋号，单元号的前8位用于sm3密码验证
+	InitSM3Auth_Paramter(CardConf,machineType);//读取母卡文件的数据，并截取ic卡小区号，楼栋号，单元号的前8位用于sm3密码验证
 	tcp_LngConnect_Parameter();
 	//Settcp_client_DeviceInit();//设置设备重新初始化
 }

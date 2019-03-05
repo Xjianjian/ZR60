@@ -59,15 +59,15 @@ typedef enum
 
 /*****struct definitions*****/
 typedef struct{
-	int tm_sec;
-	int tm_min;
-	int tm_hour;
-	int tm_mday;
-	int tm_mon;
-	int tm_year;
-	int tm_wday;
-	int tm_yday;
-	int tm_isdst;
+	uint8 tm_sec;
+	uint8 tm_min;
+	uint8 tm_hour;
+	uint8 tm_mday;
+	uint8 tm_mon;
+	uint16 tm_year;
+	uint8 tm_wday;
+	uint8 tm_yday;
+	uint16 tm_isdst;
 }BleUnlock_rtcTime ;
 
 

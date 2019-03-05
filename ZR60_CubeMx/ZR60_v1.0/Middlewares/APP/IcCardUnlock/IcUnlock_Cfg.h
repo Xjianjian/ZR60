@@ -105,5 +105,5 @@ extern uint8 IcUnlockCfg_ReadEE(uint8 Le_u_Obj,uint8* Le_u_Data,uint16 Le_w_Lng)
 extern uint8 GetIcUnlockCfg_u_CheckSum(uint8 Le_u_Obj);
 extern uint8 GetIcUnlockCfg_u_DtVild(uint8 Le_u_Obj);
 extern void SetIcUnlockCfg_EEVild(uint8 Le_u_Obj);
-extern void IcUnlockCfg_CardRenewCallback(IcUnlock_CardConf* CardConf);
+extern void IcUnlockCfg_CardRenewCallback(IcUnlock_CardConf* CardConf,uint8 machineType);
 #endif

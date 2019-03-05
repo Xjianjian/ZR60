@@ -26,7 +26,11 @@ zr60_v1.0\stm32f4xx_hal_pwr.o: ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal
 zr60_v1.0\stm32f4xx_hal_pwr.o: ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_flash.h
 zr60_v1.0\stm32f4xx_hal_pwr.o: ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_flash_ex.h
 zr60_v1.0\stm32f4xx_hal_pwr.o: ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_flash_ramfunc.h
+zr60_v1.0\stm32f4xx_hal_pwr.o: ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_i2c.h
+zr60_v1.0\stm32f4xx_hal_pwr.o: ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_i2c_ex.h
 zr60_v1.0\stm32f4xx_hal_pwr.o: ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_iwdg.h
 zr60_v1.0\stm32f4xx_hal_pwr.o: ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_pwr.h
 zr60_v1.0\stm32f4xx_hal_pwr.o: ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_pwr_ex.h
+zr60_v1.0\stm32f4xx_hal_pwr.o: ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_rtc.h
+zr60_v1.0\stm32f4xx_hal_pwr.o: ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_rtc_ex.h
 zr60_v1.0\stm32f4xx_hal_pwr.o: ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_uart.h

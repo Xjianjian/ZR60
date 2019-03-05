@@ -257,20 +257,7 @@ uint8 BleUnlockCfg_u_NetUnlockSt(void)
 ******************************************************/
 void BleUnlockCfg_datetime(BleUnlock_rtcTime* time,uint32* timestamp)
 {
-#ifdef  HYM8563
-		//(void)hym8563_read_datetime(&time);//读取hym8563日期时间
-#else
-		//Read_RTC_TimeAndDate(&time);//读取日期时间
-#endif
-	time->tm_year = 2019;
-	time->tm_mon = 2;
-	time->tm_mday = 28;
-	time->tm_hour = 10;
-	time->tm_min = 15;
-	time->tm_sec = 59;
-	
-	*timestamp = 123456;
-	
+	GetLocalRTC_datetime((struct rtc_time*)time,timestamp);	
 }
 
 /******************************************************
@@ -286,7 +273,7 @@ void BleUnlockCfg_datetime(BleUnlock_rtcTime* time,uint32* timestamp)
 ******************************************************/
 uint8 BleUnlockCfg_u_machineType(void)
 {
-	return 1;
+	return GetIcUnlock_u_MachineType();
 }
 
 
@@ -303,7 +290,7 @@ uint8 BleUnlockCfg_u_machineType(void)
 ******************************************************/
 uint8 BleUnlockCfg_PasswordAuth(uint32 timestamp,uint8 machine_type,uint32 Password)
 {
-	return 1;//sm3_time_PasswordAuth(timestamp,machine_type,Password);
+	return SM3Auth_PasswordAuth(timestamp,machine_type,Password,PASSWORD_BLE);
 }
 
 /******************************************************

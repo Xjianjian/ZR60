@@ -68,9 +68,10 @@ description： function code
 ******************************************************/
 static void ntpclient_RenewRTC(void)
 {
-	//char Le_u_timeString[15] = {0};
-	//timestamp_strBJtime(SeTransmit_dw_Timestamp,Le_u_timeString);//时间戳转换为北京时间（字符串格式）
-	//timestamp_timeCalibration(Le_u_timeString,TIME_STAMP_BJT);//校准时钟芯片时间
+	char Le_u_timeString[15] = {0};
+	LocalRTC_timestamp2strBJtime(SeTransmit_dw_Timestamp,Le_u_timeString);//时间戳转换为北京时间（字符串格式）
+	NTP_PRINTF_D("获取的网络时间：%s\n",Le_u_timeString);
+	SetLocalRTC_datetime(Le_u_timeString,TIME_STAMP_BJT);//校准时钟芯片时间
 	ntpclient.CalTimeFlag = 1U;
 }
 /**********************配置接口 END*********************/

@@ -19,13 +19,6 @@ description： global variable definitions
 description： static variable definitions
 *******************************************************/
 const char CeZR60Ctrl_u_SoftVersion[12U] = {'Z','R','6','0','_','v','1','.','2','.','2','\0'};//软件版本
-/*
-sm3密码生成使用的数据信息
-围墙机：community_id为小区id前4字节；build_num和cell_num全F
-门口机：community_id为小区id前4字节；build_num前4字节为楼栋编号，其余全F;cell_num全F
-*/
-struct sm3_info sm = {{'F','F','F','F','F','F','F','F'}, \
-		{'F','F','F','F','F','F','F','F'},{'F','F','F','F','F','F','F','F'},'\0'};
 
 static uint8_t 	sm3_flag = 0;
 static uint8_t  state = 0U;

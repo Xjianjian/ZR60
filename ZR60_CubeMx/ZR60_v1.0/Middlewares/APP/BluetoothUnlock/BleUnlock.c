@@ -23,7 +23,7 @@ static uint32 	SeCardSet_dw_setTimeCnt = 0U;//蓝牙校时延时计时器
 static uint8  	set_time_flag = 0;//校时请求标志
 static char   	Se_u_time[15] = {0};//蓝牙时间
 static uint8 	ble_Unlockflag = 0;//蓝牙开门请求标志
-static char   	Se_u_password[12] = {0};//蓝牙验证密码
+static char   	AuthPassword[6] = {0};//蓝牙验证密码
 static uint8	Se_u_PhoneNumFlg = 0;//接收到手机号标志
 static uint8	Se_u_PhoneNum[12] = {0};//接收到手机号
 static uint8 	b_5s_flag = 0;//5s延时标志（用于过滤5s内多余的开门请求指令）
@@ -132,7 +132,6 @@ void TskBleUnlock_MainFunction(void)
 	char Le_u_UnlockInfo[32U] = {0};
 	uint32 timestamp;
 	uint8  machine_type;
-	uint32 password;
 	static uint32 Ble_openDoor_cnt = 0;
 
 	if(SeCardSet_u_BleSt == 0U)//蓝牙模块空闲
@@ -168,6 +167,7 @@ void TskBleUnlock_MainFunction(void)
 			BLEUNLOCK_PRINTF_DATE("读取的时间：%d.%d.%d %d:%d:%d\n",rtcTime.tm_year,rtcTime.tm_mon, \
 							  rtcTime.tm_mday,rtcTime.tm_hour,rtcTime.tm_min,rtcTime.tm_sec);
 			machine_type = BleUnlockCfg_u_machineType();
+			uint32 password = atoi(AuthPassword);
 			if(BleUnlockCfg_PasswordAuth(timestamp,machine_type,password) == 1)
 			{//表示收到密码比对成功
 				Ble_openDoor_cnt++;
@@ -192,7 +192,7 @@ void TskBleUnlock_MainFunction(void)
 				BLEUNLOCK_PRINTF_DATE("读取的时间：%d.%d.%d %d:%d:%d\n",rtcTime.tm_year, \
 					rtcTime.tm_mon, rtcTime.tm_mday,rtcTime.tm_hour,rtcTime.tm_min,rtcTime.tm_sec);
 				machine_type = BleUnlockCfg_u_machineType();
-				if(BleUnlockCfg_PasswordAuth(timestamp,machine_type,password) == 1)
+				if(BleUnlockCfg_PasswordAuth(timestamp,machine_type,atoi(AuthPassword)) == 1)
 				{//表示收到密码比对成功		
 					Ble_openDoor_cnt++;
 					BLEUNLOCK_PRINTF_D("蓝牙 -> 开门 %ld 次\r\n",Ble_openDoor_cnt);
@@ -331,8 +331,7 @@ void BleUnlock_RxMsgCallback(char* Le_u_rxMsg,uint8 Le_u_lng)
 					{
 						for(Le_u_i = 0;Le_u_i < 6;Le_u_i++)
 						{
-							Se_u_password[Le_u_i] = Le_u_rxMsg[31+Le_u_i];//门口机密码
-							Se_u_password[Le_u_i + 6] = Le_u_rxMsg[47+Le_u_i];//围墙机密码
+							AuthPassword[Le_u_i] = Le_u_rxMsg[31+Le_u_i];
 						}
 						ble_Unlockflag = 1;
 					}
@@ -366,8 +365,7 @@ void BleUnlock_RxMsgCallback(char* Le_u_rxMsg,uint8 Le_u_lng)
 					{
 						for(Le_u_i = 0;Le_u_i < 6;Le_u_i++)
 						{
-							Se_u_password[Le_u_i] = Le_u_rxMsg[29+Le_u_i];//门口机密码
-							Se_u_password[Le_u_i + 6] = Le_u_rxMsg[29+Le_u_i];//围墙机密码
+							AuthPassword[Le_u_i] = Le_u_rxMsg[29+Le_u_i];
 						}
 						ble_Unlockflag = 1;
 					}
