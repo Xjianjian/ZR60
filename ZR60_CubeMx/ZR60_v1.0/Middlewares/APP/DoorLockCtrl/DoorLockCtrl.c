@@ -75,7 +75,7 @@ void TskDoorLockCtrl_MainFunction(void)
 	
 	if(1 == SeDoorLockCtrl_u_LockSt)
 	{
-		if(SeDoorLockCtrl_u_LockTimer >= (3000/DOORLOCKCTRL_SCHEDULING_CYCLE))
+		if(SeDoorLockCtrl_u_LockTimer >= (1500/DOORLOCKCTRL_SCHEDULING_CYCLE))
 		{
 			CLOSE_DOOR();
 			SeDoorLockCtrl_u_LockSt = 0;//ÃÅËø×´Ì¬->¹Ø±Õ

@@ -1,4 +1,6 @@
-zr60_v1.0\arc4.o: ../Middlewares/Third_Party/LwIP/src/netif/ppp/polarssl/arc4.c
+zr60_v1.0\arc4.o: ..\Middlewares\Third_Party\polarssl-1.0.0\library\arc4.c
+zr60_v1.0\arc4.o: ..\Middlewares\Third_Party\polarssl-1.0.0\config.h
+zr60_v1.0\arc4.o: ../Middlewares/Third_Party/LwIP/src/include/netif/ppp/polarssl/arc4.h
 zr60_v1.0\arc4.o: ../Middlewares/Third_Party/LwIP/src/include/netif/ppp/ppp_opts.h
 zr60_v1.0\arc4.o: ../Middlewares/Third_Party/LwIP/src/include/lwip/opt.h
 zr60_v1.0\arc4.o: ../Inc/lwipopts.h

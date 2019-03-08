@@ -1,10 +1,12 @@
-zr60_v1.0\des.o: ../Middlewares/Third_Party/LwIP/src/netif/ppp/polarssl/des.c
+zr60_v1.0\des.o: ..\Middlewares\Third_Party\polarssl-1.0.0\library\des.c
+zr60_v1.0\des.o: ..\Middlewares\Third_Party\polarssl-1.0.0\config.h
+zr60_v1.0\des.o: ../Inc/main.h
+zr60_v1.0\des.o: ../Middlewares/Third_Party/LwIP/src/include/netif/ppp/polarssl/des.h
 zr60_v1.0\des.o: ../Middlewares/Third_Party/LwIP/src/include/netif/ppp/ppp_opts.h
 zr60_v1.0\des.o: ../Middlewares/Third_Party/LwIP/src/include/lwip/opt.h
 zr60_v1.0\des.o: ../Inc/lwipopts.h
 zr60_v1.0\des.o: ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal.h
 zr60_v1.0\des.o: ../Inc/stm32f4xx_hal_conf.h
-zr60_v1.0\des.o: ../Inc/main.h
 zr60_v1.0\des.o: ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_rcc.h
 zr60_v1.0\des.o: ../Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_def.h
 zr60_v1.0\des.o: ../Drivers/CMSIS/Device/ST/STM32F4xx/Include/stm32f4xx.h

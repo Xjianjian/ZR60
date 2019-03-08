@@ -20,6 +20,7 @@ LR_IROM1 0x08000000 0x00100000  {    ; load region size_region
     iwdg.o (+ZI)
     dma.o (+ZI)
     i2c.o (+ZI)
+    rtc.o (+ZI)
     ipcp.o (+ZI)
     api_msg.o (+ZI)
     ecp.o (+ZI)

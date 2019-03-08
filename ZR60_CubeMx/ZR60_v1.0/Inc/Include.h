@@ -87,7 +87,7 @@ description锛歩nclude the header file
 *******************************************************/
 
 #define USART_DEBUGE_PRINTF   //串口调试打印输出总开关
-
+#define POLAR_SSL			0//polarSSL库
 /*******之前固件库写的代码能与当前HAL库代码兼容*******/
 #define ip_addr ip4_addr
 #define IPaddress GetdhcpClient_w_SrcIPaddr()
@@ -143,6 +143,16 @@ extern struct netif gnetif;
 #include	"DoorLockCtrl/DoorLockCtrl.h"
 #include  "BluetoothUnlock/BleUnlock.h"
 #include  "PasswordUnlock/PwUnlock.h"
+
+#if POLAR_SSL
+/* PolarSSL includes */
+#include "config.h"
+#include "polarssl/net.h"
+#include "polarssl/ssl.h"
+#include "polarssl/havege.h"
+#include "polarssl/certs.h"
+#include "polarssl/x509.h"
+#endif
 
 /*******************************************************
 description锛歴truct definitions
