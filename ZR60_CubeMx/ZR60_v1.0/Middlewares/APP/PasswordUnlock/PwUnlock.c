@@ -33,7 +33,7 @@ description： function declaration
 /*Global function declaration*/
 
 /*Static function declaration*/
-static uint8  ZR60Ctrl_TonesPlay(uint16 temp);
+static char  ZR60Ctrl_TonesPlay(uint16 temp);
 
 static void ZR60Ctrl_u_RecordUnlockInfo(char* Le_u_UnlockInfo,uint8 Le_u_UnlockEvent);
 
@@ -69,25 +69,26 @@ void InitPwUnlock_parameter(void)
 ******************************************************/
 void TskPwUnlock_MainFunction(void)
 {
-	uint8  rcvbuf[2]={0x20,0x00};
+	uint8  rcvbuf[2]={0x00};
 	uint8  machine_type;
 	uint32 timestamp;
-	static uint8  u_ActualKeyValue = 0U;//iic读取的键值转换后的实际触摸按键值
+	char  u_ActualKeyValue = 0U;//iic读取的键值转换后的实际触摸按键值
 	uint16 w_iickeyVlaue = 0;
 	uint32 Le_dw_password = 0;//临时密码
 	PwUnlockCfg_rtcTime rtcTime;
+	uint8 ret;
 	if(u_TouchKeyScanflag == 1)
 	{
 		if((SeCardSet_u_PasswordKeySt == STD_ACTIVE) &&(0U == SeCardSet_u_BtnFltrFlg))//按键
 		{
 			SeCardSet_u_PasswordKeySt = 0U;
 			SeCardSet_w_ClrTimer = 0U;
-			if(PwUnlockCfg_ReadKeyValue(rcvbuf,2) == 1U)
+			ret = PwUnlockCfg_ReadKeyValue(rcvbuf,2);
+			if(ret == 0U)
 			{
 				w_iickeyVlaue = rcvbuf[1];
 				w_iickeyVlaue = (w_iickeyVlaue << 8) | rcvbuf[0];
 				u_ActualKeyValue = ZR60Ctrl_TonesPlay(w_iickeyVlaue);
-				PWUNLOCK_PRINTF_D("\n键值 %s",(char*)u_ActualKeyValue);	
 				if(u_ActualKeyValue != 0xff)
 				{
 					SeCardSet_u_BtnFltrFlg = 1U;
@@ -95,12 +96,14 @@ void TskPwUnlock_MainFunction(void)
 					{
 						case 'C'://按键 -> 取消
 						{
+							PWUNLOCK_PRINTF_S("\n键值=>取消");
 							key_num = 0;
 							memset(keyValue_buffer,0,sizeof(keyValue_buffer));	
 						}
 						break;
 						case 'A'://按键 -> 确认
-						{			
+						{
+							PWUNLOCK_PRINTF_S("\n键值=>确认");
 							if(key_num == 6U)
 							{//当前为临时密码开门
 								PwUnlockCfg_datetime(&rtcTime,&timestamp);
@@ -155,6 +158,7 @@ void TskPwUnlock_MainFunction(void)
 						break;
 						default:
 						{
+							PWUNLOCK_PRINTF_D("\n键值 %d",(u_ActualKeyValue -0x30));	
 							if(key_num < sizeof(keyValue_buffer))
 							{
 								keyValue_buffer[key_num] = u_ActualKeyValue;
@@ -174,14 +178,14 @@ void TskPwUnlock_MainFunction(void)
 			}
 			else
 			{
-				PWUNLOCK_PRINTF_S("\nErrorLogging：读取按键值失败");
+				PWUNLOCK_PRINTF_D("\nErrorLogging：读取按键值失败,返回值：%d",ret);
 			}
 		}
 		else
 		{
 			if(SeCardSet_u_PasswordKeySt == STD_ACTIVE)
 			{
-				PWUNLOCK_PRINTF_S("\n无效按键中断滤除");
+				//PWUNLOCK_PRINTF_S("\n无效按键中断滤除");
 				SeCardSet_u_BtnFltrFlg = 0U;
 				SeCardSet_u_PasswordKeySt = 0U;
 			}
@@ -205,6 +209,21 @@ void TskPwUnlock_MainFunction(void)
 	
 }
 
+/******************************************************
+*函数名：SetZR60Ctrl_PasswordKey
+
+*形  参：
+
+*返回值：
+
+*描  述：设置password 按键状态
+
+*备  注：
+******************************************************/
+void SetZR60Ctrl_PasswordKey(void)
+{
+	SeCardSet_u_PasswordKeySt = STD_ACTIVE;
+}
 
 /******************************************************
 *函数名：return_data
@@ -217,7 +236,7 @@ void TskPwUnlock_MainFunction(void)
 
 *备  注：
 ******************************************************/
-static uint8  ZR60Ctrl_TonesPlay(uint16 temp)
+static char  ZR60Ctrl_TonesPlay(uint16 temp)
 {
 	uint8 Le_u_i;
 	for(Le_u_i = 0;Le_u_i < PW_UNLOCK_KEYNUM;Le_u_i++)
@@ -232,23 +251,6 @@ static uint8  ZR60Ctrl_TonesPlay(uint16 temp)
 	return 0xff;
 }
 
-
-
-/******************************************************
-*函数名：SetZR60Ctrl_u_PasswordKey
-
-*形  参：
-
-*返回值：
-
-*描  述：设置password 按键状态
-
-*备  注：
-******************************************************/
-void SetZR60Ctrl_u_PasswordKey(void)
-{
-	SeCardSet_u_PasswordKeySt = 1U;
-}
 
 
 

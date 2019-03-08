@@ -199,11 +199,14 @@ void PwUnlockCfg_u_RecordUnlockLog(char* Le_u_UnlockInfo,uint8 Le_u_UnlockEvent)
 ******************************************************/
 uint8 PwUnlockCfg_ReadKeyValue(uint8* Le_u_buffer,uint8 bufsize)
 {
-	uint8 ret = 0;
-	//if(HAL_I2C_Mem_Read(&hi2c1,0x6E, 0xAA,I2C_MEMADD_SIZE_8BIT,Le_u_buffer,bufsize,10) == HAL_OK)
+	uint8 ret = 0xff;
+	uint8 Le_u_i = 0;
+	do
 	{
-		ret = 1;
-	}
+		ret = SmltIIC_recv(0x37, 0xAA,Le_u_buffer,bufsize);
+		Le_u_i++;
+	}while((Le_u_i <= 15) && (ret != 0));
+	PWUNLOCK_PRINTF_D("\nIIC正确读取数据轮询的次数 %d",Le_u_i);	
 	return ret;
 }
 

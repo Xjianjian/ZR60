@@ -204,6 +204,13 @@ uint8 GetIcUnlockCfg_u_RxMsgRenew(uint8* Le_u_RxMsg)
 				ret = 1;
 			}
 		}
+		IC_UNLOCK_PRINTF_S("接收到读卡器串口数据:");
+#ifdef IC_UNLOCK_DEBUG
+		for(Le_u_i = 0;Le_u_i < uart3_dma_rx_len;Le_u_i++)
+		{
+			IC_UNLOCK_PRINTF_D("%x\n",uart3_dma_rx_buffer[Le_u_i]);
+		}
+#endif	
 		memset(uart3_dma_rx_buffer,0,UART3_DMA_RX_BUFFER_SIZE);//清0
 		HAL_UART_Receive_DMA(&huart3,uart3_dma_rx_buffer,UART3_DMA_RX_BUFFER_SIZE);//重新打开DMA接收		
 	}

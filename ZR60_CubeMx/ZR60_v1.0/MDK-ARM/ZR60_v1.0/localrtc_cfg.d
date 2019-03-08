@@ -103,6 +103,7 @@ zr60_v1.0\localrtc_cfg.o: ..\Middlewares\Ecal\BtnFltr/BtnFltr.h
 zr60_v1.0\localrtc_cfg.o: ..\Middlewares\Ecal\BtnFltr/BtnFltr_Cfg.h
 zr60_v1.0\localrtc_cfg.o: ..\Middlewares\Ecal\SM3Auth/SM3Auth.h
 zr60_v1.0\localrtc_cfg.o: ..\Middlewares\Ecal\SM3Auth/SM3.h
+zr60_v1.0\localrtc_cfg.o: ..\Middlewares\Ecal\SimulateIIC/SmltIIC.h
 zr60_v1.0\localrtc_cfg.o: ..\Middlewares\Third_Party\LwIP\App\dhcpClient.h
 zr60_v1.0\localrtc_cfg.o: ..\Middlewares\Third_Party\LwIP\App\dnsAnalysis.h
 zr60_v1.0\localrtc_cfg.o: ..\Middlewares\Third_Party\LwIP\App\ntpclient.h

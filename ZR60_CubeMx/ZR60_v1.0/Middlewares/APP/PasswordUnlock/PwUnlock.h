@@ -48,5 +48,5 @@ description£º function External declaration
 *******************************************************/
 extern void  InitPwUnlock_parameter(void);
 extern void  TskPwUnlock_MainFunction(void);
-
+extern void  SetZR60Ctrl_PasswordKey(void);
 #endif 

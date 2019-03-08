@@ -134,6 +134,7 @@
 "zr60_v1.0\btnfltr_cfg.o"
 "zr60_v1.0\sm3.o"
 "zr60_v1.0\sm3auth.o"
+"zr60_v1.0\smltiic.o"
 "zr60_v1.0\icunlock.o"
 "zr60_v1.0\icunlock_cfg.o"
 "zr60_v1.0\doorlockctrl.o"

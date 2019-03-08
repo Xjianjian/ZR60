@@ -126,6 +126,7 @@ extern struct netif gnetif;
 #include	"MemIf/MemIf.h"
 #include	"BtnFltr/BtnFltr.h"
 #include	"SM3Auth/SM3Auth.h"
+#include  "SimulateIIC/SmltIIC.h"
 
 //lwip app
 #include "dhcpClient.h"

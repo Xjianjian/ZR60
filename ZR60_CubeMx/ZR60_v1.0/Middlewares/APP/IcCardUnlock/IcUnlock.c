@@ -292,26 +292,34 @@ static void IcUnlock_handleMsg(IcUnlock_RxMsgStruct rebackInfo)
 				if(0U == SeIcUnlock_u_cardSetSt)//非卡片设置状态
 				{
 					Se_CardID.lng = rebackInfo.Dt.DtSrt.ValidDt[3];//获取卡号长度信息
-					if((Se_CardID.lng == 4U) && (0U == IcUnlock_VrfyCardNumber(*((uint32*)(&(rebackInfo.Dt.DtSrt.ValidDt[4]))))))//卡号验证通过,卡号不在黑名单中
+					if(Se_CardID.lng == 4U)//卡号长度验证
 					{
-						*((uint32*)Se_CardID.CardID) = *((uint32*)(&(rebackInfo.Dt.DtSrt.ValidDt[4])));
-						IcUnlock_readBlock(ReqPacket_ReadBlock, (uint8_t) 0x14,sizeof(ReqPacket_ReadBlock));//读取扇区0x14：小区id
-						IC_UNLOCK_PRINTF_CARD_NUM("卡号 %x%x%x%x ",rebackInfo.Dt.DtSrt.ValidDt[4],rebackInfo.Dt.DtSrt.ValidDt[5], \
-												  rebackInfo.Dt.DtSrt.ValidDt[6],rebackInfo.Dt.DtSrt.ValidDt[7]);
-						IC_UNLOCK_PRINTF_S("验证通过  √");
+						if(0U == IcUnlock_VrfyCardNumber(*((uint32*)(&(rebackInfo.Dt.DtSrt.ValidDt[4])))))//卡号验证通过,卡号不在黑名单中
+						{	
+							*((uint32*)Se_CardID.CardID) = *((uint32*)(&(rebackInfo.Dt.DtSrt.ValidDt[4])));
+							IcUnlock_readBlock(ReqPacket_ReadBlock, (uint8_t) 0x14,sizeof(ReqPacket_ReadBlock));//读取扇区0x14：小区id
+							IC_UNLOCK_PRINTF_CARD_NUM("卡号 %x%x%x%x ",rebackInfo.Dt.DtSrt.ValidDt[4],rebackInfo.Dt.DtSrt.ValidDt[5], \
+													  rebackInfo.Dt.DtSrt.ValidDt[6],rebackInfo.Dt.DtSrt.ValidDt[7]);
+							IC_UNLOCK_PRINTF_S("验证通过  √");
+						}
+						else
+						{
+							IC_UNLOCK_PRINTF_CARD_NUM("卡号 %x%x%x%x 在黑名单中\n",rebackInfo.Dt.DtSrt.ValidDt[4], \
+								rebackInfo.Dt.DtSrt.ValidDt[5], rebackInfo.Dt.DtSrt.ValidDt[6],rebackInfo.Dt.DtSrt.ValidDt[7]);
+							SeIcUnlock_AutoSectedCardFlag = 1U;
+							SetIcUnlockCfg_PlayFile(IC_UNLOCK_CARD_INVALID);
+						}
 					}
 					else
 					{
-						IC_UNLOCK_PRINTF_CARD_NUM("卡号 %x%x%x%x ",rebackInfo.Dt.DtSrt.ValidDt[4],rebackInfo.Dt.DtSrt.ValidDt[5], \
-												  rebackInfo.Dt.DtSrt.ValidDt[6],rebackInfo.Dt.DtSrt.ValidDt[7]);
-						IC_UNLOCK_PRINTF_S("验证不通过  X");
+						IC_UNLOCK_PRINTF_S("卡号接收出错\n");
+						w_SetAutoCard_DelayTime = (2500/IC_UNLOCK_SCHEDULING_CYCLE);
 						SeIcUnlock_AutoSectedCardFlag = 1U;
-						SetIcUnlockCfg_PlayFile(IC_UNLOCK_CARD_INVALID);
 					}
 				}
 				else
 				{
-					IcUnlock_readBlock(ReqPacket_ReadBlock, (uint8_t) 0x14,sizeof(ReqPacket_ReadBlock));//读取扇区0x14
+					IcUnlock_readBlock(ReqPacket_ReadBlock,(uint8_t)0x14,sizeof(ReqPacket_ReadBlock));//读取扇区0x14
 				}
 			}
 		}
@@ -356,7 +364,7 @@ static void IcUnlock_handleMsg(IcUnlock_RxMsgStruct rebackInfo)
 						Se_Cardinfo_Temp.community_id[Le_u_i] = rebackInfo.Dt.DtSrt.ValidDt[Le_u_i];
 					}
 
-					IcUnlock_readBlock(ReqPacket_ReadBlock, (uint8_t) 0x15,sizeof(ReqPacket_ReadBlock));
+					IcUnlock_readBlock(ReqPacket_ReadBlock,(uint8_t)0x15,sizeof(ReqPacket_ReadBlock));
 				}
 				else
 				{//非卡片设置模式，比对小区id
@@ -376,7 +384,7 @@ static void IcUnlock_handleMsg(IcUnlock_RxMsgStruct rebackInfo)
 						}
 						else if(2U == IC_UNLOCK_DEVICE_TYPE)
 						{//门口机，继续匹配楼栋编号
-							IcUnlock_readBlock(ReqPacket_ReadBlock, (uint8_t) 0x15,sizeof(ReqPacket_ReadBlock));
+							IcUnlock_readBlock(ReqPacket_ReadBlock,(uint8_t)0x15,sizeof(ReqPacket_ReadBlock));
 						}
 						else
 						{
@@ -420,7 +428,8 @@ static void IcUnlock_handleMsg(IcUnlock_RxMsgStruct rebackInfo)
 				}
 				else
 				{//非卡片设置模式，比对楼栋编号
-					if((*((uint64_t*)(&rebackInfo.Dt.DtSrt.ValidDt[0U])) == 0xAAAAAAAAAAAAAAAA) && (*((uint64_t*)(&rebackInfo.Dt.DtSrt.ValidDt[8U])) == 0xAAAAAAAAAAAAAAAA))
+					if((*((uint64_t*)(&rebackInfo.Dt.DtSrt.ValidDt[0U])) == 0xAAAAAAAAAAAAAAAA) && \
+							(*((uint64_t*)(&rebackInfo.Dt.DtSrt.ValidDt[8U])) == 0xAAAAAAAAAAAAAAAA))
 					{//工作人员卡
 						open_door = 1;
 						IC_UNLOCK_PRINTF_S("工作人员卡\n");
@@ -431,7 +440,8 @@ static void IcUnlock_handleMsg(IcUnlock_RxMsgStruct rebackInfo)
 						{//每个楼栋编号2字节，一个块可以装8个楼栋编号
 							if(0xFFFF != *((uint16*)(&rebackInfo.Dt.DtSrt.ValidDt[2*Le_u_i])))
 							{
-								if(*((uint16*)(&Se_Cardinfo.build_numOne[0U])) == *((uint16*)(&rebackInfo.Dt.DtSrt.ValidDt[2*Le_u_i])))
+								if(*((uint16*)(&Se_Cardinfo.build_numOne[0U])) == \
+												*((uint16*)(&rebackInfo.Dt.DtSrt.ValidDt[2*Le_u_i])))
 								{//比对楼栋编号
 									Le_u_matchFlg = 1U;
 									break;
@@ -447,7 +457,7 @@ static void IcUnlock_handleMsg(IcUnlock_RxMsgStruct rebackInfo)
 						else
 						{//未匹配到楼栋编号
 							IC_UNLOCK_PRINTF_S("扇区5块0x15未匹配到楼栋编号,继续匹配扇区0x16楼栋编号\n");
-							IcUnlock_readBlock(ReqPacket_ReadBlock, (uint8_t) 0x16,sizeof(ReqPacket_ReadBlock));
+							IcUnlock_readBlock(ReqPacket_ReadBlock,(uint8_t)0x16,sizeof(ReqPacket_ReadBlock));
 						}
 					}
 				}
@@ -479,7 +489,7 @@ static void IcUnlock_handleMsg(IcUnlock_RxMsgStruct rebackInfo)
 					#ifdef ZR50
 					SeIcUnlock_u_cardInfoReadFlag = 1U;
 					#else
-					IcUnlock_readBlock(ReqPacket_ReadBlock, (uint8_t) 0x18,sizeof(ReqPacket_ReadBlock));//读取楼栋id
+					IcUnlock_readBlock(ReqPacket_ReadBlock,(uint8_t)0x18,sizeof(ReqPacket_ReadBlock));//读取楼栋id
 					#endif
 				}
 				else
@@ -488,7 +498,8 @@ static void IcUnlock_handleMsg(IcUnlock_RxMsgStruct rebackInfo)
 					{//每个楼栋编号2字节，一个块可以装8个楼栋编号
 						if(0xFFFF != *((uint16*)(&rebackInfo.Dt.DtSrt.ValidDt[2*Le_u_i])))
 						{
-							if(*((uint16*)(&Se_Cardinfo.build_numOne[0U])) == *((uint16*)(&rebackInfo.Dt.DtSrt.ValidDt[2*Le_u_i])))
+							if(*((uint16*)(&Se_Cardinfo.build_numOne[0U])) == \
+												*((uint16*)(&rebackInfo.Dt.DtSrt.ValidDt[2*Le_u_i])))
 							{
 								Le_u_matchFlg = 1U;
 								break;
@@ -537,7 +548,7 @@ static void IcUnlock_handleMsg(IcUnlock_RxMsgStruct rebackInfo)
 				{
 					Se_Cardinfo_Temp.build_id[Le_u_i]= rebackInfo.Dt.DtSrt.ValidDt[Le_u_i];
 				}		
-				IcUnlock_readBlock(ReqPacket_ReadBlock, (uint8_t) 0x19,sizeof(ReqPacket_ReadBlock));//读取楼栋门id
+				IcUnlock_readBlock(ReqPacket_ReadBlock,(uint8_t)0x19,sizeof(ReqPacket_ReadBlock));//读取楼栋门id
 			}
 		}
 		break;
@@ -561,7 +572,7 @@ static void IcUnlock_handleMsg(IcUnlock_RxMsgStruct rebackInfo)
 				{
 					Se_Cardinfo_Temp.door_id[Le_u_i]= rebackInfo.Dt.DtSrt.ValidDt[Le_u_i];
 				}		
-				IcUnlock_readBlock(ReqPacket_ReadBlock, (uint8_t) 0x1A,sizeof(ReqPacket_ReadBlock));//读取下标
+				IcUnlock_readBlock(ReqPacket_ReadBlock,(uint8_t)0x1A,sizeof(ReqPacket_ReadBlock));//读取下标
 			}
 		}
 		break;

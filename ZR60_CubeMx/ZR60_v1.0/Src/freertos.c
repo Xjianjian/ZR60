@@ -205,9 +205,13 @@ void Start_5msTask(void const * argument)
 void Start_20msTask(void const * argument)
 {
   /* USER CODE BEGIN Start_20msTask */
+	SmltIIC_Paramter();
+	InitPwUnlock_parameter();
   /* Infinite loop */
   for(;;)
   {
+		
+	TskPwUnlock_MainFunction();
     osDelay(20);
   }
   /* USER CODE END Start_20msTask */

@@ -58,6 +58,8 @@
 /* Variables -----------------------------------------------------------------*/
 osThreadId lwip_taskHandle;
 osThreadId zr60_TaskHandle;
+osThreadId Task_5msHandle;
+osThreadId myTask05Handle;
 osThreadId FeedDogHandle;
 
 /* USER CODE BEGIN Variables */
@@ -67,6 +69,8 @@ osThreadId FeedDogHandle;
 /* Function prototypes -------------------------------------------------------*/
 void StartLwipTask(void const * argument);
 void StartZr60FuncTask(void const * argument);
+void Start_5msTask(void const * argument);
+void Start_20msTask(void const * argument);
 void vTaskFeedDog(void const * argument);
 
 void MX_FREERTOS_Init(void); /* (MISRA C 2004 rule 8.1) */
@@ -99,15 +103,23 @@ void MX_FREERTOS_Init(void) {
 
   /* Create the thread(s) */
   /* definition and creation of lwip_task */
-  osThreadDef(lwip_task, StartLwipTask, osPriorityNormal, 0, 1024);
+  osThreadDef(lwip_task, StartLwipTask, osPriorityLow, 0, 1024);
   lwip_taskHandle = osThreadCreate(osThread(lwip_task), NULL);
 
   /* definition and creation of zr60_Task */
-  osThreadDef(zr60_Task, StartZr60FuncTask, osPriorityLow, 0, 1024);
+  osThreadDef(zr60_Task, StartZr60FuncTask, osPriorityNormal, 0, 1024);
   zr60_TaskHandle = osThreadCreate(osThread(zr60_Task), NULL);
 
+  /* definition and creation of Task_5ms */
+  osThreadDef(Task_5ms, Start_5msTask, osPriorityAboveNormal, 0, 512);
+  Task_5msHandle = osThreadCreate(osThread(Task_5ms), NULL);
+
+  /* definition and creation of myTask05 */
+  osThreadDef(myTask05, Start_20msTask, osPriorityNormal, 0, 512);
+  myTask05Handle = osThreadCreate(osThread(myTask05), NULL);
+
   /* definition and creation of FeedDog */
-  osThreadDef(FeedDog, vTaskFeedDog, osPriorityRealtime, 0, 256);
+  osThreadDef(FeedDog, vTaskFeedDog, osPriorityRealtime, 0, 128);
   FeedDogHandle = osThreadCreate(osThread(FeedDog), NULL);
 
   /* USER CODE BEGIN RTOS_THREADS */
@@ -124,10 +136,13 @@ void StartLwipTask(void const * argument)
 {
 
   /* USER CODE BEGIN StartLwipTask */
+	MemIf_Init();
+	InitIcUnlock_parameter();
+	InitBleUnlock_parameter();
+	InitDoorLockCtrl_parameter();
 	/* init code for LWIP */
 	MX_LWIP_Init();
 	
-	InitBtnFltr_Parameter();
 	InitdhcpClient_parameter();
 	InitdnsAnalysis_parameter();
 	Initntpclient_Pramater();
@@ -136,7 +151,6 @@ void StartLwipTask(void const * argument)
   /* Infinite loop */
   for(;;)
   {
-		TskBtnFltr_MainFunction();
 		
 		TskdhcpClient_MainFunction();
 		TskdnsAnalysis_MainFunction();
@@ -151,20 +165,52 @@ void StartLwipTask(void const * argument)
 void StartZr60FuncTask(void const * argument)
 {
   /* USER CODE BEGIN StartZr60FuncTask */
+#if 0
 	MemIf_Init();
 	InitIcUnlock_parameter();
+	InitBleUnlock_parameter();
 	InitDoorLockCtrl_parameter();
+#endif
   /* Infinite loop */
   for(;;)
   {
 		
 		TskMemIf_MainFunction();
 		TskIcUnlock_MainFunction();
+		TskBleUnlock_MainFunction();
 		
 		TskDoorLockCtrl_MainFunction();
     osDelay(10);
   }
   /* USER CODE END StartZr60FuncTask */
+}
+
+/* Start_5msTask function */
+void Start_5msTask(void const * argument)
+{
+  /* USER CODE BEGIN Start_5msTask */
+	InitBtnFltr_Parameter();
+	
+  /* Infinite loop */
+  for(;;)
+  {
+		TskBtnFltr_MainFunction();
+		
+    osDelay(5);
+  }
+  /* USER CODE END Start_5msTask */
+}
+
+/* Start_20msTask function */
+void Start_20msTask(void const * argument)
+{
+  /* USER CODE BEGIN Start_20msTask */
+  /* Infinite loop */
+  for(;;)
+  {
+    osDelay(20);
+  }
+  /* USER CODE END Start_20msTask */
 }
 
 /* vTaskFeedDog function */

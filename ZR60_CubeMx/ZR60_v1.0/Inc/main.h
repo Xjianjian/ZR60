@@ -58,6 +58,9 @@
 
 #define open_green_led_Pin GPIO_PIN_7
 #define open_green_led_GPIO_Port GPIOF
+#define IT_touchKey_Pin GPIO_PIN_2
+#define IT_touchKey_GPIO_Port GPIOC
+#define IT_touchKey_EXTI_IRQn EXTI2_IRQn
 #define config_key_of_the_mother_card_Pin GPIO_PIN_0
 #define config_key_of_the_mother_card_GPIO_Port GPIOA
 #define enable_the_power_of_read_card_mode_Pin GPIO_PIN_5
@@ -66,6 +69,10 @@
 #define open_door_GPIO_Port GPIOB
 #define key_of_open_door_Pin GPIO_PIN_15
 #define key_of_open_door_GPIO_Port GPIOG
+#define IIC_SCL_Pin GPIO_PIN_8
+#define IIC_SCL_GPIO_Port GPIOB
+#define IIC_SDA_Pin GPIO_PIN_9
+#define IIC_SDA_GPIO_Port GPIOB
 
 /* USER CODE BEGIN Private defines */
 
