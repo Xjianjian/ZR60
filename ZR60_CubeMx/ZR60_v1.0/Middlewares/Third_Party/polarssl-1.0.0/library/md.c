@@ -222,8 +222,9 @@ int md( const md_info_t *md_info, const unsigned char *input, size_t ilen,
 
 int md_file( const md_info_t *md_info, const char *path, unsigned char *output )
 {
+#if defined(POLARSSL_FS_IO)
     int ret;
-
+#endif
     if( md_info == NULL )
         return POLARSSL_ERR_MD_BAD_INPUT_DATA;
 

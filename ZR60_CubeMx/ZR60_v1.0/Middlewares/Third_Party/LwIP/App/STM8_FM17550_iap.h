@@ -31,7 +31,6 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include "MyType.h"
 #include "stm32f4xx_flash.h"
 #include "dnsAnalysis.h"
 /*Lwip¿âÎÄ¼þ*/

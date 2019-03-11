@@ -28,13 +28,26 @@
 /* Define to prevent recursive inclusion -------------------------------------*/
 #ifndef __TCP_ECHOCLIENT_H__
 #define __TCP_ECHOCLIENT_H__
-#include "./ZR60_Ctrl/ZR60_Ctrl.h"
-#include "./PeriStFliter/PSFltr.h"
 #include "Include.h"
-#include "STM8_FM17550_iap.h"
-#include "http_client_iap.h"
+#include "UnlockLogCache/UnlockLogCache.h"
+
+#define TCP_CLIENT_SHORTCONN_DEBUG
+#if (defined(TCP_CLIENT_SHORTCONN_DEBUG) && defined(USART_DEBUGE_PRINTF))
+#define SHORTCONN_PRINTF_S(x)   	 printf("%s\n",x)
+#define SHORTCONN_PRINTF_D(x,d)   	 printf(x,d)
+#define SHORTCONN_PRINTF_IP(x,d1,d2,d3,d4)    			printf(x,d1,d2,d3,d4)
+#else
+#define SHORTCONN_PRINTF_S(x)    
+#define SHORTCONN_PRINTF_D(x,d)  
+#define SHORTCONN_PRINTF_IP(x,d1,d2,d3,d4)
+#endif
+
+
 
 //#define SHORTCNNT_HEART  //定义时，短连接需要发送心跳
+//#define SHORTCNNT_UPLOAD_UNLOCKLOG  //定义时，上传开门日志
+//#define SHORTCNNT_DOWNLOAD_BLACKLIST  //定义时，拉取黑名单
+
 #define  SHORTCNNT_EXT_NET	  //定义时使用外部服务器,未定义使用内网服务器
 #define  SHORTCNNT_HTTPS		  //定义时使用https连接,未定义使用http连接
 
@@ -60,19 +73,19 @@
 
 
 #ifdef USE_DHCP
-#define CLIENT_SHORTCNNT_DHCP_STATE    DHCP_state
+#define CLIENT_SHORTCNNT_DHCP_STATE    GetdhcpClient_u_DhcpSt()
 #else
 #define CLIENT_SHORTCNNT_DHCP_STATE    DHCP_ADDRESS_ASSIGNED
 #endif
-
+#define SHORTCONN_GET_PHY_LINK_STATUS()  netif_is_link_up(&gnetif)
 //宏函数定义
-#define Gettcp_client_u_DoorSt       GetPSFltr_u_PeriSt(DoorLockSt)
-#define Gettcp_client_u_LogAvild     GetUnlockLogCache_u_LogAvild()
-#define Gettcp_client_doorLog(x)     GetUnlockLogCache_doorLog(x)
-#define GetShortCnnt_PerformCondition     ((Gethttp_CnntTxSt() ==  0U) && (GetStm8_fm17550_iapIdle() == 1))
+#define Gettcp_client_u_DoorSt       1//GetPSFltr_u_PeriSt(DoorLockSt)
+#define Gettcp_client_u_LogAvild     0//GetUnlockLogCache_u_LogAvild()
+#define Gettcp_client_doorLog(x)     0//GetUnlockLogCache_doorLog(x)
+#define GetShortCnnt_PerformCondition     1//((Gethttp_CnntTxSt() ==  0U) && (GetStm8_fm17550_iapIdle() == 1))
 
 
-#define tcp_client_BleMacFlg    Se_u_BleMacFlg//获取蓝牙mac标志
+#define tcp_client_BleMacFlg    1//Se_u_BleMacFlg//获取蓝牙mac标志
 
 typedef enum
 {
@@ -96,8 +109,12 @@ typedef struct
 	char HeartFlag;//
 #endif
 	char DoorStFlag;//门锁状态上报任务执行标志
+#ifdef SHORTCNNT_UPLOAD_UNLOCKLOG	
 	char ReportFlag;//开门记录上报任务执行标志
+#endif
+#ifdef SHORTCNNT_DOWNLOAD_BLACKLIST	
 	char BListFlag;//拉取黑名单任务执行标志
+#endif
 	//char EchoFlag;//报文响应标志：0--报文未发送；1--等待响应；2--响应成功
 	//char BusyFlag;//忙标志
 	//char PcktType;//当前正在发送的数据报文类型:见tcp_client_TxPcktType定义
@@ -140,13 +157,14 @@ typedef struct
 	//char txflag;//临时数据发送标志
 }tcp_client_TxTempBufStruct;
 
+#ifdef SHORTCNNT_UPLOAD_UNLOCKLOG
 typedef struct
 {
 	char token[40];
 	char LogNum;//当前上报的开门记录条数
 	UnlockLogCacheStruct  Log[CLIENT_LOGRECORD_NUM];//开门记录缓存区
 }tcp_client_OpenLogStruct;
-
+#endif
 
 typedef struct 
 {

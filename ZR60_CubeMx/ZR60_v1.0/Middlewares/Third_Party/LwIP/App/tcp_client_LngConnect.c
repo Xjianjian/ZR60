@@ -27,7 +27,6 @@
 
 /* Includes ------------------------------------------------------------------*/
 
-//#include "./NetConnIf/NetConnIf.h"
 #include "tcp_client_LngConnect.h"
 
 

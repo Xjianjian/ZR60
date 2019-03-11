@@ -87,7 +87,7 @@ description锛歩nclude the header file
 *******************************************************/
 
 #define USART_DEBUGE_PRINTF   //串口调试打印输出总开关
-#define POLAR_SSL			0//polarSSL库
+#define POLAR_SSL			1//polarSSL库
 /*******之前固件库写的代码能与当前HAL库代码兼容*******/
 #define ip_addr ip4_addr
 #define IPaddress GetdhcpClient_w_SrcIPaddr()
@@ -108,7 +108,7 @@ extern struct netif gnetif;
 #include "stm32f4xx_hal_gpio.h"
 #include "stm32f4xx_hal_rtc.h"
 #include "rtc.h"
-
+#include "stm32f4xx_hal_rng.h"
 //lwip 库
 #include "lwip/dhcp.h"
 #include "lwip/dns.h"
@@ -120,13 +120,17 @@ extern struct netif gnetif;
 
 
 //Ecal layer
-#include	"xor/xor.h"
-#include	"JsonIf/cJSON.h"
-#include	"JsonIf/JsonIf.h"
-#include	"MemIf/MemIf.h"
-#include	"BtnFltr/BtnFltr.h"
-#include	"SM3Auth/SM3Auth.h"
-#include  "SimulateIIC/SmltIIC.h"
+#include "xor/xor.h"
+#include "JsonIf/cJSON.h"
+#include "JsonIf/JsonIf.h"
+#include "MemIf/MemIf.h"
+#include "BtnFltr/BtnFltr.h"
+#include "SM3Auth/SM3Auth.h"
+#include "SimulateIIC/SmltIIC.h"
+#include "UnlockLogCache/UnlockLogCache.h"
+
+//user complex
+#include	"LocalRTC/LocalRTC.h"
 
 //lwip app
 #include "dhcpClient.h"
@@ -134,9 +138,8 @@ extern struct netif gnetif;
 #include "ntpclient.h"
 #include "./NetConnIf/NetConnIf.h"
 #include "tcp_client_LngConnect.h"
+#include "tcp_client_ShortConnect.h"
 
-//user complex
-#include	"LocalRTC/LocalRTC.h"
 
 //user app
 #include	"IcCardUnlock/IcUnlock.h"

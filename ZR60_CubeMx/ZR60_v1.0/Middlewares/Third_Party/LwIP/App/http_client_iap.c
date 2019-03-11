@@ -172,7 +172,7 @@ void http_client_iap_MainFunction(void)
 			GetdnsAnalysis_ipAddr(http_download,&DestIPaddr);
 			if(ERR_OK == http_client_iap_connect())
 			{
-				USART_PRINTF_S("建立下载连接...");
+				SHORTCONN_PRINTF_S("建立下载连接...");
 				TxFlag.TskFlag = 0U;
 				Se_u_BusyFlg = 1U;
 				Se_w_ConntTimer = 0U;
@@ -187,14 +187,14 @@ void http_client_iap_MainFunction(void)
 		{
 			if((httpclient_es->state == ES_CONNECTED) &&(ESTABLISHED == httpclient_pcb->state))
 			{//连接建立成功
-				USART_PRINTF_S("下载连接建立成功!\n");
+				SHORTCONN_PRINTF_S("下载连接建立成功!\n");
 				Se_w_ConntTimer = 0U;
 				Sehttp_client_u_cnntSt = CLIENT_CNNT_LOADPCKT;//
 			}
 		}
 		else
 		{//连接建立失败
-			USART_PRINTF_S("\r\nErrorLogging：建立下载连接超时\r\n");
+			SHORTCONN_PRINTF_S("\r\nErrorLogging：建立下载连接超时\r\n");
 			Se_u_TimeoutCnt++;
 			if(Se_u_TimeoutCnt >= 3U)
 			{
@@ -212,7 +212,7 @@ void http_client_iap_MainFunction(void)
 		{
 			TxFlag.downloadFlag = DOWNLOAD_UNDERWAY;
 			TxFlag.firstFrameFlag = 0U;
-			USART_PRINTF_S("发送下载请求");
+			SHORTCONN_PRINTF_S("发送下载请求");
 			memset(Se_u_Txbuf,0,sizeof(Se_u_Txbuf));//清0
 			Le_w_lng = 0U;
 			Se_dw_byteCnt = 0U;
@@ -225,7 +225,7 @@ void http_client_iap_MainFunction(void)
 		Se_w_DownloadTimer++;
 		if(Se_w_DownloadTimer >= (15000U/IAP_SCHEDULING_CYCLE))//下载超时
 		{
-			USART_PRINTF_S("\r\nErrorLogging：下载超时\r\n");	
+			SHORTCONN_PRINTF_S("\r\nErrorLogging：下载超时\r\n");	
 			SetAudioIO_PlayFile(AudioIO_SoftUpdataFail,2U);//
 			Se_w_DownloadTimer = 0U;
 			Sehttp_client_u_cnntSt = CLIENT_CNNT_DISCNNT;//断开连接
@@ -253,7 +253,7 @@ void http_client_iap_MainFunction(void)
 	if(CLIENT_CNNT_DISCNNT == Sehttp_client_u_cnntSt)
 	{
 		http_client_iap_disconnect();
-		USART_PRINTF_S("断开连接...");
+		SHORTCONN_PRINTF_S("断开连接...");
 		Se_u_BusyFlg = 0U;
 		Se_w_DownloadTimer = 0U;
 		Sehttp_client_u_cnntSt = CLIENT_CNNT_IDLE;
@@ -264,7 +264,7 @@ void http_client_iap_MainFunction(void)
 	{	
 		if((CLIENT_CNNT_IDLE == Sehttp_client_u_cnntSt) && (0U == Gettcp_shortCnntTxSt()) && (GetAudioIO_u_PlaySt() == 0U))
 		{
-			USART_PRINTF_S("有在线升级请求或下载完成，复位重启");
+			SHORTCONN_PRINTF_S("有在线升级请求或下载完成，复位重启");
 			NVIC_SystemReset();//软件复位，进入初始化流程，在初始化中执行擦除flash扇区
 		}
 	}
@@ -285,10 +285,10 @@ char http_client_iap_connect(void)
 	{
 		LocalIPaddr.addr = IPaddress;
 		ret = tcp_bind(httpclient_pcb, &LocalIPaddr, 0); 
-		USART_PRINTF_D("tcp_bind ret is: %d\n",ret);
+		SHORTCONN_PRINTF_D("tcp_bind ret is: %d\n",ret);
 		/* connect to destination address/port */
 		ret = tcp_connect(httpclient_pcb,&DestIPaddr,CLIENT_CNNT_REMOTEPORT,http_client_connected);
-		USART_PRINTF_D("tcp_connect ret is: %d\n",ret);
+		SHORTCONN_PRINTF_D("tcp_connect ret is: %d\n",ret);
 
 		if(ERR_OK != ret)
 		{
@@ -304,7 +304,7 @@ char http_client_iap_connect(void)
 	{
 		ret = ERR_MEM;
 		/* deallocate the pcb */
-		USART_PRINTF_S("\r\nErrorLogging：下载连接tcp控制块分配失败\r\n");
+		SHORTCONN_PRINTF_S("\r\nErrorLogging：下载连接tcp控制块分配失败\r\n");
 	}
 	return ret;
 }
@@ -314,30 +314,30 @@ char http_client_iap_connect(void)
 */
 static void http_ConnectErr(void *arg,err_t err)
 {  
-	USART_PRINTF_S("\r\nErrorLogging：下载连接err处理\r\n");
+	SHORTCONN_PRINTF_S("\r\nErrorLogging：下载连接err处理\r\n");
     switch(err)  
     {   
         case ERR_MEM:                                            /* Out of memory error.     */  
-            USART_PRINTF_S("\r\n ERR_MEM   \r\n");  
+            SHORTCONN_PRINTF_S("\r\n ERR_MEM   \r\n");  
         break;    
         case ERR_BUF:                                            /* Buffer error.            */  
-            USART_PRINTF_S("\r\n ERR_BUF   \r\n");  
+            SHORTCONN_PRINTF_S("\r\n ERR_BUF   \r\n");  
         break;  
         case  ERR_TIMEOUT:                                       /* Timeout.                 */  
-            USART_PRINTF_S("\r\n ERR_TIMEOUT   \r\n");  
+            SHORTCONN_PRINTF_S("\r\n ERR_TIMEOUT   \r\n");  
         break;  
         case ERR_RTE:                                            /* Routing problem.         */        
-			USART_PRINTF_S("\r\n ERR_RTE   \r\n");  
+			SHORTCONN_PRINTF_S("\r\n ERR_RTE   \r\n");  
         break;  
 		case ERR_ISCONN:                                          /* Already connected.       */  
-			USART_PRINTF_S("\r\n ERR_ISCONN   \r\n");  
+			SHORTCONN_PRINTF_S("\r\n ERR_ISCONN   \r\n");  
         break;  
         case ERR_ABRT:                                           /* Connection aborted.      */  
-            USART_PRINTF_S("\r\n ERR_ABRT   \r\n");  
+            SHORTCONN_PRINTF_S("\r\n ERR_ABRT   \r\n");  
 			httpclient_pcb = NULL;
         break;  
         case ERR_RST:                                            /* Connection reset.        */       
-            USART_PRINTF_S("\r\n ERR_RST   \r\n");  
+            SHORTCONN_PRINTF_S("\r\n ERR_RST   \r\n");  
 			httpclient_pcb = NULL;
         break;  
         case ERR_CONN:                                           /* Not connected.           */  

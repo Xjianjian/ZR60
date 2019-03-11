@@ -758,6 +758,26 @@ void GetIcUnlock_buildID(unsigned char* build_id)
 	}
 }
 
+/******************************************************
+*函数名：GetIcUnlock_doorID
+
+*形  参：
+
+*返回值：
+
+*描  述：获取门ID
+
+*备  注：
+******************************************************/
+void GetIcUnlock_doorID(unsigned char* door_id)
+ {
+	uint8 Le_u_i;
+	for(Le_u_i = 0;Le_u_i < 16;Le_u_i++)
+	{
+		door_id[Le_u_i] = Se_Cardinfo.door_id[Le_u_i];
+	}
+}
+
 
 /******************************************************
 *函数名：GetIcUnlock_w_suffix

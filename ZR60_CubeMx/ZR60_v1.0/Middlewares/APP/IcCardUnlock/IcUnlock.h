@@ -107,6 +107,7 @@ extern char IcUnlock_u_ArrayCmp(unsigned char *a,unsigned char *b, unsigned int 
 extern void SetIcUnlock_u_CardReadSuccess(void);
 extern void GetIcUnlock_communityID(unsigned char* community_id);
 extern void GetIcUnlock_buildID(unsigned char* build_id);
+extern void GetIcUnlock_doorID(unsigned char* door_id);
 extern unsigned short GetIcUnlock_w_suffix(void);
 extern char GetIcUnlock_u_MachineType(void);
 #endif 

@@ -60,6 +60,7 @@ osThreadId lwip_taskHandle;
 osThreadId zr60_TaskHandle;
 osThreadId Task_5msHandle;
 osThreadId myTask05Handle;
+osThreadId https_TaskHandle;
 osThreadId FeedDogHandle;
 
 /* USER CODE BEGIN Variables */
@@ -71,6 +72,7 @@ void StartLwipTask(void const * argument);
 void StartZr60FuncTask(void const * argument);
 void Start_5msTask(void const * argument);
 void Start_20msTask(void const * argument);
+void vTaskhttps(void const * argument);
 void vTaskFeedDog(void const * argument);
 
 void MX_FREERTOS_Init(void); /* (MISRA C 2004 rule 8.1) */
@@ -118,6 +120,10 @@ void MX_FREERTOS_Init(void) {
   osThreadDef(myTask05, Start_20msTask, osPriorityNormal, 0, 512);
   myTask05Handle = osThreadCreate(osThread(myTask05), NULL);
 
+  /* definition and creation of myTask05 */
+  osThreadDef(https_Task, vTaskhttps, osPriorityNormal, 0, 1024);//此处分配过小，会导致卡死复位
+  https_TaskHandle = osThreadCreate(osThread(https_Task), NULL);
+  
   /* definition and creation of FeedDog */
   osThreadDef(FeedDog, vTaskFeedDog, osPriorityRealtime, 0, 128);
   FeedDogHandle = osThreadCreate(osThread(FeedDog), NULL);
@@ -147,6 +153,7 @@ void StartLwipTask(void const * argument)
 	InitdnsAnalysis_parameter();
 	Initntpclient_Pramater();
 	NetConnIf_Parameter();
+	tcp_ShortConnect_parameter();
 	tcp_LngConnect_Parameter();
   /* Infinite loop */
   for(;;)
@@ -194,7 +201,7 @@ void Start_5msTask(void const * argument)
   /* Infinite loop */
   for(;;)
   {
-		TskBtnFltr_MainFunction();
+	TskBtnFltr_MainFunction();
 		
     osDelay(5);
   }
@@ -215,6 +222,21 @@ void Start_20msTask(void const * argument)
     osDelay(20);
   }
   /* USER CODE END Start_20msTask */
+}
+
+/* vTaskhttps function */
+void vTaskhttps(void const * argument)
+{
+	/* USER CODE BEGIN vTaskhttps */
+	
+	/* Infinite loop */
+	for(;;)
+	{
+		tcp_ShortConnect_MainFunction();
+		
+		osDelay(5000);
+	}
+	/* USER CODE END vTaskhttps */
 }
 
 /* vTaskFeedDog function */

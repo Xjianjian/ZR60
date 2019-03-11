@@ -94,7 +94,7 @@ void Json_HexToJson(void *Le_u_in,uint16* Len,unsigned char type, char *Le_u_out
 			}
 		}	
 		break;
-		
+#endif		
 		case JSON_DEVICE_INIT:
 		{//{"doorId":"门id","mac":"MAC地址","isWifi":"mac是否是无线的MAC地址","bluetooth":"蓝牙地址"}
 			cJSON_AddStringToObject(json,"doorId",&(((tcp_client_DeviceInitStruct*)Le_u_in)->doorID[0U]));
@@ -103,7 +103,6 @@ void Json_HexToJson(void *Le_u_in,uint16* Len,unsigned char type, char *Le_u_out
 			cJSON_AddStringToObject(json,"bluetooth",&(((tcp_client_DeviceInitStruct*)Le_u_in)->Blemac[0U]));
 		}
 		break;
-		#endif
 		case JSON_DEVICE_ECHO_REMOTEUNLOCK:
 		{//{"t":-5,"mid":"消息id"}
 			cJSON_AddNumberToObject(json,"t",-5);

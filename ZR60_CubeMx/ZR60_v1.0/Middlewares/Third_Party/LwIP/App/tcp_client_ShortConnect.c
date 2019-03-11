@@ -33,12 +33,11 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include "netconf.h"
-#include "LAN8742A.h"
-#include "tcp_client_ShortConnect.h"
+//#include "netconf.h"
 #include "lwip/api.h"
+#include "tcp_client_ShortConnect.h"
 
-#if LWIP_TCP
+
 /* Private typedef -----------------------------------------------------------*/
 /* Private define ------------------------------------------------------------*/
 /* Private macro -------------------------------------------------------------*/
@@ -65,8 +64,9 @@ static u16_t  Se_w_OpenDoorLogTimer = 0U;//上报开锁日志计时器
 static u8_t  Setcp_client_u_TimeoutCnt = 0U;//短连接超时计数
 
 static u32_t  Se_dw_BListPullTimer;//拉取黑名单计时器
+#ifdef SHORTCNNT_UPLOAD_UNLOCKLOG
 static tcp_client_OpenLogStruct Setcp_h_OpenLog;
-
+#endif
 char Vetcp_client_u_token[40];
 tcp_client_BListPullStruct BListPull;
 tcp_client_DeviceInitStruct DeviceInit;
@@ -118,8 +118,10 @@ static uint8_t tcp_ShortConnect_RcvMsg( ssl_context *ssl, unsigned char *buf, si
 static void my_debug(void *ctx, int level, char *str);
 static int RandVal(void* arg);
 static uint8 Gettcp_client_u_XOR(uint8* Le_u_Dt,uint16 Le_w_Lng);
+#ifdef SHORTCNNT_DOWNLOAD_BLACKLIST
 static uint8_t Settcp_shortConnect_UpdataBLTime(void);
 static void tcp_shortConnect_UpdataBList(void);
+#endif
 /******************************************************
 *函数名：tcp_ShortConnect_parameter
 
@@ -133,9 +135,7 @@ static void tcp_shortConnect_UpdataBList(void);
 ******************************************************/
 void tcp_ShortConnect_parameter(void)
 {
-	//struct rtc_time Le_h_tm;
 	uint8_t Letcp_ShortConnect_u_Xor = 0;
-	//MemIf_ReadEE(EepromCfg_timestamp_page,BListPull.token,sizeof(BListPull));//读取黑名单时间戳、页码等信息
 	BListPull.timestamp = 0;
 	BListPull.page = 1U;
 	BListPull.Listtype = 0;
@@ -146,13 +146,15 @@ void tcp_ShortConnect_parameter(void)
 	Se_h_doorSt.state = STD_OFF;
 	
 	client_TxFlag.InitFlag = 0U;//
-	Letcp_ShortConnect_u_Xor = GetMemIf_u_CheckSum(EepromCfg_tokenInfo);//读取mac地址数据校验和
+	Letcp_ShortConnect_u_Xor = GetMemIf_u_CheckSum(EepromCfg_tokenInfo);//读取token数据校验和
 	if((Letcp_ShortConnect_u_Xor == MemIf_ReadEE(EepromCfg_tokenInfo,Vetcp_client_u_token,sizeof(Vetcp_client_u_token))) && \
 			(STD_ACTIVE == GetMemIf_u_DtVild(EepromCfg_tokenInfo)))
 	{//token有效
 		SetMemIf_EEVild(EepromCfg_tokenInfo);//数据有效
 		memcpy(BListPull.token,Vetcp_client_u_token,39U);
+#ifdef SHORTCNNT_UPLOAD_UNLOCKLOG		
 		memcpy(Setcp_h_OpenLog.token,Vetcp_client_u_token,39U);
+#endif		
 		memcpy(Se_h_doorSt.token,Vetcp_client_u_token,39U);
 		client_TxFlag.InitFlag = 1U;//不需要再初始化
 		printf("\r\n token信息有效,设备不需重新初始化\r\n");
@@ -161,18 +163,22 @@ void tcp_ShortConnect_parameter(void)
 	client_TxFlag.HeartFlag = 0U;//
 #endif
 	client_TxFlag.DoorStFlag = 0U;//
+#ifdef SHORTCNNT_UPLOAD_UNLOCKLOG	
 	client_TxFlag.ReportFlag = 0U;//
+#endif
+#ifdef SHORTCNNT_DOWNLOAD_BLACKLIST		
 	client_TxFlag.BListFlag = 0U;//
+#endif
 	//client_TxFlag.BusyFlag = 0U;//
 	//client_TxFlag.PcktType = Pckt_Unknow;
 	DeviceInit.addrtype = 0;//
-#if 0	
+#if 1	
 	DeviceInit.mac[0] = 'e';//测试使用
-	DeviceInit.mac[1] = '0';
+	DeviceInit.mac[1] = '1';
 	DeviceInit.mac[2] = '7';
 	DeviceInit.mac[3] = '6';
 	DeviceInit.mac[4] = 'd';
-	DeviceInit.mac[5] = '0';
+	DeviceInit.mac[5] = '1';
 	DeviceInit.mac[6] = 'f';
 	DeviceInit.mac[7] = '8';
 	DeviceInit.mac[8] = '1';
@@ -180,6 +186,7 @@ void tcp_ShortConnect_parameter(void)
 	DeviceInit.mac[10] = 'a';
 	DeviceInit.mac[11] = '8';
 #endif
+#ifdef SHORTCNNT_DOWNLOAD_BLACKLIST		
 	/*读取当前时间，计算全量更新黑名单的时间点*/
 	Se_h_UpdateBList.Timer = 0U;
 	Se_h_UpdateBList.flag = 0U;	
@@ -189,6 +196,7 @@ void tcp_ShortConnect_parameter(void)
 	{
 		Se_h_UpdateBList.UpdataTimeSetflag = 1U;
 	}
+#endif
 }
 
 /******************************************************
@@ -214,7 +222,7 @@ void tcp_ShortConnect_MainFunction(void)
 	char Le_u_TxData[450U] = {0};
 	//char Recev_Tempbuf[512] = {0};
 	
-	if(0 == GET_PHY_LINK_STATUS())/* Get Ethernet link status*/
+	if(0 == SHORTCONN_GET_PHY_LINK_STATUS())/* Get Ethernet link status*/
 	{
 		Setcp_client_w_DoorStTimer = 0U;
 		//client_TxFlag.TskFlag = 0U;//任务标志
@@ -225,8 +233,12 @@ void tcp_ShortConnect_MainFunction(void)
 		client_TxFlag.HeartFlag = 0U;//
 #endif
 		client_TxFlag.DoorStFlag = 0U;//
+#ifdef SHORTCNNT_UPLOAD_UNLOCKLOG			
 		client_TxFlag.ReportFlag = 0U;//
+#endif		
+#ifdef SHORTCNNT_DOWNLOAD_BLACKLIST	
 		client_TxFlag.BListFlag = 0U;//
+#endif
 		//client_TxFlag.BusyFlag = 0U;//
 		Setcp_client_u_TxBusyFlg = 0U;
 		//client_TxFlag.EchoFlag = 0U;//
@@ -237,7 +249,7 @@ void tcp_ShortConnect_MainFunction(void)
 		Setcp_client_u_cnntSt = CLIENT_SHORTCNNT_IDLE;
 		return;
 	}
-	
+#ifdef SHORTCNNT_DOWNLOAD_BLACKLIST		
 /**********************全量更新黑名单**********************/
 	if(0U == Se_h_UpdateBList.UpdataTimeSetflag)
 	{
@@ -248,6 +260,7 @@ void tcp_ShortConnect_MainFunction(void)
 	}
 	
 	tcp_shortConnect_UpdataBList();/* 全量更新黑名单 */
+#endif
 /**********************************************************/
 	
 #ifdef SHORTCNNT_HEART	
@@ -266,7 +279,7 @@ void tcp_ShortConnect_MainFunction(void)
 		client_TxFlag.DoorStFlag = 1U;//
 		//client_TxFlag.TskFlag = 1U;
 	}
-	
+#ifdef SHORTCNNT_DOWNLOAD_BLACKLIST		
 	Se_dw_BListPullTimer++;
 	if(Se_dw_BListPullTimer >= (SHORTCNNT_PULLBLIST_PERIOD))//0.5h
 	{
@@ -274,7 +287,8 @@ void tcp_ShortConnect_MainFunction(void)
 		Se_dw_BListPullTimer = 0U;
 		//client_TxFlag.TskFlag = 1U;
 	}
-
+#endif
+#ifdef SHORTCNNT_UPLOAD_UNLOCKLOG	
 	Se_w_OpenDoorLogTimer++;
 	if(Se_w_OpenDoorLogTimer >= CLIENT_LOGRECORD_PERIOD)
 	{
@@ -285,6 +299,7 @@ void tcp_ShortConnect_MainFunction(void)
 		}
 		//client_TxFlag.TskFlag = 1U;
 	}
+#endif
 #ifdef SHORTCNNT_HTTPS	
 	int ret;
 	int server_fd =0;
@@ -298,8 +313,16 @@ void tcp_ShortConnect_MainFunction(void)
 	if((DHCP_ADDRESS_ASSIGNED == CLIENT_SHORTCNNT_DHCP_STATE) && (GetShortCnnt_PerformCondition) \
 		&& (CLIENT_SHORTCNNT_IDLE == Setcp_client_u_cnntSt))
 	{	
-		if((client_TxFlag.DoorStFlag == 1U) || (client_TxFlag.BListFlag == 1U) || \
-				(client_TxFlag.ReportFlag == 1U) || (client_TxFlag.InitFlag == 0U))
+		if(
+				(client_TxFlag.DoorStFlag == 1U) || 
+#ifdef SHORTCNNT_DOWNLOAD_BLACKLIST			
+				(client_TxFlag.BListFlag == 1U) || 
+#endif		
+#ifdef SHORTCNNT_UPLOAD_UNLOCKLOG			
+				(client_TxFlag.ReportFlag == 1U) || 
+#endif
+				(client_TxFlag.InitFlag == 0U)
+			)
 		{
 			//client_TxFlag.TskFlag = 0U;
 			if(1U != GetdnsAnalysis_u_ipValidity(ShortConnect))
@@ -317,14 +340,14 @@ void tcp_ShortConnect_MainFunction(void)
 			/* Start the connection */
 			do
 			{
-				USART_PRINTF_S(( "\n\rSSL : Start the connection \n\r"));
+				SHORTCONN_PRINTF_S(( "\n\rSSL : Start the connection \n\r"));
 				
 				/* Bint the connection to SSL server port */
 				ret = net_connect(&server_fd, Le_u_IPaddr, SSL_SERVER_PORT);
 				if(ret != 0)
 				{
 					/* Connection to SSL server failed */
-					USART_PRINTF_D("\r\nErrorLogging：failed \n\r ! net_connect returned %d\n\r", -ret);
+					SHORTCONN_PRINTF_D("\r\nErrorLogging：failed \n\r ! net_connect returned %d\n\r", -ret);
 					
 					/* Wait 1s until next retry */
 					vTaskDelay(5000);
@@ -333,13 +356,13 @@ void tcp_ShortConnect_MainFunction(void)
 #else
 			do
 			{
-				USART_PRINTF_S(( "\n\rStart the connection \n\r"));
+				SHORTCONN_PRINTF_S(( "\n\rStart the connection \n\r"));
 				
 				tcp_clientconn = netconn_new(NETCONN_TCP);  //创建一个NETCONN_TCP链接
 				err = netconn_connect(tcp_clientconn,&ShortConnect_DestIPaddr,8090);//连接服务器
 				if(err != ERR_OK)  
 				{
-					USART_PRINTF_S("connection failed \r\n");
+					SHORTCONN_PRINTF_S("connection failed \r\n");
 					netconn_delete(tcp_clientconn); //返回值不等于ERR_OK,删除tcp_clientconn连接
 					/* Wait 1s until next retry */
 					vTaskDelay(5000);
@@ -348,7 +371,7 @@ void tcp_ShortConnect_MainFunction(void)
 			
 #endif
 
-			USART_PRINTF_S((" net_connect Ok \n\r"));
+			SHORTCONN_PRINTF_S((" net_connect Ok \n\r"));
 			Setcp_client_u_cnntSt = CLIENT_SHORTCNNT_TXPCKT;//连接建立成功，准备发送数据
 		}
 	}
@@ -364,11 +387,11 @@ void tcp_ShortConnect_MainFunction(void)
 			if(ret != 0)
 			{
 				/* SSL initialization failed */
-				USART_PRINTF_D("\r\nErrorLogging：failed \n\r ! ssl_init returned %d\n\r", -ret);
+				SHORTCONN_PRINTF_D("\r\nErrorLogging：failed \n\r ! ssl_init returned %d\n\r", -ret);
 				Setcp_client_u_cnntSt = CLIENT_SHORTCNNT_DISCNNT;
 				goto shortCnnt_exit;
 			}
-			USART_PRINTF_S((" ssl_init ok\n\r"));	
+			SHORTCONN_PRINTF_S((" ssl_init ok\n\r"));	
 			/* Set the current session as SSL client */
 			ssl_set_endpoint(&ssl, SSL_IS_CLIENT);
 			/* No certificate verification */
@@ -394,11 +417,12 @@ void tcp_ShortConnect_MainFunction(void)
 		if(client_TxFlag.InitFlag == 0U)//设备未初始化
 		{
 			char Letcp_u_InitTxbuf[265] = {0};
+			unsigned char La_u_doorID[16];
 			client_TxFlag.InitFlag = 2U;
 			Setcp_client_u_TxBusyFlg = 1U;
-			USART_PRINTF_S("设备初始化信息推送");
-			Json_HexToStr(DeviceInit.doorID,sminfo1.door_id,16);
-			//memset(Setcp_u_shortCnntTxbuf,0,sizeof(Setcp_u_shortCnntTxbuf));//清0
+			SHORTCONN_PRINTF_S("设备初始化信息推送");
+			GetIcUnlock_doorID(La_u_doorID);
+			Json_HexToStr(DeviceInit.doorID,La_u_doorID,16);
 			if(DeviceInit.addrRecombineFlg == 0U)
 			{
 				tcp_client_MacRecombine(&DeviceInit.Blemac[0]);
@@ -410,6 +434,7 @@ void tcp_ShortConnect_MainFunction(void)
 				//tcp_client_MacRecombine(&DeviceInit.mac[0]);
 				DeviceInit.addrRecombineFlg = 1U;
 			}
+			SHORTCONN_PRINTF_D("设备初始化MAC地址：%s\n",DeviceInit.mac);
 			Json_HexToJson(&DeviceInit,&Le_w_lng,JSON_DEVICE_INIT,Le_u_TxData);
 			tcp_client_httpPostRequest("POST /device/initForBand HTTP/1.1\n",Le_u_TxData,&Le_w_lng, \
 									   Letcp_u_InitTxbuf,1U);
@@ -418,17 +443,17 @@ void tcp_ShortConnect_MainFunction(void)
 			//ret = ssl_write(&ssl,Setcp_u_shortCnntTxbuf,Le_w_lng);//数据发送
 			if(0U == ret)
 			{//发送失败
-				USART_PRINTF_S("\r\nErrorLogging：'设备初始化'数据发送失败\r\n");
+				SHORTCONN_PRINTF_S("\r\nErrorLogging：'设备初始化'数据发送失败\r\n");
 				Setcp_client_u_cnntSt = CLIENT_SHORTCNNT_DISCNNT;
 				goto shortCnnt_exit;
 			}
 			
 			/* Read the HTTP response */
-			USART_PRINTF_S("\n\r<= Read from server :");;
+			SHORTCONN_PRINTF_S("\n\r<= Read from server :");;
 			ret = tcp_ShortConnect_RcvMsg(&ssl, ShortRecev_buf, len);
 			if(0U == ret)
 			{//读取数据失败
-				USART_PRINTF_S("\r\nErrorLogging：'设备初始化'时未收到服务器响应\r\n");
+				SHORTCONN_PRINTF_S("\r\nErrorLogging：'设备初始化'时未收到服务器响应\r\n");
 				Setcp_client_u_cnntSt = CLIENT_SHORTCNNT_DISCNNT;
 				goto shortCnnt_exit;
 			}
@@ -436,7 +461,7 @@ void tcp_ShortConnect_MainFunction(void)
 			err = netconn_write(tcp_clientconn ,Letcp_u_InitTxbuf,Le_w_lng,NETCONN_COPY); //发送tcp_server_sentbuf中的数据
 			if(err != ERR_OK)
 			{
-				USART_PRINTF_S("发送失败\r\n");
+				SHORTCONN_PRINTF_S("发送失败\r\n");
 				SetAudioIO_PlayFile(AudioIO_DeInitFail,2U);
 				Setcp_client_u_cnntSt = CLIENT_SHORTCNNT_DISCNNT;
 				goto shortCnnt_exit;
@@ -470,16 +495,16 @@ void tcp_ShortConnect_MainFunction(void)
 				goto shortCnnt_exit;
 			}
 #endif
-			//USART_PRINTF_S("\n\r---------------------------------------------------------\n\r");
-			//USART_PRINTF_S(ShortRecev_buf);
-			//USART_PRINTF_S("\n\r---------------------------------------------------------\n\r");
+			//SHORTCONN_PRINTF_S("\n\r---------------------------------------------------------\n\r");
+			//SHORTCONN_PRINTF_S(ShortRecev_buf);
+			//SHORTCONN_PRINTF_S("\n\r---------------------------------------------------------\n\r");
 			//从http报文中解析出数据体
 			position = strchr(ShortRecev_buf, '\{');//首次出现'\{'的地址
 			if(position != NULL)
 			{
 				Le_w_temp = position - (char*)ShortRecev_buf;//'\{'位置的下标
-				USART_PRINTF_S("接收到的Json格式数据如下：");
-				USART_PRINTF_S(&ShortRecev_buf[Le_w_temp]);
+				SHORTCONN_PRINTF_S("接收到的Json格式数据如下：");
+				SHORTCONN_PRINTF_S(&ShortRecev_buf[Le_w_temp]);
 				
 				(void)tcp_ShortConnect_parseJson(&ShortRecev_buf[Le_w_temp]);
 			}
@@ -506,7 +531,7 @@ void tcp_ShortConnect_MainFunction(void)
 			/*发送门锁状态*/
 			if(1U == client_TxFlag.DoorStFlag)
 			{
-				USART_PRINTF_S("发送门锁状态");
+				SHORTCONN_PRINTF_S("发送门锁状态");
 				Setcp_client_u_TxBusyFlg = 1U;
 				client_TxFlag.DoorStFlag = 0U;
 				//上报门锁状态
@@ -519,17 +544,17 @@ void tcp_ShortConnect_MainFunction(void)
 				ret = tcp_ShortConnect_SendMsg(&ssl,Setcp_u_shortCnntTxbuf,Le_w_lng);//数据发送
 				if(0U == ret)
 				{//发送失败
-					USART_PRINTF_S("\r\nErrorLogging：发送'门锁状态'数据失败\r\n");
+					SHORTCONN_PRINTF_S("\r\nErrorLogging：发送'门锁状态'数据失败\r\n");
 					Setcp_client_u_cnntSt = CLIENT_SHORTCNNT_DISCNNT;
 					goto shortCnnt_exit;
 				}
 				
 				/* Read the HTTP response */
-				USART_PRINTF_S("\n\r<= Read from server :");;
+				SHORTCONN_PRINTF_S("\n\r<= Read from server :");;
 				ret = tcp_ShortConnect_RcvMsg(&ssl, ShortRecev_buf, len);
 				if(0U == ret)
 				{//读取数据失败
-					USART_PRINTF_S("\r\nErrorLogging：发送'门锁状态'时未收到服务器响应\r\n");
+					SHORTCONN_PRINTF_S("\r\nErrorLogging：发送'门锁状态'时未收到服务器响应\r\n");
 					Setcp_client_u_cnntSt = CLIENT_SHORTCNNT_DISCNNT;
 					goto shortCnnt_exit;
 				}
@@ -538,7 +563,7 @@ void tcp_ShortConnect_MainFunction(void)
 				err = netconn_write(tcp_clientconn ,Setcp_u_shortCnntTxbuf,Le_w_lng,NETCONN_COPY); //发送tcp_server_sentbuf中的数据
 				if(err != ERR_OK)
 				{
-					USART_PRINTF_S("发送失败\r\n");
+					SHORTCONN_PRINTF_S("发送失败\r\n");
 					Setcp_client_u_cnntSt = CLIENT_SHORTCNNT_DISCNNT;
 					goto shortCnnt_exit;
 				}
@@ -570,16 +595,16 @@ void tcp_ShortConnect_MainFunction(void)
 					goto shortCnnt_exit;
 				}
 #endif
-				//USART_PRINTF_S("\n\r---------------------------------------------------------\n\r");
-				//USART_PRINTF_S(ShortRecev_buf);
-				//USART_PRINTF_S("\n\r---------------------------------------------------------\n\r");
+				//SHORTCONN_PRINTF_S("\n\r---------------------------------------------------------\n\r");
+				//SHORTCONN_PRINTF_S(ShortRecev_buf);
+				//SHORTCONN_PRINTF_S("\n\r---------------------------------------------------------\n\r");
 				//从http报文中解析出数据体
 				position = strchr(ShortRecev_buf, '\{');//首次出现'\{'的地址
 				if(position != NULL)
 				{
 					Le_w_temp = position - (char*)ShortRecev_buf;//'\{'位置的下标
-					USART_PRINTF_S("接收到的Json格式数据如下：");
-					USART_PRINTF_S(&ShortRecev_buf[Le_w_temp]);
+					SHORTCONN_PRINTF_S("接收到的Json格式数据如下：");
+					SHORTCONN_PRINTF_S(&ShortRecev_buf[Le_w_temp]);
 					
 					(void)tcp_ShortConnect_parseJson(&ShortRecev_buf[Le_w_temp]);
 				}
@@ -593,7 +618,7 @@ void tcp_ShortConnect_MainFunction(void)
 			  && (0U == TxTempBuf.txflag))//临时缓存区数据有效,并且未发送过
 			if(TxTempBuf.dtAlidity == 1U)//临时缓存区数据有效
 			{
-				USART_PRINTF_S("发送临时缓存区数据");
+				SHORTCONN_PRINTF_S("发送临时缓存区数据");
 				Setcp_client_u_TxBusyFlg = 1U;
 				TxTempBuf.dtAlidity = 0U;
 				memset(Setcp_u_shortCnntTxbuf,0,sizeof(Setcp_u_shortCnntTxbuf));//清0
@@ -601,23 +626,23 @@ void tcp_ShortConnect_MainFunction(void)
 				{
 					Setcp_u_shortCnntTxbuf[Le_w_i] = TxTempBuf.data[Le_w_i];
 				}
-				USART_PRINTF_S(Setcp_u_shortCnntTxbuf);
+				SHORTCONN_PRINTF_S(Setcp_u_shortCnntTxbuf);
 #ifdef SHORTCNNT_HTTPS
 				ret = tcp_ShortConnect_SendMsg(&ssl,Setcp_u_shortCnntTxbuf,TxTempBuf.lng);//数据发送
 				if(0U == ret)
 				{//发送失败
-					USART_PRINTF_S("\r\nErrorLogging：发送'临时数据缓存区'数据失败\r\n");
+					SHORTCONN_PRINTF_S("\r\nErrorLogging：发送'临时数据缓存区'数据失败\r\n");
 					TxTempBuf.dtAlidity = 1U;
 					Setcp_client_u_cnntSt = CLIENT_SHORTCNNT_DISCNNT;
 					goto shortCnnt_exit;
 				}
 				
 				/* Read the HTTP response */
-				USART_PRINTF_S("\n\r<= Read from server :");;
+				SHORTCONN_PRINTF_S("\n\r<= Read from server :");;
 				ret = tcp_ShortConnect_RcvMsg(&ssl, ShortRecev_buf, len);
 				if(0U == ret)
 				{//读取数据失败
-					USART_PRINTF_S("\r\nErrorLogging：发送'临时数据缓存区'数据时未收到服务器响应\r\n");
+					SHORTCONN_PRINTF_S("\r\nErrorLogging：发送'临时数据缓存区'数据时未收到服务器响应\r\n");
 					Setcp_client_u_cnntSt = CLIENT_SHORTCNNT_DISCNNT;
 					goto shortCnnt_exit;
 				}
@@ -625,7 +650,7 @@ void tcp_ShortConnect_MainFunction(void)
 				err = netconn_write(tcp_clientconn ,Setcp_u_shortCnntTxbuf,TxTempBuf.lng,NETCONN_COPY); //发送tcp_server_sentbuf中的数据
 				if(err != ERR_OK)
 				{
-					USART_PRINTF_S("发送失败\r\n");
+					SHORTCONN_PRINTF_S("发送失败\r\n");
 					Setcp_client_u_cnntSt = CLIENT_SHORTCNNT_DISCNNT;
 					goto shortCnnt_exit;
 				}
@@ -657,16 +682,16 @@ void tcp_ShortConnect_MainFunction(void)
 					goto shortCnnt_exit;
 				}
 #endif			
-				//USART_PRINTF_S("\n\r---------------------------------------------------------\n\r");
-				//USART_PRINTF_S(ShortRecev_buf);
-				//USART_PRINTF_S("\n\r---------------------------------------------------------\n\r");
+				//SHORTCONN_PRINTF_S("\n\r---------------------------------------------------------\n\r");
+				//SHORTCONN_PRINTF_S(ShortRecev_buf);
+				//SHORTCONN_PRINTF_S("\n\r---------------------------------------------------------\n\r");
 				//从http报文中解析出数据体
 				position = strchr(ShortRecev_buf, '\{');//首次出现'\{'的地址
 				if(position != NULL)
 				{
 					Le_w_temp = position - (char*)ShortRecev_buf;//'\{'位置的下标
-					USART_PRINTF_S("接收到的Json格式数据如下：");
-					USART_PRINTF_S(&ShortRecev_buf[Le_w_temp]);
+					SHORTCONN_PRINTF_S("接收到的Json格式数据如下：");
+					SHORTCONN_PRINTF_S(&ShortRecev_buf[Le_w_temp]);
 					
 					if(1U != tcp_ShortConnect_parseJson(&ShortRecev_buf[Le_w_temp]))
 					{
@@ -676,7 +701,7 @@ void tcp_ShortConnect_MainFunction(void)
 				Setcp_client_u_cnntSt = CLIENT_SHORTCNNT_DISCNNT;
 				goto shortCnnt_exit;
 			}
-	
+#ifdef SHORTCNNT_UPLOAD_UNLOCKLOG	
 			/*发送开门记录*/
 			//if((1U == client_TxFlag.ReportFlag)&& (0U == client_TxFlag.BusyFlag) \
 				&&(TxTempBuf.dtAlidity == 0U))
@@ -686,7 +711,7 @@ void tcp_ShortConnect_MainFunction(void)
 				Setcp_client_u_TxBusyFlg = 1U;
 				if(1U == Gettcp_client_u_LogAvild)
 				{
-					USART_PRINTF_S("发送开门记录数据");
+					SHORTCONN_PRINTF_S("发送开门记录数据");
 					for(Le_w_i = 0U;Le_w_i < CLIENT_LOGRECORD_NUM;Le_w_i++)
 					{
 						if(1U == Gettcp_client_u_LogAvild)
@@ -715,17 +740,17 @@ void tcp_ShortConnect_MainFunction(void)
 					ret = tcp_ShortConnect_SendMsg(&ssl,Setcp_u_shortCnntTxbuf,Le_w_lng);//数据发送
 					if(0U == ret)
 					{//发送失败
-						USART_PRINTF_S("\r\nErrorLogging：发送'开门记录'数据失败\r\n");
+						SHORTCONN_PRINTF_S("\r\nErrorLogging：发送'开门记录'数据失败\r\n");
 						Setcp_client_u_cnntSt = CLIENT_SHORTCNNT_DISCNNT;
 						goto shortCnnt_exit;
 					}
 					
 					/* Read the HTTP response */
-					USART_PRINTF_S("\n\r<= Read from server :");;
+					SHORTCONN_PRINTF_S("\n\r<= Read from server :");;
 					ret = tcp_ShortConnect_RcvMsg(&ssl, ShortRecev_buf, len);
 					if(0U == ret)
 					{//读取数据失败
-						USART_PRINTF_S("\r\nErrorLogging：发送'开门记录'数据时未收到服务器响应\r\n");
+						SHORTCONN_PRINTF_S("\r\nErrorLogging：发送'开门记录'数据时未收到服务器响应\r\n");
 						Setcp_client_u_cnntSt = CLIENT_SHORTCNNT_DISCNNT;
 						goto shortCnnt_exit;
 					}
@@ -733,7 +758,7 @@ void tcp_ShortConnect_MainFunction(void)
 					err = netconn_write(tcp_clientconn ,Setcp_u_shortCnntTxbuf,Le_w_lng,NETCONN_COPY); //发送tcp_server_sentbuf中的数据
 					if(err != ERR_OK)
 					{
-						USART_PRINTF_S("发送失败\r\n");
+						SHORTCONN_PRINTF_S("发送失败\r\n");
 						Setcp_client_u_cnntSt = CLIENT_SHORTCNNT_DISCNNT;
 						goto shortCnnt_exit;
 					}
@@ -765,16 +790,16 @@ void tcp_ShortConnect_MainFunction(void)
 						goto shortCnnt_exit;
 					}
 #endif					
-					//USART_PRINTF_S("\n\r---------------------------------------------------------\n\r");
-					//USART_PRINTF_S(ShortRecev_buf);
-					//USART_PRINTF_S("\n\r---------------------------------------------------------\n\r");
+					//SHORTCONN_PRINTF_S("\n\r---------------------------------------------------------\n\r");
+					//SHORTCONN_PRINTF_S(ShortRecev_buf);
+					//SHORTCONN_PRINTF_S("\n\r---------------------------------------------------------\n\r");
 					//从http报文中解析出数据体
 					position = strchr(ShortRecev_buf, '\{');//首次出现'\{'的地址
 					if(position != NULL)
 					{
 						Le_w_temp = position - (char*)ShortRecev_buf;//'\{'位置的下标
-						USART_PRINTF_S("接收到的Json格式数据如下：");
-						USART_PRINTF_S(&ShortRecev_buf[Le_w_temp]);
+						SHORTCONN_PRINTF_S("接收到的Json格式数据如下：");
+						SHORTCONN_PRINTF_S(&ShortRecev_buf[Le_w_temp]);
 						
 						if(1U == tcp_ShortConnect_parseJson(&ShortRecev_buf[Le_w_temp]))
 						{
@@ -790,13 +815,14 @@ void tcp_ShortConnect_MainFunction(void)
 					goto shortCnnt_exit;
 				}	
 			}
-			
+#endif	
+#ifdef SHORTCNNT_DOWNLOAD_BLACKLIST
 			/*拉取黑名单*/
 			//if((client_TxFlag.BListFlag == 1U) && (0U == client_TxFlag.BusyFlag) \
 			  &&(TxTempBuf.dtAlidity == 0U))
 			if(client_TxFlag.BListFlag == 1U)
 			{
-				USART_PRINTF_S("拉取黑名单");
+				SHORTCONN_PRINTF_S("拉取黑名单");
 				client_TxFlag.BListFlag = 0U;
 				Setcp_client_u_TxBusyFlg = 1U;
 				memset(Setcp_u_shortCnntTxbuf,0,sizeof(Setcp_u_shortCnntTxbuf));//清0
@@ -815,17 +841,17 @@ void tcp_ShortConnect_MainFunction(void)
 				ret = tcp_ShortConnect_SendMsg(&ssl,Setcp_u_shortCnntTxbuf,Le_w_lng);//数据发送
 				if(0U == ret)
 				{//发送失败
-					USART_PRINTF_S("\r\nErrorLogging：发送'拉取黑名单'请求数据失败\r\n");
+					SHORTCONN_PRINTF_S("\r\nErrorLogging：发送'拉取黑名单'请求数据失败\r\n");
 					Setcp_client_u_cnntSt = CLIENT_SHORTCNNT_DISCNNT;
 					goto shortCnnt_exit;
 				}
 				
 				/* Read the HTTP response */
-				USART_PRINTF_S("\n\r<= Read from server :");;
+				SHORTCONN_PRINTF_S("\n\r<= Read from server :");;
 				ret = tcp_ShortConnect_RcvMsg(&ssl, ShortRecev_buf, len);
 				if(0U == ret)
 				{//读取数据失败
-					USART_PRINTF_S("\r\nErrorLogging：发送'拉取黑名单'请求数据时未收到服务器响应\r\n");
+					SHORTCONN_PRINTF_S("\r\nErrorLogging：发送'拉取黑名单'请求数据时未收到服务器响应\r\n");
 					Setcp_client_u_cnntSt = CLIENT_SHORTCNNT_DISCNNT;
 					goto shortCnnt_exit;
 				}
@@ -833,7 +859,7 @@ void tcp_ShortConnect_MainFunction(void)
 				err = netconn_write(tcp_clientconn ,Setcp_u_shortCnntTxbuf,Le_w_lng,NETCONN_COPY); //发送tcp_server_sentbuf中的数据
 				if(err != ERR_OK)
 				{
-					USART_PRINTF_S("发送失败\r\n");
+					SHORTCONN_PRINTF_S("发送失败\r\n");
 					Setcp_client_u_cnntSt = CLIENT_SHORTCNNT_DISCNNT;
 					goto shortCnnt_exit;
 				}
@@ -865,16 +891,16 @@ void tcp_ShortConnect_MainFunction(void)
 					goto shortCnnt_exit;
 				}
 #endif
-				//USART_PRINTF_S("\n\r---------------------------------------------------------\n\r");
-				//USART_PRINTF_S(ShortRecev_buf);
-				//USART_PRINTF_S("\n\r---------------------------------------------------------\n\r");
+				//SHORTCONN_PRINTF_S("\n\r---------------------------------------------------------\n\r");
+				//SHORTCONN_PRINTF_S(ShortRecev_buf);
+				//SHORTCONN_PRINTF_S("\n\r---------------------------------------------------------\n\r");
 				//从http报文中解析出数据体
 				position = strchr(ShortRecev_buf, '\{');//首次出现'\{'的地址
 				if(position != NULL)
 				{
 					Le_w_temp = position - (char*)ShortRecev_buf;//'\{'位置的下标
-					USART_PRINTF_S("接收到的Json格式数据如下：");
-					USART_PRINTF_S(&ShortRecev_buf[Le_w_temp]);
+					SHORTCONN_PRINTF_S("接收到的Json格式数据如下：");
+					SHORTCONN_PRINTF_S(&ShortRecev_buf[Le_w_temp]);
 					
 					if(1U == tcp_ShortConnect_parseJson(&ShortRecev_buf[Le_w_temp]))
 					{
@@ -884,6 +910,7 @@ void tcp_ShortConnect_MainFunction(void)
 				Setcp_client_u_cnntSt = CLIENT_SHORTCNNT_DISCNNT;
 				goto shortCnnt_exit;
 			}	
+#endif
 		}
 		else
 		{//设备未成功初始化
@@ -895,7 +922,6 @@ void tcp_ShortConnect_MainFunction(void)
 shortCnnt_exit:
 	if(Setcp_client_u_cnntSt == CLIENT_SHORTCNNT_DISCNNT)
 	{
-		USART_PRINTF_S("断开连接...");
 #ifdef SHORTCNNT_HTTPS
 		net_close(server_fd);
 		ssl_free(&ssl);
@@ -907,6 +933,7 @@ shortCnnt_exit:
 		Setcp_client_u_TxBusyFlg = 0U;
 		//client_TxFlag.PcktType = Pckt_Unknow;
 		Setcp_client_u_cnntSt = CLIENT_SHORTCNNT_IDLE;
+		SHORTCONN_PRINTF_S("断开连接...");
 	}
 }
 
@@ -922,7 +949,7 @@ static uint8_t tcp_ShortConnect_SendMsg( ssl_context *ssl, const unsigned char *
 		if( ret != POLARSSL_ERR_NET_WANT_READ && ret != POLARSSL_ERR_NET_WANT_WRITE )
 		{
 			/* Write to SSL server failed */
-			USART_PRINTF_D( "ErrorLogging：failed \n\r! ssl_write returned %d\n\r", -ret);
+			SHORTCONN_PRINTF_D( "ErrorLogging：failed \n\r! ssl_write returned %d\n\r", -ret);
 			return 0;
 		}
 	}
@@ -944,19 +971,19 @@ static uint8_t tcp_ShortConnect_RcvMsg( ssl_context *ssl, unsigned char *buf, si
 		ret = ssl_read(ssl, buf, len);				
 		if( ret == POLARSSL_ERR_NET_WANT_READ || ret == POLARSSL_ERR_NET_WANT_WRITE ) 
 		{
-			USART_PRINTF_S("SSL: POLARSSL_ERR_NET_WANT_READ/WRITE\n");
+			SHORTCONN_PRINTF_S("SSL: POLARSSL_ERR_NET_WANT_READ/WRITE\n");
 			continue;
 		}
 
 		if( ret == POLARSSL_ERR_SSL_PEER_CLOSE_NOTIFY ) 
 		{
-			USART_PRINTF_S("SSL: POLARSSL_ERR_SSL_PEER_CLOSE_NOTIFY\n");
+			SHORTCONN_PRINTF_S("SSL: POLARSSL_ERR_SSL_PEER_CLOSE_NOTIFY\n");
 			return 0U;
 		} 
 
 		if( ret <= 0 )
 		{
-			USART_PRINTF_D( "ErrorLogging：failed\n  ! ssl_read returned %d\r\n", ret );
+			SHORTCONN_PRINTF_D( "ErrorLogging：failed\n  ! ssl_read returned %d\r\n", ret );
 			return 0U;
 		}
 		break;
@@ -978,12 +1005,12 @@ static void my_debug(void *ctx, int level, char *str)
 static int RandVal(void* arg)
 {
   uint32_t ret; 
-
+  RNG_HandleTypeDef *hrng;
   /* Wait until random number is ready */
-  while(RNG_GetFlagStatus(RNG_FLAG_DRDY)== RESET);
+  while(__HAL_RNG_GET_FLAG(hrng, RNG_FLAG_DRDY)== RESET);
   
   /* Get the random number */       
-  ret = RNG_GetRandomNumber();
+  ret = HAL_RNG_GetRandomNumber(hrng);
 
   /* Return the random number */ 
   return(ret);
@@ -1029,7 +1056,7 @@ static void tcp_client_httpPostRequest(char* postAddr,char* Le_u_in,u16_t * Le_u
 	strcat(Le_u_out, Le_u_in);
 	strcat(Le_u_out, "\r\n\r\n");
 	*Le_u_len = strlen(Le_u_out);
-	USART_PRINTF_S(Le_u_out);
+	SHORTCONN_PRINTF_S(Le_u_out);
 }
 
 /*
@@ -1042,14 +1069,14 @@ static uint8 tcp_ShortConnect_parseJson(char * pMsg)
 	if(NULL == pJson)                                                                                         
 	{
 		// parse faild, return
-		USART_PRINTF_S("\r\nErrorLogging：接收数据解析成json格式失败\r\n");
+		SHORTCONN_PRINTF_S("\r\nErrorLogging：接收数据解析成json格式失败\r\n");
 		return 0U;
 	}
 	// get string from json
 	cJSON * pSub_err = cJSON_GetObjectItem(pJson, "error");
 	if(NULL == pSub_err)
 	{
-		USART_PRINTF_S("\r\nErrorLogging：获取成员 error 失败\r\n");
+		SHORTCONN_PRINTF_S("\r\nErrorLogging：获取成员 error 失败\r\n");
 		cJSON_Delete(pJson);
 		return 0U;
 	}
@@ -1063,14 +1090,18 @@ static uint8 tcp_ShortConnect_parseJson(char * pMsg)
 	{
 		case 0:
 		{
-			USART_PRINTF_S("状态码正确");
+			SHORTCONN_PRINTF_S("状态码正确");
 			ret = 1;
 			//client_TxFlag.EchoFlag = 2U;
 			cJSON * pSub_token = cJSON_GetObjectItem(pJson, "token");
 			if(NULL != pSub_token)
 			{//收到初始化响应
+#ifdef SHORTCNNT_DOWNLOAD_BLACKLIST					
 				memcpy(BListPull.token,pSub_token->valuestring,39U);
+#endif				
+#ifdef SHORTCNNT_UPLOAD_UNLOCKLOG					
 				memcpy(Setcp_h_OpenLog.token,pSub_token->valuestring,39U);
+#endif				
 				memcpy(Se_h_doorSt.token,pSub_token->valuestring,39U);
 				memcpy(Vetcp_client_u_token,pSub_token->valuestring,39U);
 				if(TxTempBuf.dtAlidity == 1U)
@@ -1086,13 +1117,14 @@ static uint8 tcp_ShortConnect_parseJson(char * pMsg)
 						TxTempBuf.data[Le_w_temp + Le_u_i] = pSub_token->valuestring[Le_u_i];
 					}
 				}
-				USART_PRINTF_S("\r\ntoken信息写入flash\r\n");
+				SHORTCONN_PRINTF_S("\r\ntoken信息写入flash\r\n");
 				(void)MemIf_WriteEE(EepromCfg_tokenInfo,Vetcp_client_u_token,sizeof(Vetcp_client_u_token));//token值写到flash
 				client_TxFlag.InitFlag = 1U;//设备初始化ok
-				SetAudioIO_PlayFile(AudioIO_DeInitFinish,2U);
+				//SetAudioIO_PlayFile(AudioIO_DeInitFinish,2U);
 			}
 			else
-			{		
+			{
+#ifdef SHORTCNNT_DOWNLOAD_BLACKLIST					
 				cJSON * pSub_list = cJSON_GetObjectItem(pJson, "list");
 				if(NULL != pSub_list)
 				{//黑名单响应数据
@@ -1118,13 +1150,13 @@ static uint8 tcp_ShortConnect_parseJson(char * pMsg)
 							BListPull.page++;
 							Se_dw_BListPullTimer = SHORTCNNT_PULLBLIST_PERIOD - (3000U/SHORTCNNT_SCHEDULING_CYCLE);
 						}
-						//USART_PRINTF_D("拉取页码：%d\n",BListPull.page);
+						//SHORTCONN_PRINTF_D("拉取页码：%d\n",BListPull.page);
 						/*网络发来的时间校准本地时钟芯片*/
 						//timestamp_strBJtime((BListPull.timestamp/1000),timelist);//时间戳转换为时间（字符串格式）
 						//timestamp_timeCalibration(timelist,TIME_STAMP_UNT);//校准时钟芯片时间	
 						/*提取网络黑名单数据*/
 						unsigned int BList_size = cJSON_GetArraySize(pSub_list);
-						//USART_PRINTF_D("：黑名单卡号数量%d\n",BList_size);
+						//SHORTCONN_PRINTF_D("：黑名单卡号数量%d\n",BList_size);
 						unsigned int BList_i = 0;
 						unsigned char BList_j = 0;
 						uint8_t BList_cardNum[CLIENT_SHORTCNNT_CARDNUM_LNG];
@@ -1139,7 +1171,7 @@ static uint8 tcp_ShortConnect_parseJson(char * pMsg)
 							{
 								if(BList_cardNumLen > 8U)
 								{
-									//USART_PRINTF_D("卡号编号 %s长度不符\n：",BList_item->valuestring);
+									//SHORTCONN_PRINTF_D("卡号编号 %s长度不符\n：",BList_item->valuestring);
 									continue;
 								}
 								else
@@ -1157,7 +1189,7 @@ static uint8 tcp_ShortConnect_parseJson(char * pMsg)
 								tcp_shortConnect_StrToHex(BList_item->valuestring,BList_cardNum);
 							}
 							WrBListCache_BListQueue(BList_cardNum);
-							//USART_PRINTF_D("卡号编号 %d 转换为Hex格式卡号：",BList_i);
+							//SHORTCONN_PRINTF_D("卡号编号 %d 转换为Hex格式卡号：",BList_i);
 							//USART_PRINTF_CARD_NUM("%x%x%x%x\n",BList_cardNum[0U],BList_cardNum[1U],BList_cardNum[2U], \
 												  BList_cardNum[3U]);
 						}
@@ -1175,13 +1207,15 @@ static uint8 tcp_ShortConnect_parseJson(char * pMsg)
 						(void)MemIf_WriteEE(EepromCfg_timestamp_page,&BListPull,sizeof(BListPull));//黑名单时间戳、页码等信息写入非易失性存储器
 					}
 #endif
+				
 				}
+#endif	
 			}
 		}
 		break;
 		case 308:
 		{//token 过期
-			USART_PRINTF_S("\r\nErrorLogging：token过期\r\n");
+			SHORTCONN_PRINTF_S("\r\nErrorLogging：token过期\r\n");
 			//client_TxFlag.tokenOverdueFlag = 1U;
 			client_TxFlag.InitFlag = 0U;//设置设备重新初始化
 			ret = 0;
@@ -1189,28 +1223,28 @@ static uint8 tcp_ShortConnect_parseJson(char * pMsg)
 		break;
 		case 406:
 		{//门id未在后台绑定设备
-			USART_PRINTF_S("\r\nErrorLogging：门id未在后台绑定设备\r\n");
-			SetAudioIO_PlayFile(AudioIO_DeInitFailLostId,2U);
+			SHORTCONN_PRINTF_S("\r\nErrorLogging：门id未在后台绑定设备\r\n");
+			//SetAudioIO_PlayFile(AudioIO_DeInitFailLostId,2U);
 			ret = 0;
 		}
 		break;
 		case 428:
 		{//门id已在后台绑定设备
-			USART_PRINTF_S("\r\nErrorLogging：门id已在后台绑定设备\r\n");
-			SetAudioIO_PlayFile(AudioIO_DeInitFailExistId,2U);
+			SHORTCONN_PRINTF_S("\r\nErrorLogging：门id已在后台绑定设备\r\n");
+			//SetAudioIO_PlayFile(AudioIO_DeInitFailExistId,2U);
 			ret = 0;
 		}
 		break;
 		case 319:
 		{//数据不正确或数据不完整
-			USART_PRINTF_S("\r\nErrorLogging：数据不正确或数据不完整\r\n");
+			SHORTCONN_PRINTF_S("\r\nErrorLogging：数据不正确或数据不完整\r\n");
 			TxTempBuf.dtAlidity = 0U;
 			ret = 0;
 		}
 		break;
 		default:
 		{
-			USART_PRINTF_D( "\r\nErrorLogging：状态码错误，当前状态码为 %d\r\n",pSub_err->valueint);
+			SHORTCONN_PRINTF_D( "\r\nErrorLogging：状态码错误，当前状态码为 %d\r\n",pSub_err->valueint);
 			ret = 0;
 		}
 		break;
@@ -1241,7 +1275,9 @@ uint8_t tcp_client_BListUpdataSt(void)
 */
 void tcp_client_BListUpdata(void)
 {
+#ifdef SHORTCNNT_DOWNLOAD_BLACKLIST
 	ClrBListMng_ListData();//清黑名单列表
+#endif
 	BListPull.timestamp = 0;
 	BListPull.page = 1U;
 	Se_dw_BListPullTimer = SHORTCNNT_PULLBLIST_PERIOD;
@@ -1328,19 +1364,18 @@ static void tcp_shortConnect_StrToHex(char* Le_in, uint8_t* Le_out)
 	}
 }
 
-
+#ifdef SHORTCNNT_DOWNLOAD_BLACKLIST
 /*
 //	设置全量更新黑名单的时间
 */
 static uint8_t Settcp_shortConnect_UpdataBLTime(void)
 { 
 	struct rtc_time Le_h_tm;
+	uint32_t timestamp;
 	uint8_t ret = 0U;
-#ifdef  HYM8563
-	(void)hym8563_read_datetime(&Le_h_tm);
-#else
-	Read_RTC_TimeAndDate(&Le_h_tm);//读取日期时间
-#endif
+
+	GetLocalRTC_datetime(&Le_h_tm,&timestamp);//读取日期时间
+
 	//tm.tm_year, tm.tm_mon, tm.tm_mday, tm.wday,tm.tm_hour, tm.tm_min, tm.tm_sec);
 	if(Le_h_tm.tm_year >= 2018U)
 	{
@@ -1359,22 +1394,20 @@ static uint8_t Settcp_shortConnect_UpdataBLTime(void)
 	return ret;
 }
 
-
 /*
 //	全量更新黑名单
 */
 static void tcp_shortConnect_UpdataBList(void)
 { 
 	struct rtc_time Le_h_tm;
+	uint32_t timestamp;
 	Se_h_UpdateBList.Timer++;
 	if(Se_h_UpdateBList.Timer >= (25000U/SHORTCNNT_SCHEDULING_CYCLE))
 	{
 		Se_h_UpdateBList.Timer = 0U;
-#ifdef  HYM8563
-		(void)hym8563_read_datetime(&Le_h_tm);/*读取当前时间*/
-#else
-		Read_RTC_TimeAndDate(&Le_h_tm);//读取日期时间
-#endif
+		
+		GetLocalRTC_datetime(&Le_h_tm,&timestamp);//读取日期时间
+
 		if((Se_h_UpdateBList.hour == Le_h_tm.tm_hour) && (Le_h_tm.tm_min == Se_h_UpdateBList.min))
 		{//全量更新黑名单。[注：时钟误差大，同时在网络校时情况下会出现跳过全量更新黑名单过程]
 			if(0U == Se_h_UpdateBList.flag)
@@ -1392,7 +1425,7 @@ static void tcp_shortConnect_UpdataBList(void)
 		}
 	}
 }
-
+#endif
 
 /*
 //hex ip转换成x.x.x.x  
@@ -1410,6 +1443,6 @@ static void tcp_shortConnect_HexIPtoStr(struct ip_addr Le_dw_in,char* Le_u_out)
 
 	sprintf(Le_u_out,"%d.%d.%d.%d",ip_int_index[3],ip_int_index[2],ip_int_index[1],ip_int_index[0]); 
 }
-#endif /* LWIP_TCP */
+
 
 /************************ (C) COPYRIGHT STMicroelectronics *****END OF FILE****/

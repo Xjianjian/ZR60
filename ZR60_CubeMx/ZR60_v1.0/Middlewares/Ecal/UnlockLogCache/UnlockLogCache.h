@@ -11,8 +11,7 @@ Data			  Vasion			author
 /*******************************************************
 description£º include the header file
 *******************************************************/
-#include "stm32f4xx.h"
-#include "MyType.h"
+#include "Include.h"
 
 /*******************************************************
 description£º macro definitions

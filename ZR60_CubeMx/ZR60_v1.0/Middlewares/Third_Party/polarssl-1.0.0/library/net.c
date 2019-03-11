@@ -260,7 +260,7 @@ int net_accept( int bind_fd, int *client_fd, void *client_ip )
 #if defined(__socklen_t_defined) || defined(_SOCKLEN_T)
     socklen_t n = (socklen_t) sizeof( client_addr );
 #else
-    int n = (int) sizeof( client_addr );
+    socklen_t n = (int) sizeof( client_addr );
 #endif
 
     *client_fd = accept( bind_fd, (struct sockaddr *)
