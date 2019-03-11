@@ -120,10 +120,10 @@ void MX_FREERTOS_Init(void) {
   osThreadDef(myTask05, Start_20msTask, osPriorityNormal, 0, 512);
   myTask05Handle = osThreadCreate(osThread(myTask05), NULL);
 
-  /* definition and creation of myTask05 */
-  osThreadDef(https_Task, vTaskhttps, osPriorityNormal, 0, 1024);//此处分配过小，会导致卡死复位
+  /* definition and creation of https_Task */
+  osThreadDef(https_Task, vTaskhttps, osPriorityNormal, 0, 1024);
   https_TaskHandle = osThreadCreate(osThread(https_Task), NULL);
-  
+
   /* definition and creation of FeedDog */
   osThreadDef(FeedDog, vTaskFeedDog, osPriorityRealtime, 0, 128);
   FeedDogHandle = osThreadCreate(osThread(FeedDog), NULL);
@@ -227,7 +227,7 @@ void Start_20msTask(void const * argument)
 /* vTaskhttps function */
 void vTaskhttps(void const * argument)
 {
-	/* USER CODE BEGIN vTaskhttps */
+  /* USER CODE BEGIN vTaskhttps */
 	
 	/* Infinite loop */
 	for(;;)
@@ -236,7 +236,7 @@ void vTaskhttps(void const * argument)
 		
 		osDelay(5000);
 	}
-	/* USER CODE END vTaskhttps */
+  /* USER CODE END vTaskhttps */
 }
 
 /* vTaskFeedDog function */

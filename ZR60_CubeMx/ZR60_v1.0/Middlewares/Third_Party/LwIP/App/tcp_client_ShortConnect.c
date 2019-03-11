@@ -60,11 +60,12 @@ static u8_t   Setcp_client_u_TxBusyFlg = 0U;//发送忙标志：0--空闲，1--忙
 static u16_t  Setcp_client_w_HeartTimer = 0U;//发送心跳计时器
 #endif
 static u16_t  Setcp_client_w_DoorStTimer = 0U;//上报门锁状态计时器
-static u16_t  Se_w_OpenDoorLogTimer = 0U;//上报开锁日志计时器
 static u8_t  Setcp_client_u_TimeoutCnt = 0U;//短连接超时计数
-
+#ifdef SHORTCNNT_DOWNLOAD_BLACKLIST	
 static u32_t  Se_dw_BListPullTimer;//拉取黑名单计时器
+#endif
 #ifdef SHORTCNNT_UPLOAD_UNLOCKLOG
+static u16_t  Se_w_OpenDoorLogTimer = 0U;//上报开锁日志计时器
 static tcp_client_OpenLogStruct Setcp_h_OpenLog;
 #endif
 char Vetcp_client_u_token[40];
@@ -89,8 +90,9 @@ struct echoclient
   struct pbuf *p_tx;            /* pointer on pbuf to be transmitted */
 };
 
-//struct echoclient * echoclient_es = NULL;
+#ifdef SHORTCNNT_DOWNLOAD_BLACKLIST	
 static tcp_client_UpdateBListStruct  Se_h_UpdateBList;
+#endif
 
 /* Exported types ------------------------------------------------------------*/
 /* polarSSL */
@@ -112,10 +114,10 @@ static void tcp_client_MacRecombine(char* Le_u_mac);
 static uint8 tcp_ShortConnect_parseJson(char * pMsg);
 static void tcp_shortConnect_StrToHex(char* Le_in, uint8_t* Le_out);
 static void tcp_shortConnect_HexIPtoStr(struct ip_addr Le_dw_in,char* Le_u_out);
-static uint8_t tcp_ShortConnect_SendMsg( ssl_context *ssl, const unsigned char *buf, size_t len );
-static uint8_t tcp_ShortConnect_RcvMsg( ssl_context *ssl, unsigned char *buf, size_t len );
+static uint8_t tcp_ShortConnect_SendMsg( ssl_context *ssl,char *buf, size_t len );
+static uint8_t tcp_ShortConnect_RcvMsg( ssl_context *ssl, char *buf, size_t len );
 /* Private functions ---------------------------------------------------------*/
-static void my_debug(void *ctx, int level, char *str);
+static void my_debug(void *ctx, int level,const char *str);
 static int RandVal(void* arg);
 static uint8 Gettcp_client_u_XOR(uint8* Le_u_Dt,uint16 Le_w_Lng);
 #ifdef SHORTCNNT_DOWNLOAD_BLACKLIST
@@ -136,18 +138,10 @@ static void tcp_shortConnect_UpdataBList(void);
 void tcp_ShortConnect_parameter(void)
 {
 	uint8_t Letcp_ShortConnect_u_Xor = 0;
-	BListPull.timestamp = 0;
-	BListPull.page = 1U;
-	BListPull.Listtype = 0;
-	BListPull.pageSize = SHORTCNNT_BLIST_PULLNUM;//默认最多拉取卡号数量
-	Se_dw_BListPullTimer = SHORTCNNT_PULLBLIST_PERIOD - (10000U/SHORTCNNT_SCHEDULING_CYCLE);
-	Setcp_client_w_DoorStTimer = CLIENT_DOORST_PERIOD - (5000U/SHORTCNNT_SCHEDULING_CYCLE);
-	//client_TxFlag.TskFlag = 0U;//任务标志
-	Se_h_doorSt.state = STD_OFF;
-	
+
 	client_TxFlag.InitFlag = 0U;//
 	Letcp_ShortConnect_u_Xor = GetMemIf_u_CheckSum(EepromCfg_tokenInfo);//读取token数据校验和
-	if((Letcp_ShortConnect_u_Xor == MemIf_ReadEE(EepromCfg_tokenInfo,Vetcp_client_u_token,sizeof(Vetcp_client_u_token))) && \
+	if((Letcp_ShortConnect_u_Xor == MemIf_ReadEE(EepromCfg_tokenInfo,(uint8*)Vetcp_client_u_token,sizeof(Vetcp_client_u_token))) && \
 			(STD_ACTIVE == GetMemIf_u_DtVild(EepromCfg_tokenInfo)))
 	{//token有效
 		SetMemIf_EEVild(EepromCfg_tokenInfo);//数据有效
@@ -162,15 +156,22 @@ void tcp_ShortConnect_parameter(void)
 #ifdef SHORTCNNT_HEART
 	client_TxFlag.HeartFlag = 0U;//
 #endif
+	Setcp_client_w_DoorStTimer = CLIENT_DOORST_PERIOD - (5000U/SHORTCNNT_SCHEDULING_CYCLE);
+	Se_h_doorSt.state = STD_OFF;
 	client_TxFlag.DoorStFlag = 0U;//
 #ifdef SHORTCNNT_UPLOAD_UNLOCKLOG	
 	client_TxFlag.ReportFlag = 0U;//
 #endif
 #ifdef SHORTCNNT_DOWNLOAD_BLACKLIST		
+	BListPull.timestamp = 0;
+	BListPull.page = 1U;
+	BListPull.Listtype = 0;
+	BListPull.pageSize = SHORTCNNT_BLIST_PULLNUM;//默认最多拉取卡号数量
+	
+	Se_dw_BListPullTimer = SHORTCNNT_PULLBLIST_PERIOD - (10000U/SHORTCNNT_SCHEDULING_CYCLE);
 	client_TxFlag.BListFlag = 0U;//
 #endif
-	//client_TxFlag.BusyFlag = 0U;//
-	//client_TxFlag.PcktType = Pckt_Unknow;
+
 	DeviceInit.addrtype = 0;//
 #if 1	
 	DeviceInit.mac[0] = 'e';//测试使用
@@ -233,7 +234,8 @@ void tcp_ShortConnect_MainFunction(void)
 		client_TxFlag.HeartFlag = 0U;//
 #endif
 		client_TxFlag.DoorStFlag = 0U;//
-#ifdef SHORTCNNT_UPLOAD_UNLOCKLOG			
+#ifdef SHORTCNNT_UPLOAD_UNLOCKLOG		
+		Se_w_OpenDoorLogTimer = 0U;		
 		client_TxFlag.ReportFlag = 0U;//
 #endif		
 #ifdef SHORTCNNT_DOWNLOAD_BLACKLIST	
@@ -244,7 +246,6 @@ void tcp_ShortConnect_MainFunction(void)
 		//client_TxFlag.EchoFlag = 0U;//
 		//client_TxFlag.PcktType = Pckt_Unknow;
 		//Setcp_client_w_TxTimer = 0U;
-		Se_w_OpenDoorLogTimer = 0U;
 		//Setcp_client_w_ConntTimer = 0U;
 		Setcp_client_u_cnntSt = CLIENT_SHORTCNNT_IDLE;
 		return;
@@ -940,7 +941,7 @@ shortCnnt_exit:
 /*
 	发送数据
 */
-static uint8_t tcp_ShortConnect_SendMsg( ssl_context *ssl, const unsigned char *buf, size_t len )
+static uint8_t tcp_ShortConnect_SendMsg( ssl_context *ssl, char *buf, size_t len )
 {
 	int ret;
 	ret = ssl_write(ssl,buf,len);//数据发送
@@ -960,7 +961,7 @@ static uint8_t tcp_ShortConnect_SendMsg( ssl_context *ssl, const unsigned char *
 /*
 	接收数据
 */
-static uint8_t tcp_ShortConnect_RcvMsg( ssl_context *ssl, unsigned char *buf, size_t len )
+static uint8_t tcp_ShortConnect_RcvMsg( ssl_context *ssl, char *buf, size_t len )
 {
 	int ret;
 	/* Read decrypted application data */
@@ -968,7 +969,7 @@ static uint8_t tcp_ShortConnect_RcvMsg( ssl_context *ssl, unsigned char *buf, si
 	{
 		len = sizeof(ShortRecev_buf) - 1;
 		memset(ShortRecev_buf, 0, sizeof(ShortRecev_buf));
-		ret = ssl_read(ssl, buf, len);				
+		ret = ssl_read(ssl, (unsigned char*)buf, len);				
 		if( ret == POLARSSL_ERR_NET_WANT_READ || ret == POLARSSL_ERR_NET_WANT_WRITE ) 
 		{
 			SHORTCONN_PRINTF_S("SSL: POLARSSL_ERR_NET_WANT_READ/WRITE\n");
@@ -992,7 +993,7 @@ static uint8_t tcp_ShortConnect_RcvMsg( ssl_context *ssl, unsigned char *buf, si
 }
 
 
-static void my_debug(void *ctx, int level, char *str)
+static void my_debug(void *ctx, int level, const char *str)
 {
 	//printf("%s", str); 
 }
@@ -1270,18 +1271,20 @@ uint8_t tcp_client_BListUpdataSt(void)
 	return BListPull.UpdataFlag;
 }
 
+#ifdef SHORTCNNT_DOWNLOAD_BLACKLIST
 /*
 	全量更新黑名单
 */
 void tcp_client_BListUpdata(void)
 {
-#ifdef SHORTCNNT_DOWNLOAD_BLACKLIST
+
 	ClrBListMng_ListData();//清黑名单列表
-#endif
+
 	BListPull.timestamp = 0;
 	BListPull.page = 1U;
 	Se_dw_BListPullTimer = SHORTCNNT_PULLBLIST_PERIOD;
 }
+#endif
 
 /******************************************************
 *函数名：Gettcp_client_u_XOR
